@@ -1,7 +1,8 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ReportsService } from './reports.service';
-import { Roles, UserRole } from '../common/decorators/roles.decorator';
+import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
+import { UserRole } from '@prisma/client';
 
 @Controller('reports')
 @UseGuards(RolesGuard)
@@ -20,13 +21,13 @@ export class ReportsController {
   }
 
   @Get('users')
-  async getUsersReport(@Query() query: any) {
-    return this.reportsService.getUsersReport(query);
+  async getUsersReport() {
+    return this.reportsService.getUsersReport();
   }
 
   @Get('resources')
-  async getResourcesReport(@Query() query: any) {
-    return this.reportsService.getResourcesReport(query);
+  async getResourcesReport() {
+    return this.reportsService.getResourcesReport();
   }
 
   @Get('dashboard')

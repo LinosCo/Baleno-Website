@@ -69,10 +69,10 @@ export default function HomePage() {
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Button asChild size="lg" variant="secondary">
-              <Link href="/auth/register">Registrati</Link>
+              <Link href="/register">Registrati</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href="/auth/login">Accedi</Link>
+              <Link href="/login">Accedi</Link>
             </Button>
           </div>
         </div>

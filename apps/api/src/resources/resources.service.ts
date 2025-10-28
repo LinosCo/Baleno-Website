@@ -1,32 +1,86 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateResourceDto, UpdateResourceDto } from './dto';
+import { ResourceType } from '@prisma/client';
 
 @Injectable()
 export class ResourcesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll() {
-    // TODO: Implement - Get all resources/spaces
-    throw new Error('Not implemented yet');
+  async findAll(type?: ResourceType, isActive?: boolean) {
+    const where: any = {};
+
+    if (type) {
+      where.type = type;
+    }
+
+    if (isActive !== undefined) {
+      where.isActive = isActive;
+    }
+
+    const resources = await this.prisma.resource.findMany({
+      where,
+      orderBy: { name: 'asc' },
+    });
+
+    return resources;
   }
 
   async findOne(id: string) {
-    // TODO: Implement - Get single resource
-    throw new Error('Not implemented yet');
+    const resource = await this.prisma.resource.findUnique({
+      where: { id },
+    });
+
+    if (!resource) {
+      throw new NotFoundException('Resource not found');
+    }
+
+    return resource;
   }
 
-  async create(createDto: any) {
-    // TODO: Implement - Create new resource (Admin only)
-    throw new Error('Not implemented yet');
+  async create(createDto: CreateResourceDto) {
+    const resource = await this.prisma.resource.create({
+      data: {
+        ...createDto,
+        pricePerHour: createDto.pricePerHour,
+      },
+    });
+
+    return resource;
   }
 
-  async update(id: string, updateDto: any) {
-    // TODO: Implement - Update resource
-    throw new Error('Not implemented yet');
+  async update(id: string, updateDto: UpdateResourceDto) {
+    const resource = await this.prisma.resource.findUnique({
+      where: { id },
+    });
+
+    if (!resource) {
+      throw new NotFoundException('Resource not found');
+    }
+
+    const updatedResource = await this.prisma.resource.update({
+      where: { id },
+      data: updateDto,
+    });
+
+    return updatedResource;
   }
 
   async remove(id: string) {
-    // TODO: Implement - Soft delete resource
-    throw new Error('Not implemented yet');
+    const resource = await this.prisma.resource.findUnique({
+      where: { id },
+    });
+
+    if (!resource) {
+      throw new NotFoundException('Resource not found');
+    }
+
+    // Soft delete - mark as inactive
+    await this.prisma.resource.update({
+      where: { id },
+      data: { isActive: false },
+    });
+
+    return { message: 'Resource deactivated successfully' };
   }
 }

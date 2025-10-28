@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Public } from '../common/decorators/public.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { RegisterDto, LoginDto, RefreshTokenDto } from './dto';
 
 @Controller('auth')
 export class AuthController {
@@ -10,18 +11,19 @@ export class AuthController {
 
   @Public()
   @Post('register')
-  async register(@Body() registerDto: any) {
+  async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
   @Public()
   @Post('login')
-  async login(@Body() loginDto: any) {
+  async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
+  @Public()
   @Post('refresh')
-  async refresh(@Body() refreshTokenDto: any) {
+  async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refreshToken(refreshTokenDto);
   }
 

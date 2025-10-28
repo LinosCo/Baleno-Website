@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards, Query } from '@nestjs/common';
 import { ResourcesService } from './resources.service';
-import { Roles, UserRole } from '../common/decorators/roles.decorator';
+import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Public } from '../common/decorators/public.decorator';
+import { CreateResourceDto, UpdateResourceDto } from './dto';
+import { UserRole, ResourceType } from '@prisma/client';
 
 @Controller('resources')
 @UseGuards(RolesGuard)
@@ -11,8 +13,8 @@ export class ResourcesController {
 
   @Public()
   @Get()
-  async findAll() {
-    return this.resourcesService.findAll();
+  async findAll(@Query('type') type?: ResourceType, @Query('isActive') isActive?: string) {
+    return this.resourcesService.findAll(type, isActive === 'true');
   }
 
   @Public()
@@ -23,13 +25,13 @@ export class ResourcesController {
 
   @Post()
   @Roles(UserRole.ADMIN)
-  async create(@Body() createDto: any) {
+  async create(@Body() createDto: CreateResourceDto) {
     return this.resourcesService.create(createDto);
   }
 
   @Put(':id')
   @Roles(UserRole.ADMIN, UserRole.COMMUNITY_MANAGER)
-  async update(@Param('id') id: string, @Body() updateDto: any) {
+  async update(@Param('id') id: string, @Body() updateDto: UpdateResourceDto) {
     return this.resourcesService.update(id, updateDto);
   }
 

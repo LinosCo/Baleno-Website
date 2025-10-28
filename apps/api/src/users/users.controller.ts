@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Roles, UserRole } from '../common/decorators/roles.decorator';
+import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { UpdateUserDto, ChangePasswordDto } from './dto';
+import { UserRole } from '@prisma/client';
 
 @Controller('users')
 @UseGuards(RolesGuard)
@@ -21,8 +23,17 @@ export class UsersController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateDto: any, @CurrentUser() currentUser: any) {
+  async update(@Param('id') id: string, @Body() updateDto: UpdateUserDto, @CurrentUser() currentUser: any) {
     return this.usersService.update(id, updateDto, currentUser);
+  }
+
+  @Put(':id/password')
+  async changePassword(
+    @Param('id') id: string,
+    @Body() changePasswordDto: ChangePasswordDto,
+    @CurrentUser() currentUser: any,
+  ) {
+    return this.usersService.changePassword(id, changePasswordDto, currentUser);
   }
 
   @Delete(':id')

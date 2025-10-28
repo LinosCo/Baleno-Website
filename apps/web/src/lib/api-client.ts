@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
@@ -7,63 +7,45 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Per cookies
 });
 
-// Request interceptor per aggiungere token
-apiClient.interceptors.request.use(
-  (config) => {
-    // Ottieni token da localStorage
-    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-
-    if (token && config.headers) {
+apiClient.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+  }
+  return config;
+});
 
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
-
-// Response interceptor per gestire errori e refresh token
 apiClient.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError) => {
-    const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
-
-    // Se 401 e non è già un retry, prova a refreshare il token
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (!refreshToken) throw new Error('No refresh token');
-
-        const response = await axios.post(`${API_URL}/auth/refresh`, {
-          refreshToken,
-        });
-
-        const { accessToken } = response.data;
-        localStorage.setItem('accessToken', accessToken);
-
-        // Retry original request
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        }
-        return apiClient(originalRequest);
-      } catch (refreshError) {
-        // Refresh failed, logout user
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        window.location.href = '/auth/login';
-        return Promise.reject(refreshError);
+  (error) => {
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
+      localStorage.removeItem('accessToken');
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login';
       }
     }
-
     return Promise.reject(error);
-  },
+  }
 );
 
-export default apiClient;
+export const authAPI = {
+  register: (data: any) => apiClient.post('/auth/register', data),
+  login: (data: any) => apiClient.post('/auth/login', data),
+  logout: () => apiClient.post('/auth/logout'),
+  getMe: () => apiClient.get('/auth/me'),
+};
+
+export const resourcesAPI = {
+  getAll: (params?: any) => apiClient.get('/resources', { params }),
+  getOne: (id: string) => apiClient.get(`/resources/${id}`),
+};
+
+export const bookingsAPI = {
+  getAll: (params?: any) => apiClient.get('/bookings', { params }),
+  getOne: (id: string) => apiClient.get(`/bookings/${id}`),
+  create: (data: any) => apiClient.post('/bookings', data),
+};

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
+import { APP_GUARD } from '@nestjs/core';
 
 // Modules
 import { AuthModule } from './auth/auth.module';
@@ -12,6 +13,8 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { ResourcesModule } from './resources/resources.module';
 import { ReportsModule } from './reports/reports.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { AppController } from './app.controller';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -43,6 +46,13 @@ import { PrismaModule } from './prisma/prisma.module';
     NotificationsModule,
     ResourcesModule,
     ReportsModule,
+  ],
+  controllers: [AppController],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
   ],
 })
 export class AppModule {}

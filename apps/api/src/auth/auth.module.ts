@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { GoogleStrategy } from './strategies/google.strategy';
+// import { GoogleStrategy } from './strategies/google.strategy'; // Commented out for dev - configure GOOGLE_CLIENT_ID to enable
 import { UsersModule } from '../users/users.module';
 
 @Module({
@@ -24,7 +24,7 @@ import { UsersModule } from '../users/users.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, GoogleStrategy],
+  providers: [AuthService, JwtStrategy], // GoogleStrategy removed for dev
   exports: [AuthService],
 })
 export class AuthModule {}
