@@ -1,10 +1,14 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Work_Sans } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/providers';
 import { Toaster } from 'sonner';
 
-const inter = Inter({ subsets: ['latin'] });
+const workSans = Work_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-work-sans',
+});
 
 export const metadata: Metadata = {
   title: 'Baleno Sanzeno - Sistema di Prenotazione',
@@ -18,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="it" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={workSans.className}>
         <Providers>
           {children}
           <Toaster position="top-right" richColors />

@@ -2,6 +2,7 @@
 
 import { ReactNode, useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { authAPI } from '@/lib/api-client';
 
@@ -101,37 +102,45 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Top Bar */}
-      <div className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-20">
+      <div className="fixed top-0 left-0 right-0 h-16 bg-primary border-b border-primary z-20">
         <div className="h-full px-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 hover:bg-gray-100 rounded-lg"
+              className="p-2 hover:bg-primary/80 rounded-lg text-white"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <h1 className="text-xl font-bold text-gray-900">Baleno Admin</h1>
+            <Link href="/admin" className="flex items-center">
+              <Image
+                src="/BALENO-LOGO-BIANCO.png"
+                alt="Baleno Sanzeno"
+                width={120}
+                height={40}
+                className="h-8 w-auto"
+              />
+            </Link>
           </div>
 
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard"
-              className="text-sm text-gray-600 hover:text-gray-900"
+              className="text-sm text-white/80 hover:text-white"
             >
               Vista Utente
             </Link>
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-white">
                   {user.firstName} {user.lastName}
                 </p>
-                <p className="text-xs text-gray-500">{user.role}</p>
+                <p className="text-xs text-white/70">{user.role}</p>
               </div>
               <button
                 onClick={handleLogout}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm"
+                className="bg-accent text-primary px-4 py-2 rounded-lg hover:bg-accent/90 transition text-sm font-medium"
               >
                 Logout
               </button>

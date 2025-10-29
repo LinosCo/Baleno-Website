@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
+import { usersAPI } from '@/lib/api-client';
 
 interface User {
   id: string;
@@ -18,21 +19,15 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchUsers = () => {
-    const token = localStorage.getItem('accessToken');
-
-    fetch('http://localhost:4000/api/users', {
-      headers: { 'Authorization': `Bearer ${token}` },
-    })
-      .then(res => res.json())
-      .then(data => {
-        setUsers(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
+  const fetchUsers = async () => {
+    try {
+      const response = await usersAPI.getAll();
+      setUsers(response.data);
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -40,17 +35,8 @@ export default function AdminUsersPage() {
   }, []);
 
   const handleRoleChange = async (userId: string, newRole: string) => {
-    const token = localStorage.getItem('accessToken');
-
     try {
-      await fetch(`http://localhost:4000/api/users/${userId}/role`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ role: newRole }),
-      });
+      await usersAPI.updateRole(userId, newRole);
       fetchUsers();
     } catch (err) {
       console.error(err);

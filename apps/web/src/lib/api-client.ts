@@ -50,3 +50,14 @@ export const bookingsAPI = {
   getOne: (id: string) => apiClient.get(`/bookings/${id}`),
   create: (data: any) => apiClient.post('/bookings', data),
 };
+
+export const usersAPI = {
+  getAll: () => apiClient.get('/users'),
+  updateRole: (id: string, role: string) => apiClient.put(`/users/${id}/role`, { role }),
+};
+
+// Update bookingsAPI
+export const bookingsAPIExtended = {
+  ...bookingsAPI,
+  delete: (id: string) => apiClient.delete(`/bookings/${id}`),
+};

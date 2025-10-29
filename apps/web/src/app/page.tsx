@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Calendar, Users, Shield, CreditCard } from 'lucide-react';
 
@@ -6,16 +7,22 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-sm border-b">
-        <div className="container mx-auto max-w-6xl px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold">
-            Baleno Sanzeno
+      <nav className="fixed top-0 w-full z-50 bg-primary border-b border-primary">
+        <div className="container mx-auto max-w-6xl px-4 py-3 flex justify-between items-center">
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/BALENO-LOGO-BIANCO.png"
+              alt="Baleno Sanzeno"
+              width={140}
+              height={45}
+              className="h-10 w-auto"
+            />
           </Link>
           <div className="flex gap-3">
-            <Button asChild variant="ghost">
+            <Button asChild variant="ghost" className="text-white hover:bg-white/10 hover:text-white">
               <Link href="/login">Accedi</Link>
             </Button>
-            <Button asChild>
+            <Button asChild className="bg-accent text-primary hover:bg-accent/90">
               <Link href="/register">Registrati</Link>
             </Button>
           </div>
@@ -71,26 +78,6 @@ export default function HomePage() {
               title="Calendario Pubblico"
               description="Visualizza tutte le prenotazioni approvate in tempo reale"
             />
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4 bg-primary text-primary-foreground">
-        <div className="container mx-auto max-w-4xl text-center space-y-6">
-          <h2 className="text-3xl md:text-4xl font-bold">
-            Pronto per iniziare?
-          </h2>
-          <p className="text-lg opacity-90">
-            Registrati ora e inizia a prenotare i tuoi spazi preferiti
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Button asChild size="lg" variant="secondary">
-              <Link href="/register">Registrati</Link>
-            </Button>
-            <Button asChild size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90">
-              <Link href="/login">Accedi</Link>
-            </Button>
           </div>
         </div>
       </section>

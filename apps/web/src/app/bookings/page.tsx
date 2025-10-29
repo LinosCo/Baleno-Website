@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { bookingsAPIExtended } from '@/lib/api-client';
 
 interface Booking {
   id: string;
@@ -30,27 +32,21 @@ export default function BookingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const fetchBookings = () => {
+  const fetchBookings = async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
       router.push('/login');
       return;
     }
 
-    fetch('http://localhost:4000/api/bookings', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        setBookings(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError('Errore nel caricamento delle prenotazioni');
-        setLoading(false);
-      });
+    try {
+      const response = await bookingsAPIExtended.getAll();
+      setBookings(response.data);
+      setLoading(false);
+    } catch (err) {
+      setError('Errore nel caricamento delle prenotazioni');
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -63,18 +59,7 @@ export default function BookingsPage() {
     }
 
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`http://localhost:4000/api/bookings/${bookingId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Errore nella cancellazione');
-      }
-
+      await bookingsAPIExtended.delete(bookingId);
       fetchBookings();
     } catch (err: any) {
       alert(err.message || 'Errore nella cancellazione della prenotazione');
@@ -91,12 +76,24 @@ export default function BookingsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
-        <div className="container mx-auto px-4 py-4">
+      <nav className="bg-primary shadow">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Le Mie Prenotazioni</h1>
-            <Link href="/dashboard" className="text-blue-600 hover:underline">
-              ← Torna alla dashboard
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard" className="flex items-center">
+                <Image
+                  src="/BALENO-LOGO-BIANCO.png"
+                  alt="Baleno Sanzeno"
+                  width={140}
+                  height={45}
+                  className="h-10 w-auto"
+                />
+              </Link>
+              <span className="text-white text-lg">|</span>
+              <h1 className="text-xl font-bold text-white">Le Mie Prenotazioni</h1>
+            </div>
+            <Link href="/dashboard" className="text-white hover:text-accent transition font-medium">
+              ← Dashboard
             </Link>
           </div>
         </div>
@@ -113,7 +110,7 @@ export default function BookingsPage() {
           <div className="mb-6">
             <Link
               href="/bookings/new"
-              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+              className="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition font-medium"
             >
               + Nuova Prenotazione
             </Link>
@@ -125,7 +122,7 @@ export default function BookingsPage() {
               <p className="text-lg text-gray-600 mb-4">Non hai ancora prenotazioni</p>
               <Link
                 href="/bookings/new"
-                className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+                className="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition font-medium"
               >
                 Crea la tua prima prenotazione
               </Link>
@@ -218,7 +215,7 @@ export default function BookingsPage() {
 
                     <div className="text-right ml-6">
                       {booking.totalPrice && (
-                        <p className="text-2xl font-bold text-blue-600 mb-2">
+                        <p className="text-2xl font-bold text-primary mb-2">
                           €{booking.totalPrice.toFixed(2)}
                         </p>
                       )}
@@ -234,7 +231,7 @@ export default function BookingsPage() {
 
                       {booking.status === 'APPROVED' && !booking.payment && (
                         <button
-                          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm font-medium"
+                          className="bg-accent text-primary px-4 py-2 rounded-lg hover:bg-accent/90 transition text-sm font-medium"
                         >
                           Paga Ora
                         </button>
