@@ -2,6 +2,17 @@
 
 Sistema completo di prenotazione spazi e risorse per Baleno San Zeno, con backend NestJS, frontend Next.js e pannello amministrativo in stile WordPress.
 
+## 🎨 Branding Baleno
+
+Il sistema utilizza l'identità visiva ufficiale di Baleno Sanzeno:
+- **Logo**: BALENO-LOGO-BIANCO.png (logo bianco su sfondi scuri)
+- **Colori**:
+  - Primary (Blu Baleno): #2B548E
+  - Accent (Giallo Baleno): #EDBB00
+  - Secondary (Blu Chiaro): #1863DC
+- **Font**: Work Sans (sostituisce Inter) - pesi 400, 500, 600, 700
+- **Riferimento**: Design basato su [balenosanzeno.it](https://balenosanzeno.it)
+
 ## 📋 Caratteristiche
 
 ### Backend (NestJS + Prisma + PostgreSQL)
@@ -298,22 +309,114 @@ const prisma = new PrismaClient();
 
 ## 🚢 Deploy Produzione
 
-### Backend
-1. Setup PostgreSQL produzione
-2. Configura variabili ambiente
-3. Esegui migrations: `pnpm prisma:migrate deploy`
-4. Build: `pnpm build`
-5. Start: `pnpm start:prod`
+Il progetto è configurato per deployment su **Railway** (backend + database) e **Vercel** (frontend).
 
-### Frontend
-1. Build Next.js: `pnpm build`
-2. Deploy su Vercel/Railway
-3. Configura `NEXT_PUBLIC_API_URL`
+### Documentazione Completa
+Consulta `DEPLOY_CONFIG.md` per la guida dettagliata con tutte le variabili d'ambiente e i segreti JWT pre-generati.
 
-### Opzioni Deploy
-- **Railway**: Deploy automatico per backend + database
-- **Vercel**: Deploy frontend Next.js
-- **Docker**: Container per deployment completo
+### Quick Start Railway (Backend)
+
+1. **Crea Progetto su Railway**
+   - Connetti repository GitHub
+   - Railway rileverà automaticamente il monorepo
+
+2. **Configura Servizio @baleno/api**
+   - Rimuovi il servizio @baleno/web (lo deploieremo su Vercel)
+   - Aggiungi PostgreSQL database al progetto
+   - **Root Directory**: `apps/api`
+   - **Build Command**: Configurato automaticamente via `railway.json`
+   - **Start Command**: Configurato automaticamente via `railway.json`
+
+3. **Variabili d'Ambiente Railway**
+   Aggiungi queste variabili al servizio @baleno/api:
+
+   ```env
+   # Database (aggiungi come riferimento)
+   DATABASE_URL=${{Postgres.DATABASE_URL}}
+
+   # App Config
+   NODE_ENV=production
+   PORT=4000
+
+   # JWT Secrets (generati in DEPLOY_CONFIG.md)
+   JWT_SECRET=AQ0n9dvYqlh3HHEphje0hXwGzYd2l3mr7WATvsh5KaQ=
+   JWT_REFRESH_SECRET=+pu1k8kPWpUmn+WkinKF4E259t4zdnd6D+LzvmA7qxw=
+   JWT_EXPIRES_IN=7d
+
+   # Frontend URL (aggiorna dopo deploy Vercel)
+   FRONTEND_URL=https://baleno-sanzeno.vercel.app
+
+   # Stripe (usa le tue chiavi di produzione)
+   STRIPE_SECRET_KEY=your-stripe-secret-key
+   STRIPE_WEBHOOK_SECRET=your-stripe-webhook-secret
+
+   # Email Configuration
+   EMAIL_FROM=noreply@balenosanzeno.it
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USER=your-email@gmail.com
+   SMTP_PASSWORD=your-app-specific-password
+
+   # Google OAuth (opzionale)
+   GOOGLE_CALLBACK_URL=https://your-api-url.up.railway.app/api/auth/google/callback
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+   # Redis (opzionale per rate limiting)
+   REDIS_HOST=localhost
+   REDIS_PORT=6379
+   RATE_LIMIT_TTL=60
+   ```
+
+4. **Deploy Backend**
+   - Railway deploierà automaticamente
+   - Copia l'URL pubblico del servizio (es: `https://xxx.up.railway.app`)
+
+5. **Esegui Migrations Database**
+   ```bash
+   # Dalla Railway CLI o dal dashboard
+   pnpm --filter @baleno/api prisma:migrate deploy
+   ```
+
+### Quick Start Vercel (Frontend)
+
+1. **Importa Progetto su Vercel**
+   - Connetti repository GitHub
+   - Framework: Next.js
+   - **Root Directory**: `apps/web`
+
+2. **Variabili d'Ambiente Vercel**
+   ```env
+   NEXT_PUBLIC_API_URL=https://your-railway-backend.up.railway.app/api
+   ```
+
+3. **Deploy Frontend**
+   - Vercel deploierà automaticamente
+   - Copia l'URL pubblico (es: `https://baleno-sanzeno.vercel.app`)
+
+4. **Aggiorna Railway**
+   - Torna su Railway
+   - Aggiorna la variabile `FRONTEND_URL` con l'URL Vercel
+   - Rideploy il servizio backend
+
+### Post-Deploy
+
+1. **Crea Admin**
+   Connettiti al database Railway via CLI o GUI e promuovi un utente:
+   ```sql
+   UPDATE "User" SET role = 'ADMIN' WHERE email = 'your-email@example.com';
+   ```
+
+2. **Configura Stripe Webhooks**
+   - Dashboard Stripe → Webhooks
+   - Endpoint: `https://your-railway-backend.up.railway.app/api/payments/webhook`
+   - Eventi: `payment_intent.succeeded`, `payment_intent.payment_failed`
+
+3. **Test Sistema**
+   - Registra un utente sul frontend
+   - Crea una prenotazione
+   - Verifica pannello admin
+   - Test pagamento Stripe (usa carte di test)
 
 ## 🔧 Scripts Disponibili
 
@@ -423,7 +526,8 @@ Gli URL ngrok saranno del tipo:
 ## 🎉 Stato Progetto
 
 **Versione**: 1.0.0
-**Stato**: Produzione Ready
+**Stato**: Production Ready - In Deployment
+**Ultimo Aggiornamento**: 29 Ottobre 2025
 
 ### Completato ✅
 - [x] Backend NestJS completo
@@ -440,6 +544,20 @@ Gli URL ngrok saranno del tipo:
 - [x] Supporto ngrok per demo pubbliche
 - [x] Client API centralizzato con Axios
 - [x] Gestione ruoli admin automatica
+- [x] **Branding Baleno completo** (logo, colori, font Work Sans)
+- [x] **Configurazione deployment Railway + Vercel**
+- [x] **JWT secrets generati per produzione**
+- [x] **railway.json e vercel.json configurati**
+- [x] **Documentazione deployment completa (DEPLOY_CONFIG.md)**
+
+### In Deployment 🚀
+- [x] Progetto su GitHub pronto
+- [ ] Railway backend deployment (IN CORSO)
+  - [x] PostgreSQL database aggiunto
+  - [ ] Variabili d'ambiente da completare
+  - [ ] Prima deploy da eseguire
+- [ ] Vercel frontend deployment
+- [ ] Test produzione completo
 
 ### In Sviluppo 🚧
 - [ ] Integrazione email produzione
@@ -455,3 +573,26 @@ Gli URL ngrok saranno del tipo:
 - [ ] Gestione eventi pubblici
 - [ ] Multi-tenant per altre locations
 - [ ] Integrazione calendario esterno (Google Calendar, iCal)
+
+## 📝 Note Recenti
+
+### Deployment Setup (29 Ottobre 2025)
+- Railway: Database PostgreSQL configurato, servizio @baleno/api pronto
+- Prossimi passi:
+  1. Completare aggiunta variabili d'ambiente su Railway
+  2. Eseguire primo deploy backend su Railway
+  3. Copiare URL Railway pubblico
+  4. Configurare Vercel con NEXT_PUBLIC_API_URL
+  5. Deploy frontend su Vercel
+  6. Aggiornare FRONTEND_URL su Railway
+  7. Eseguire migrations database
+  8. Creare primo utente admin
+  9. Configurare Stripe webhooks
+  10. Test completo sistema
+
+### Variabili Railway da Aggiungere
+Vedi `DEPLOY_CONFIG.md` per lista completa. Importante:
+- `DATABASE_URL` → Selezionare dal reference `${{Postgres.DATABASE_URL}}`
+- JWT secrets già generati e sicuri
+- SMTP da configurare con credenziali Gmail reali
+- Stripe keys da sostituire con quelle di produzione
