@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { authAPI } from '@/lib/api-client';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -20,25 +21,18 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:4000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await authAPI.register(formData);
+      const data = response.data;
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Registrazione fallita');
-      }
-
-      // Salva il token e reindirizza
+      // Salva il token e reindirizza in base al ruolo
       localStorage.setItem('accessToken', data.accessToken);
-      window.location.href = '/dashboard';
+      if (data.user.role === 'ADMIN' || data.user.role === 'COMMUNITY_MANAGER') {
+        window.location.href = '/admin';
+      } else {
+        window.location.href = '/dashboard';
+      }
     } catch (err: any) {
-      setError(err.message || 'Errore durante la registrazione');
+      setError(err.response?.data?.message || err.message || 'Errore durante la registrazione');
     } finally {
       setLoading(false);
     }

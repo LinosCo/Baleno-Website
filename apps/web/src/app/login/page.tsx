@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { authAPI } from '@/lib/api-client';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -15,25 +16,18 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:4000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await authAPI.login({ email, password });
+      const data = response.data;
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login fallito');
-      }
-
-      // Salva il token e reindirizza
+      // Salva il token e reindirizza in base al ruolo
       localStorage.setItem('accessToken', data.accessToken);
-      window.location.href = '/dashboard';
+      if (data.user.role === 'ADMIN' || data.user.role === 'COMMUNITY_MANAGER') {
+        window.location.href = '/admin';
+      } else {
+        window.location.href = '/dashboard';
+      }
     } catch (err: any) {
-      setError(err.message || 'Errore durante il login');
+      setError(err.response?.data?.message || err.message || 'Errore durante il login');
     } finally {
       setLoading(false);
     }
@@ -68,9 +62,17 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-sm text-blue-600 hover:underline"
+              >
+                Password dimenticata?
+              </Link>
+            </div>
             <input
               id="password"
               type="password"

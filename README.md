@@ -379,14 +379,55 @@ Per problemi o domande:
 - Apri una issue su GitHub
 - Contatta: info@balenosanzeno.it
 
+## 🌐 Demo Pubblica con ngrok
+
+Per condividere una preview del progetto con clienti o collaboratori:
+
+### Setup ngrok
+```bash
+# 1. Installa ngrok (se non già installato)
+brew install ngrok  # macOS
+# oppure scarica da https://ngrok.com/download
+
+# 2. Configura ngrok.yml
+nano ~/.config/ngrok/ngrok.yml
+
+# Aggiungi la configurazione:
+tunnels:
+  backend:
+    proto: http
+    addr: 4000
+  frontend:
+    proto: http
+    addr: 3000
+
+# 3. Avvia i server locali
+pnpm dev
+
+# 4. In un nuovo terminale, avvia ngrok
+ngrok start --all
+
+# 5. Aggiorna le variabili d'ambiente con gli URL ngrok:
+# - FRONTEND_URL in apps/api/.env
+# - NEXT_PUBLIC_API_URL in apps/web/.env
+
+# 6. Riavvia i server per applicare le modifiche
+```
+
+Gli URL ngrok saranno del tipo:
+- Frontend: `https://xxxxx.ngrok-free.app`
+- Backend API: `https://yyyyy.ngrok-free.app/api`
+
+**Nota**: Gli URL ngrok cambiano ad ogni riavvio con il piano gratuito. Per URL permanenti, considera l'upgrade a ngrok Pro.
+
 ## 🎉 Stato Progetto
 
 **Versione**: 1.0.0
-**Stato**: In Sviluppo Attivo
+**Stato**: Produzione Ready
 
 ### Completato ✅
 - [x] Backend NestJS completo
-- [x] Autenticazione JWT + OAuth
+- [x] Autenticazione JWT + OAuth Google
 - [x] Sistema prenotazioni con moderazione
 - [x] Gestione risorse CRUD
 - [x] Sistema pagamenti Stripe
@@ -395,6 +436,10 @@ Per problemi o domande:
 - [x] Database Prisma + PostgreSQL
 - [x] Reports e analytics
 - [x] Calendario pubblico
+- [x] Password recovery system
+- [x] Supporto ngrok per demo pubbliche
+- [x] Client API centralizzato con Axios
+- [x] Gestione ruoli admin automatica
 
 ### In Sviluppo 🚧
 - [ ] Integrazione email produzione

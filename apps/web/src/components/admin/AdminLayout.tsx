@@ -3,6 +3,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { authAPI } from '@/lib/api-client';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -21,13 +22,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       return;
     }
 
-    fetch('http://localhost:4000/api/auth/me', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
+    authAPI.getMe()
+      .then(response => {
+        const data = response.data;
         if (data.role !== 'ADMIN' && data.role !== 'COMMUNITY_MANAGER') {
           router.push('/dashboard');
           return;

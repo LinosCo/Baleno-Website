@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { authAPI } from '@/lib/api-client';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
@@ -15,14 +16,9 @@ export default function DashboardPage() {
     }
 
     // Fetch user data
-    fetch('http://localhost:4000/api/auth/me', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        setUser(data);
+    authAPI.getMe()
+      .then(response => {
+        setUser(response.data);
         setLoading(false);
       })
       .catch(() => {

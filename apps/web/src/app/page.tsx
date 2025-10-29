@@ -5,8 +5,25 @@ import { Calendar, Users, Shield, CreditCard } from 'lucide-react';
 export default function HomePage() {
   return (
     <div className="min-h-screen">
+      {/* Navbar */}
+      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-sm border-b">
+        <div className="container mx-auto max-w-6xl px-4 py-4 flex justify-between items-center">
+          <Link href="/" className="text-2xl font-bold">
+            Baleno Sanzeno
+          </Link>
+          <div className="flex gap-3">
+            <Button asChild variant="ghost">
+              <Link href="/login">Accedi</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/register">Registrati</Link>
+            </Button>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section */}
-      <section className="relative py-20 px-4 bg-gradient-to-b from-primary/10 to-background">
+      <section className="relative pt-32 pb-20 px-4 bg-gradient-to-b from-primary/10 to-background">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center space-y-6">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
@@ -71,7 +88,7 @@ export default function HomePage() {
             <Button asChild size="lg" variant="secondary">
               <Link href="/register">Registrati</Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90">
               <Link href="/login">Accedi</Link>
             </Button>
           </div>
