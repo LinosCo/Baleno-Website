@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import AdminLayout from '@/components/admin/AdminLayout';
+import AdminLayout from '../../../components/admin/AdminLayout';
 
 export default function AdminReportsPage() {
   const [stats, setStats] = useState<any>(null);
