@@ -5,6 +5,7 @@
   "description": "Backend API per Baleno Booking System",
   "scripts": {
     "build": "nest build",
+    "postbuild": "prisma migrate deploy --schema=../../prisma/schema.prisma",
     "dev": "nest start --watch",
     "start": "node dist/main",
     "start:debug": "nest start --debug --watch",
