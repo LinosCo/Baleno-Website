@@ -38,13 +38,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }, [router]);
 
   const navigation = [
-    { name: 'Dashboard', href: '/admin', icon: '=Ê', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
-    { name: 'Prenotazioni', href: '/admin/bookings', icon: '=Å', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
-    { name: 'Risorse', href: '/admin/resources', icon: '<â', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
-    { name: 'Utenti', href: '/admin/users', icon: '=e', allowedRoles: ['ADMIN'] },
-    { name: 'Pagamenti', href: '/admin/payments', icon: '=³', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
-    { name: 'Calendario', href: '/admin/calendar', icon: '=Æ', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
-    { name: 'Report', href: '/admin/reports', icon: '=È', allowedRoles: ['ADMIN'] },
+    { name: 'Dashboard', href: '/admin', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
+    { name: 'Prenotazioni', href: '/admin/bookings', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
+    { name: 'Risorse', href: '/admin/resources', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
+    { name: 'Utenti', href: '/admin/users', allowedRoles: ['ADMIN'] },
+    { name: 'Pagamenti', href: '/admin/payments', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
+    { name: 'Calendario', href: '/admin/calendar', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
+    { name: 'Report', href: '/admin/reports', allowedRoles: ['ADMIN'] },
   ];
 
   const filteredNavigation = navigation.filter(item =>
@@ -141,7 +141,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       }`}
                       style={{ padding: '0.75rem 1rem' }}
                     >
-                      <span style={{ fontSize: '1.25rem' }}>{item.icon}</span>
                       <span>{item.name}</span>
                     </Link>
                   </li>
