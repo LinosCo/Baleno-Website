@@ -12,10 +12,10 @@ export default function HomePage() {
             <Image
               src="/BALENO-LOGO-BIANCO.png"
               alt="Baleno Sanzeno"
-              width={160}
-              height={50}
+              width={200}
+              height={65}
               className="d-inline-block"
-              style={{ height: '50px', width: 'auto' }}
+              style={{ height: '65px', width: 'auto' }}
               priority
             />
           </Link>
@@ -34,10 +34,6 @@ export default function HomePage() {
 
           <div className="collapse navbar-collapse" id="mainNavbar">
             <div className="navbar-nav ms-auto d-flex align-items-lg-center gap-3">
-              <Link href="/calendar" className="nav-link text-white d-lg-block">
-                <Calendar size={18} className="me-2 d-inline" />
-                Calendario
-              </Link>
               <div className="d-flex gap-2 mt-3 mt-lg-0">
                 <Link href="/login" className="btn btn-outline-light px-4">
                   Accedi
