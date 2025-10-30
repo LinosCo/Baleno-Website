@@ -135,8 +135,13 @@ export default function AdminResourcesPage() {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-xl">Caricamento risorse...</div>
+        <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '400px' }}>
+          <div className="text-center">
+            <div className="spinner-border text-primary mb-3" role="status">
+              <span className="visually-hidden">Caricamento...</span>
+            </div>
+            <p className="text-muted">Caricamento risorse...</p>
+          </div>
         </div>
       </AdminLayout>
     );
@@ -144,11 +149,12 @@ export default function AdminResourcesPage() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
+      <div>
+        {/* Header */}
+        <div className="d-flex justify-content-between align-items-start mb-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Gestione Risorse</h1>
-            <p className="text-gray-600 mt-1">Aggiungi, modifica o rimuovi risorse prenotabili</p>
+            <h1 className="h3 fw-bold text-baleno-primary">Gestione Risorse</h1>
+            <p className="text-muted">Aggiungi, modifica o rimuovi risorse prenotabili</p>
           </div>
           <button
             onClick={() => {
@@ -156,193 +162,213 @@ export default function AdminResourcesPage() {
               setEditingResource(null);
               setShowModal(true);
             }}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+            className="btn btn-primary fw-semibold"
           >
             + Aggiungi Risorsa
           </button>
         </div>
 
         {/* Resources Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="row g-4">
           {resources.map((resource) => (
-            <div key={resource.id} className="bg-white rounded-lg shadow p-6">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-bold text-gray-900">{resource.name}</h3>
-                <span
-                  className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                    resource.isActive
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}
-                >
-                  {resource.isActive ? 'ATTIVA' : 'NON ATTIVA'}
-                </span>
-              </div>
+            <div key={resource.id} className="col-md-6 col-lg-4">
+              <div className="card border-0 shadow-sm h-100">
+                <div className="card-body">
+                  <div className="d-flex justify-content-between align-items-start mb-3">
+                    <h3 className="h5 fw-bold mb-0">{resource.name}</h3>
+                    <span
+                      className={`badge ${
+                        resource.isActive
+                          ? 'bg-success'
+                          : 'bg-secondary'
+                      }`}
+                    >
+                      {resource.isActive ? 'ATTIVA' : 'NON ATTIVA'}
+                    </span>
+                  </div>
 
-              <p className="text-sm text-gray-600 mb-4">{resource.description}</p>
+                  <p className="text-muted small mb-4">{resource.description}</p>
 
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Tipo:</span>
-                  <span className="font-medium">{resource.type}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Capacità:</span>
-                  <span className="font-medium">{resource.capacity} persone</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Prezzo:</span>
-                  <span className="font-medium">€{resource.pricePerHour}/h</span>
-                </div>
-              </div>
+                  <div className="d-flex flex-column gap-2 mb-4">
+                    <div className="d-flex justify-content-between small">
+                      <span className="text-muted">Tipo:</span>
+                      <span className="fw-semibold">{resource.type}</span>
+                    </div>
+                    <div className="d-flex justify-content-between small">
+                      <span className="text-muted">Capacità:</span>
+                      <span className="fw-semibold">{resource.capacity} persone</span>
+                    </div>
+                    <div className="d-flex justify-content-between small">
+                      <span className="text-muted">Prezzo:</span>
+                      <span className="fw-semibold text-primary">€{resource.pricePerHour}/h</span>
+                    </div>
+                  </div>
 
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleEdit(resource)}
-                  className="flex-1 bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 transition text-sm font-medium"
-                >
-                  Modifica
-                </button>
-                <button
-                  onClick={() => handleDelete(resource.id)}
-                  className="flex-1 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition text-sm font-medium"
-                >
-                  Elimina
-                </button>
+                  <div className="d-flex gap-2">
+                    <button
+                      onClick={() => handleEdit(resource)}
+                      className="btn btn-sm btn-outline-primary flex-fill fw-semibold"
+                    >
+                      Modifica
+                    </button>
+                    <button
+                      onClick={() => handleDelete(resource.id)}
+                      className="btn btn-sm btn-outline-danger flex-fill fw-semibold"
+                    >
+                      Elimina
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modal Bootstrap Italia */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title fw-bold text-baleno-primary">
                   {editingResource ? 'Modifica Risorsa' : 'Nuova Risorsa'}
-                </h2>
+                </h5>
                 <button
+                  type="button"
+                  className="btn-close"
                   onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  ✕
-                </button>
+                  aria-label="Close"
+                ></button>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Nome *</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tipo *</label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="ROOM">Sala</option>
-                    <option value="SPACE">Spazio</option>
-                    <option value="EQUIPMENT">Attrezzatura</option>
-                    <option value="SERVICE">Servizio</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Descrizione</label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Capacità *</label>
+              <form onSubmit={handleSubmit}>
+                <div className="modal-body">
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">Nome *</label>
                     <input
-                      type="number"
-                      value={formData.capacity}
-                      onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) })}
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
-                      min="1"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="form-control"
+                      placeholder="es. Sala Riunioni A"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Prezzo/ora (€) *</label>
-                    <input
-                      type="number"
-                      value={formData.pricePerHour}
-                      onChange={(e) => setFormData({ ...formData, pricePerHour: parseFloat(e.target.value) })}
-                      required
-                      min="0"
-                      step="0.01"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">Tipo *</label>
+                    <select
+                      value={formData.type}
+                      onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                      className="form-select"
+                    >
+                      <option value="ROOM">Sala</option>
+                      <option value="SPACE">Spazio</option>
+                      <option value="EQUIPMENT">Attrezzatura</option>
+                      <option value="SERVICE">Servizio</option>
+                    </select>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">Descrizione</label>
+                    <textarea
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      rows={3}
+                      className="form-control"
+                      placeholder="Descrizione della risorsa..."
                     />
+                  </div>
+
+                  <div className="row g-3 mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Capacità *</label>
+                      <input
+                        type="number"
+                        value={formData.capacity}
+                        onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) })}
+                        required
+                        min="1"
+                        className="form-control"
+                        placeholder="es. 20"
+                      />
+                      <div className="form-text">Numero di persone</div>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Prezzo/ora (€) *</label>
+                      <input
+                        type="number"
+                        value={formData.pricePerHour}
+                        onChange={(e) => setFormData({ ...formData, pricePerHour: parseFloat(e.target.value) })}
+                        required
+                        min="0"
+                        step="0.01"
+                        className="form-control"
+                        placeholder="es. 25.00"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">Posizione</label>
+                    <input
+                      type="text"
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      className="form-control"
+                      placeholder="es. Piano Terra, Ala Nord"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      Caratteristiche (separate da virgola)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.amenities}
+                      onChange={(e) => setFormData({ ...formData, amenities: e.target.value })}
+                      placeholder="WiFi, Proiettore, Lavagna"
+                      className="form-control"
+                    />
+                  </div>
+
+                  <div className="form-check">
+                    <input
+                      type="checkbox"
+                      id="isActive"
+                      checked={formData.isActive}
+                      onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                      className="form-check-input"
+                    />
+                    <label htmlFor="isActive" className="form-check-label">
+                      Risorsa attiva e prenotabile
+                    </label>
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Posizione</label>
-                  <input
-                    type="text"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Caratteristiche (separate da virgola)
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.amenities}
-                    onChange={(e) => setFormData({ ...formData, amenities: e.target.value })}
-                    placeholder="WiFi, Proiettore, Lavagna"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="isActive"
-                    checked={formData.isActive}
-                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <label htmlFor="isActive" className="ml-2 text-sm text-gray-700">
-                    Risorsa attiva e prenotabile
-                  </label>
-                </div>
-
-                <div className="flex gap-3 pt-4">
-                  <button
-                    type="submit"
-                    className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
-                  >
-                    {editingResource ? 'Salva Modifiche' : 'Crea Risorsa'}
-                  </button>
+                <div className="modal-footer">
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition font-medium"
+                    className="btn btn-secondary"
                   >
                     Annulla
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary fw-semibold"
+                  >
+                    {editingResource ? 'Salva Modifiche' : 'Crea Risorsa'}
                   </button>
                 </div>
               </form>

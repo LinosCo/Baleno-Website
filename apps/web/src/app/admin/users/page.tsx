@@ -46,8 +46,13 @@ export default function AdminUsersPage() {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-xl">Caricamento utenti...</div>
+        <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '400px' }}>
+          <div className="text-center">
+            <div className="spinner-border text-primary mb-3" role="status">
+              <span className="visually-hidden">Caricamento...</span>
+            </div>
+            <p className="text-muted">Caricamento utenti...</p>
+          </div>
         </div>
       </AdminLayout>
     );
@@ -55,85 +60,104 @@ export default function AdminUsersPage() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gestione Utenti</h1>
-          <p className="text-gray-600 mt-1">Gestisci ruoli e permessi degli utenti</p>
+      <div>
+        {/* Header */}
+        <div className="mb-4">
+          <h1 className="h3 fw-bold text-baleno-primary">Gestione Utenti</h1>
+          <p className="text-muted">Gestisci ruoli e permessi degli utenti</p>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600">Totale Utenti</p>
-            <p className="text-3xl font-bold text-gray-900">{users.length}</p>
+        <div className="row g-4 mb-4">
+          <div className="col-md-4">
+            <div className="card border-0 shadow-sm">
+              <div className="card-body">
+                <p className="text-muted small mb-2">Totale Utenti</p>
+                <p className="display-6 fw-bold mb-0">{users.length}</p>
+              </div>
+            </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600">Amministratori</p>
-            <p className="text-3xl font-bold text-blue-600">
-              {users.filter(u => u.role === 'ADMIN').length}
-            </p>
+          <div className="col-md-4">
+            <div className="card border-0 shadow-sm">
+              <div className="card-body">
+                <p className="text-muted small mb-2">Amministratori</p>
+                <p className="display-6 fw-bold text-primary mb-0">
+                  {users.filter(u => u.role === 'ADMIN').length}
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600">Utenti Attivi</p>
-            <p className="text-3xl font-bold text-green-600">
-              {users.filter(u => u.isActive).length}
-            </p>
+          <div className="col-md-4">
+            <div className="card border-0 shadow-sm">
+              <div className="card-body">
+                <p className="text-muted small mb-2">Utenti Attivi</p>
+                <p className="display-6 fw-bold text-success mb-0">
+                  {users.filter(u => u.isActive).length}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Users Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Utente</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ruolo</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Registrazione</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ultimo Accesso</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {users.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <div className="h-10 w-10 flex-shrink-0">
-                        <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                          {user.firstName[0]}{user.lastName[0]}
+        <div className="card border-0 shadow-sm">
+          <div className="card-body p-0">
+            <div className="table-responsive">
+              <table className="table table-hover mb-0">
+                <thead className="table-light">
+                  <tr>
+                    <th className="fw-semibold text-uppercase small">Utente</th>
+                    <th className="fw-semibold text-uppercase small">Email</th>
+                    <th className="fw-semibold text-uppercase small">Ruolo</th>
+                    <th className="fw-semibold text-uppercase small">Registrazione</th>
+                    <th className="fw-semibold text-uppercase small">Ultimo Accesso</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user.id}>
+                      <td>
+                        <div className="d-flex align-items-center">
+                          <div
+                            className="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0"
+                            style={{ width: '40px', height: '40px' }}
+                          >
+                            {user.firstName[0]}{user.lastName[0]}
+                          </div>
+                          <div className="ms-3">
+                            <div className="fw-semibold">
+                              {user.firstName} {user.lastName}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {user.firstName} {user.lastName}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{user.email}</td>
-                  <td className="px-6 py-4">
-                    <select
-                      value={user.role}
-                      onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                      className="text-sm border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="USER">USER</option>
-                      <option value="COMMUNITY_MANAGER">COMMUNITY_MANAGER</option>
-                      <option value="ADMIN">ADMIN</option>
-                    </select>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {new Date(user.createdAt).toLocaleDateString('it-IT')}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {user.lastLogin
-                      ? new Date(user.lastLogin).toLocaleDateString('it-IT')
-                      : 'Mai'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      </td>
+                      <td className="text-muted small align-middle">{user.email}</td>
+                      <td className="align-middle">
+                        <select
+                          value={user.role}
+                          onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                          className="form-select form-select-sm"
+                          style={{ width: 'auto', minWidth: '180px' }}
+                        >
+                          <option value="USER">USER</option>
+                          <option value="COMMUNITY_MANAGER">COMMUNITY_MANAGER</option>
+                          <option value="ADMIN">ADMIN</option>
+                        </select>
+                      </td>
+                      <td className="text-muted small align-middle">
+                        {new Date(user.createdAt).toLocaleDateString('it-IT')}
+                      </td>
+                      <td className="text-muted small align-middle">
+                        {user.lastLogin
+                          ? new Date(user.lastLogin).toLocaleDateString('it-IT')
+                          : 'Mai'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </AdminLayout>

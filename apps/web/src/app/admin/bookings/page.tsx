@@ -110,227 +110,267 @@ export default function AdminBookingsPage() {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-xl">Caricamento prenotazioni...</div>
+        <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '400px' }}>
+          <div className="text-center">
+            <div className="spinner-border text-primary mb-3" role="status">
+              <span className="visually-hidden">Caricamento...</span>
+            </div>
+            <p className="text-muted">Caricamento prenotazioni...</p>
+          </div>
         </div>
       </AdminLayout>
     );
   }
 
+  const statusLabels: Record<string, string> = {
+    'ALL': 'Tutte',
+    'PENDING': 'In Attesa',
+    'APPROVED': 'Approvate',
+    'REJECTED': 'Rifiutate',
+    'CANCELLED': 'Cancellate'
+  };
+
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Gestione Prenotazioni</h1>
-            <p className="text-gray-600 mt-1">Modera e gestisci tutte le prenotazioni</p>
-          </div>
+      <div>
+        {/* Header */}
+        <div className="mb-4">
+          <h1 className="h3 fw-bold text-baleno-primary">Gestione Prenotazioni</h1>
+          <p className="text-muted">Modera e gestisci tutte le prenotazioni</p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="flex gap-2">
-            {['ALL', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].map((status) => (
-              <button
-                key={status}
-                onClick={() => setFilter(status)}
-                className={`px-4 py-2 rounded-lg transition ${
-                  filter === status
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {status === 'ALL' ? 'Tutte' : status}
-              </button>
-            ))}
+        <div className="card border-0 shadow-sm mb-4">
+          <div className="card-body">
+            <div className="d-flex flex-wrap gap-2">
+              {['ALL', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setFilter(status)}
+                  className={`btn ${
+                    filter === status
+                      ? 'btn-primary'
+                      : 'btn-outline-secondary'
+                  }`}
+                >
+                  {statusLabels[status]}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Bookings Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          {bookings.length === 0 ? (
-            <div className="p-12 text-center text-gray-500">
-              Nessuna prenotazione trovata
-            </div>
-          ) : (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Titolo</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Utente</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Risorsa</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stato</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Azioni</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {bookings.map((booking) => (
-                  <tr key={booking.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">{booking.title}</div>
-                      {booking.description && (
-                        <div className="text-sm text-gray-500 truncate max-w-xs">
-                          {booking.description}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">
-                        {booking.user.firstName} {booking.user.lastName}
-                      </div>
-                      <div className="text-sm text-gray-500">{booking.user.email}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{booking.resource.name}</div>
-                      <div className="text-sm text-gray-500">{booking.resource.type}</div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {new Date(booking.startTime).toLocaleDateString('it-IT', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                          booking.status === 'APPROVED'
-                            ? 'bg-green-100 text-green-800'
-                            : booking.status === 'PENDING'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {booking.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <button
-                        onClick={() => openModal(booking)}
-                        className="text-blue-600 hover:text-blue-800 font-medium"
-                      >
-                        Dettagli
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+        <div className="card border-0 shadow-sm">
+          <div className="card-body p-0">
+            {bookings.length === 0 ? (
+              <div className="text-center text-muted py-5">
+                <p className="mb-0">Nessuna prenotazione trovata</p>
+              </div>
+            ) : (
+              <div className="table-responsive">
+                <table className="table table-hover mb-0">
+                  <thead className="table-light">
+                    <tr>
+                      <th className="fw-semibold text-uppercase small">Titolo</th>
+                      <th className="fw-semibold text-uppercase small">Utente</th>
+                      <th className="fw-semibold text-uppercase small">Risorsa</th>
+                      <th className="fw-semibold text-uppercase small">Data</th>
+                      <th className="fw-semibold text-uppercase small">Stato</th>
+                      <th className="fw-semibold text-uppercase small">Azioni</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bookings.map((booking) => (
+                      <tr key={booking.id}>
+                        <td>
+                          <div className="fw-semibold">{booking.title}</div>
+                          {booking.description && (
+                            <div className="text-muted small text-truncate" style={{ maxWidth: '300px' }}>
+                              {booking.description}
+                            </div>
+                          )}
+                        </td>
+                        <td>
+                          <div className="fw-medium">
+                            {booking.user.firstName} {booking.user.lastName}
+                          </div>
+                          <div className="text-muted small">{booking.user.email}</div>
+                        </td>
+                        <td>
+                          <div className="fw-medium">{booking.resource.name}</div>
+                          <div className="text-muted small">{booking.resource.type}</div>
+                        </td>
+                        <td className="text-muted small">
+                          {new Date(booking.startTime).toLocaleDateString('it-IT', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </td>
+                        <td>
+                          <span
+                            className={`badge ${
+                              booking.status === 'APPROVED'
+                                ? 'bg-success'
+                                : booking.status === 'PENDING'
+                                ? 'bg-warning text-dark'
+                                : 'bg-danger'
+                            }`}
+                          >
+                            {booking.status}
+                          </span>
+                        </td>
+                        <td>
+                          <button
+                            onClick={() => openModal(booking)}
+                            className="btn btn-sm btn-link text-decoration-none fw-semibold"
+                          >
+                            Dettagli →
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modal Bootstrap Italia */}
       {showModal && selectedBooking && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Dettagli Prenotazione</h2>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Titolo</label>
-                  <p className="text-lg font-semibold">{selectedBooking.title}</p>
+        <>
+          <div
+            className="modal fade show d-block"
+            tabIndex={-1}
+            style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+            onClick={() => setShowModal(false)}
+          >
+            <div
+              className="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title fw-bold text-baleno-primary">
+                    Dettagli Prenotazione
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowModal(false)}
+                    aria-label="Close"
+                  ></button>
                 </div>
 
-                {selectedBooking.description && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Descrizione</label>
-                    <p className="text-gray-700">{selectedBooking.description}</p>
+                <div className="modal-body">
+                  <div className="mb-4">
+                    <label className="form-label text-muted small fw-semibold">Titolo</label>
+                    <p className="h5 mb-0">{selectedBooking.title}</p>
                   </div>
-                )}
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Utente</label>
-                    <p className="text-gray-900">
-                      {selectedBooking.user.firstName} {selectedBooking.user.lastName}
-                    </p>
-                    <p className="text-sm text-gray-500">{selectedBooking.user.email}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Risorsa</label>
-                    <p className="text-gray-900">{selectedBooking.resource.name}</p>
-                    <p className="text-sm text-gray-500">{selectedBooking.resource.type}</p>
-                  </div>
-                </div>
+                  {selectedBooking.description && (
+                    <div className="mb-4">
+                      <label className="form-label text-muted small fw-semibold">Descrizione</label>
+                      <p className="mb-0">{selectedBooking.description}</p>
+                    </div>
+                  )}
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Data Inizio</label>
-                    <p className="text-gray-900">
-                      {new Date(selectedBooking.startTime).toLocaleString('it-IT')}
-                    </p>
+                  <div className="row g-4 mb-4">
+                    <div className="col-md-6">
+                      <label className="form-label text-muted small fw-semibold">Utente</label>
+                      <p className="fw-semibold mb-1">
+                        {selectedBooking.user.firstName} {selectedBooking.user.lastName}
+                      </p>
+                      <p className="text-muted small mb-0">{selectedBooking.user.email}</p>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label text-muted small fw-semibold">Risorsa</label>
+                      <p className="fw-semibold mb-1">{selectedBooking.resource.name}</p>
+                      <p className="text-muted small mb-0">{selectedBooking.resource.type}</p>
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Data Fine</label>
-                    <p className="text-gray-900">
-                      {new Date(selectedBooking.endTime).toLocaleString('it-IT')}
-                    </p>
+
+                  <div className="row g-4 mb-4">
+                    <div className="col-md-6">
+                      <label className="form-label text-muted small fw-semibold">Data Inizio</label>
+                      <p className="mb-0">
+                        {new Date(selectedBooking.startTime).toLocaleString('it-IT')}
+                      </p>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label text-muted small fw-semibold">Data Fine</label>
+                      <p className="mb-0">
+                        {new Date(selectedBooking.endTime).toLocaleString('it-IT')}
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Stato</label>
-                  <p>
-                    <span
-                      className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                        selectedBooking.status === 'APPROVED'
-                          ? 'bg-green-100 text-green-800'
-                          : selectedBooking.status === 'PENDING'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {selectedBooking.status}
-                    </span>
-                  </p>
-                </div>
-
-                {selectedBooking.status === 'PENDING' && (
-                  <>
+                  <div className="mb-4">
+                    <label className="form-label text-muted small fw-semibold">Stato</label>
                     <div>
-                      <label className="text-sm font-medium text-gray-500 block mb-2">
-                        Motivo Rifiuto (opzionale)
-                      </label>
-                      <textarea
-                        value={rejectionReason}
-                        onChange={(e) => setRejectionReason(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        rows={3}
-                        placeholder="Inserisci il motivo del rifiuto..."
-                      />
+                      <span
+                        className={`badge ${
+                          selectedBooking.status === 'APPROVED'
+                            ? 'bg-success'
+                            : selectedBooking.status === 'PENDING'
+                            ? 'bg-warning text-dark'
+                            : 'bg-danger'
+                        }`}
+                      >
+                        {selectedBooking.status}
+                      </span>
                     </div>
+                  </div>
 
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => handleApprove(selectedBooking.id)}
-                        className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-medium"
-                      >
-                        ✓ Approva
-                      </button>
-                      <button
-                        onClick={() => handleReject(selectedBooking.id)}
-                        className="flex-1 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition font-medium"
-                      >
-                        ✕ Rifiuta
-                      </button>
-                    </div>
-                  </>
-                )}
+                  {selectedBooking.status === 'PENDING' && (
+                    <>
+                      <div className="mb-4">
+                        <label className="form-label fw-semibold">
+                          Motivo Rifiuto (opzionale)
+                        </label>
+                        <textarea
+                          value={rejectionReason}
+                          onChange={(e) => setRejectionReason(e.target.value)}
+                          className="form-control"
+                          rows={3}
+                          placeholder="Inserisci il motivo del rifiuto..."
+                        />
+                      </div>
+
+                      <div className="d-flex gap-2">
+                        <button
+                          onClick={() => handleApprove(selectedBooking.id)}
+                          className="btn btn-success flex-fill fw-semibold"
+                        >
+                          ✓ Approva
+                        </button>
+                        <button
+                          onClick={() => handleReject(selectedBooking.id)}
+                          className="btn btn-danger flex-fill fw-semibold"
+                        >
+                          ✕ Rifiuta
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Chiudi
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </AdminLayout>
   );
