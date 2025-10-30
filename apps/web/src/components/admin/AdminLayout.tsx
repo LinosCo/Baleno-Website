@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { authAPI } from '@/lib/api-client';
+import { authAPI } from '../../lib/api-client';
 
 interface AdminLayoutProps {
   children: ReactNode;

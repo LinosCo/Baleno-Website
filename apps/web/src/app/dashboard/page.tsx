@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { authAPI } from '@/lib/api-client';
+import { authAPI } from '../../lib/api-client';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);

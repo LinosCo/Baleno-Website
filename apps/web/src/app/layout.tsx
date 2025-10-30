@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import 'bootstrap-italia/dist/css/bootstrap-italia.min.css';
-import { Providers } from '@/components/providers';
+import { Providers } from '../components/providers';
 import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {

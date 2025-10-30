@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../components/admin/AdminLayout';
-import { usersAPI } from '@/lib/api-client';
+import { usersAPI } from '../../../lib/api-client';
 
 interface User {
   id: string;
