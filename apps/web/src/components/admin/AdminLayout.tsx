@@ -69,46 +69,41 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="min-vh-100 bg-light">
       <nav className="navbar navbar-dark bg-primary fixed-top shadow-lg" style={{ zIndex: 1030, padding: '1rem 0' }}>
-        <div className="container-fluid px-4">
-          <div className="d-flex align-items-center gap-3">
-            <button
-              className="btn btn-link text-white p-0"
-              type="button"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              aria-label="Toggle sidebar"
-            >
-              <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <Link href="/admin" className="navbar-brand mb-0 d-flex align-items-center">
-              <Image
-                src="/BALENO-LOGO-BIANCO.png"
-                alt="Baleno Sanzeno"
-                width={200}
-                height={65}
-                style={{ height: '55px', width: 'auto' }}
-                priority
-              />
-            </Link>
-          </div>
-          <div className="d-flex align-items-center gap-3">
-            <Link href="/dashboard" className="btn btn-outline-light d-none d-md-block px-4">
-              Vista Utente
-            </Link>
-            <div className="d-flex align-items-center gap-3">
-              <div className="text-end d-none d-md-block">
-                <div className="text-white fw-semibold" style={{ fontSize: '0.95rem' }}>
-                  {user.firstName} {user.lastName}
-                </div>
-                <div className="text-white-50" style={{ fontSize: '0.8rem' }}>
-                  {user.role}
-                </div>
+        <div className="container-fluid px-4 position-relative">
+          <button
+            className="btn btn-link text-white p-0"
+            type="button"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            aria-label="Toggle sidebar"
+          >
+            <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
+          <Link href="/admin" className="position-absolute start-50 translate-middle-x navbar-brand mb-0">
+            <Image
+              src="/BALENO-LOGO-BIANCO.png"
+              alt="Baleno Sanzeno"
+              width={200}
+              height={65}
+              style={{ height: '55px', width: 'auto' }}
+              priority
+            />
+          </Link>
+
+          <div className="d-flex align-items-center gap-3 ms-auto">
+            <div className="text-end d-none d-md-block">
+              <div className="text-white fw-semibold" style={{ fontSize: '0.95rem' }}>
+                {user.firstName} {user.lastName}
               </div>
-              <button onClick={handleLogout} className="btn btn-light text-primary fw-semibold px-4">
-                Logout
-              </button>
+              <div className="text-white-50" style={{ fontSize: '0.8rem' }}>
+                {user.role}
+              </div>
             </div>
+            <button onClick={handleLogout} className="btn btn-light text-primary fw-semibold px-4">
+              Logout
+            </button>
           </div>
         </div>
       </nav>
@@ -149,15 +144,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               })}
             </ul>
           </nav>
-
-          <div className="position-absolute bottom-0 start-0 end-0 p-3 border-top">
-            <div className="text-center text-muted small">
-              <div>Baleno Booking System</div>
-              <div className="text-muted" style={{ fontSize: '0.7rem' }}>
-                v1.0 - Lino's & Co
-              </div>
-            </div>
-          </div>
         </div>
 
         <main
