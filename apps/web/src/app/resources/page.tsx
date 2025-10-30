@@ -48,119 +48,133 @@ export default function ResourcesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Caricamento...</div>
+      <div className="min-vh-100 d-flex align-items-center justify-content-center">
+        <div className="text-center">
+          <div className="spinner-border text-primary mb-3" role="status">
+            <span className="visually-hidden">Caricamento...</span>
+          </div>
+          <p className="text-muted">Caricamento risorse...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Risorse Disponibili</h1>
-            <Link href="/dashboard" className="text-blue-600 hover:underline">
-              ← Torna alla dashboard
-            </Link>
-          </div>
+    <div className="min-vh-100 bg-light">
+      {/* Navbar */}
+      <nav className="navbar bg-white shadow-sm">
+        <div className="container-fluid">
+          <h1 className="h4 mb-0 text-baleno-primary fw-bold">Risorse Disponibili</h1>
+          <Link href="/dashboard" className="text-decoration-none fw-medium" style={{ color: 'var(--baleno-primary)' }}>
+            ← Torna alla dashboard
+          </Link>
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="container py-4">
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <div className="alert alert-danger d-flex align-items-center mb-4" role="alert">
+              <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+              </svg>
               {error}
             </div>
           )}
 
           {resources.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-12 text-center">
-              <div className="text-4xl mb-4">🏢</div>
-              <p className="text-lg text-gray-600">Nessuna risorsa disponibile al momento</p>
+            <div className="card border-0 shadow-sm text-center py-5">
+              <div className="card-body">
+                <div className="fs-1 mb-3">🏢</div>
+                <p className="fs-5 text-muted">Nessuna risorsa disponibile al momento</p>
+              </div>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="row g-4">
               {resources.map(resource => (
-                <div
-                  key={resource.id}
-                  className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition"
-                >
-                  <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                    <div className="text-6xl">
-                      {resource.type === 'ROOM' && '🏠'}
-                      {resource.type === 'EQUIPMENT' && '⚙️'}
-                      {resource.type === 'SPACE' && '📍'}
-                      {resource.type === 'VEHICLE' && '🚗'}
-                    </div>
-                  </div>
-
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-xl font-bold text-gray-900">{resource.name}</h3>
-                      <span
-                        className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                          resource.isActive
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {resource.isActive ? 'DISPONIBILE' : 'NON DISPONIBILE'}
-                      </span>
+                <div key={resource.id} className="col-md-6 col-lg-4">
+                  <div className="card border-0 shadow-sm h-100 overflow-hidden">
+                    <div
+                      className="d-flex align-items-center justify-content-center text-white"
+                      style={{
+                        height: '200px',
+                        background: 'linear-gradient(135deg, #0d6efd 0%, #6f42c1 100%)'
+                      }}
+                    >
+                      <div style={{ fontSize: '4rem' }}>
+                        {resource.type === 'ROOM' && '🏠'}
+                        {resource.type === 'EQUIPMENT' && '⚙️'}
+                        {resource.type === 'SPACE' && '📍'}
+                        {resource.type === 'VEHICLE' && '🚗'}
+                      </div>
                     </div>
 
-                    <p className="text-sm text-gray-600 mb-4">{resource.description}</p>
+                    <div className="card-body">
+                      <div className="d-flex justify-content-between align-items-start mb-3">
+                        <h3 className="h5 fw-bold mb-0 text-baleno-primary">{resource.name}</h3>
+                        <span
+                          className={`badge ${
+                            resource.isActive
+                              ? 'bg-success'
+                              : 'bg-danger'
+                          }`}
+                        >
+                          {resource.isActive ? 'DISPONIBILE' : 'NON DISPONIBILE'}
+                        </span>
+                      </div>
 
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center text-sm">
-                        <span className="text-gray-600">Tipo:</span>
-                        <span className="ml-2 font-medium">{resource.type}</span>
+                      <p className="small text-muted mb-3">{resource.description}</p>
+
+                      <div className="d-flex flex-column gap-2 mb-3">
+                        <div className="d-flex align-items-center small">
+                          <span className="text-muted">Tipo:</span>
+                          <span className="ms-2 fw-medium">{resource.type}</span>
+                        </div>
+                        <div className="d-flex align-items-center small">
+                          <span className="text-muted">Capacità:</span>
+                          <span className="ms-2 fw-medium">{resource.capacity} persone</span>
+                        </div>
+                        {resource.location && (
+                          <div className="d-flex align-items-center small">
+                            <span className="text-muted">Posizione:</span>
+                            <span className="ms-2 fw-medium">{resource.location}</span>
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center text-sm">
-                        <span className="text-gray-600">Capacità:</span>
-                        <span className="ml-2 font-medium">{resource.capacity} persone</span>
-                      </div>
-                      {resource.location && (
-                        <div className="flex items-center text-sm">
-                          <span className="text-gray-600">Posizione:</span>
-                          <span className="ml-2 font-medium">{resource.location}</span>
+
+                      {resource.amenities && resource.amenities.length > 0 && (
+                        <div className="mb-3">
+                          <p className="small text-muted mb-2">Caratteristiche:</p>
+                          <div className="d-flex flex-wrap gap-2">
+                            {resource.amenities.map((amenity, idx) => (
+                              <span
+                                key={idx}
+                                className="badge bg-info bg-opacity-10 text-info-emphasis"
+                              >
+                                {amenity}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       )}
-                    </div>
 
-                    {resource.amenities && resource.amenities.length > 0 && (
-                      <div className="mb-4">
-                        <p className="text-xs text-gray-500 mb-2">Caratteristiche:</p>
-                        <div className="flex flex-wrap gap-2">
-                          {resource.amenities.map((amenity, idx) => (
-                            <span
-                              key={idx}
-                              className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded"
+                      <div className="border-top pt-3 mt-3">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div>
+                            <p className="display-6 fw-bold text-primary mb-1">
+                              €{resource.pricePerHour}
+                            </p>
+                            <p className="small text-muted mb-0">per ora</p>
+                          </div>
+                          {resource.isActive && (
+                            <Link
+                              href={`/bookings/new?resourceId=${resource.id}`}
+                              className="btn btn-primary btn-sm fw-semibold"
                             >
-                              {amenity}
-                            </span>
-                          ))}
+                              Prenota
+                            </Link>
+                          )}
                         </div>
-                      </div>
-                    )}
-
-                    <div className="border-t pt-4 mt-4">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="text-2xl font-bold text-blue-600">
-                            €{resource.pricePerHour}
-                          </p>
-                          <p className="text-xs text-gray-500">per ora</p>
-                        </div>
-                        {resource.isActive && (
-                          <Link
-                            href={`/bookings/new?resourceId=${resource.id}`}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
-                          >
-                            Prenota
-                          </Link>
-                        )}
                       </div>
                     </div>
                   </div>

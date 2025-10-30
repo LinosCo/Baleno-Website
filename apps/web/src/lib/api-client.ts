@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+// Usa URL relativo per sfruttare il proxy Next.js (utile per ngrok)
+// In produzione, imposta NEXT_PUBLIC_API_URL nel .env
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 export const apiClient = axios.create({
   baseURL: API_URL,

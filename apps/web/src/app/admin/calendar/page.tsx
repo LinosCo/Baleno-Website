@@ -84,8 +84,13 @@ export default function AdminCalendarPage() {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-xl">Caricamento calendario...</div>
+        <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '400px' }}>
+          <div className="text-center">
+            <div className="spinner-border text-primary mb-3" role="status">
+              <span className="visually-hidden">Caricamento...</span>
+            </div>
+            <p className="text-muted">Caricamento calendario...</p>
+          </div>
         </div>
       </AdminLayout>
     );
@@ -93,104 +98,121 @@ export default function AdminCalendarPage() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Calendario Completo</h1>
-            <p className="text-gray-600 mt-1">Visualizza tutte le prenotazioni nel calendario</p>
-          </div>
+      <div>
+        {/* Header */}
+        <div className="mb-4">
+          <h1 className="h3 fw-bold text-baleno-primary">Calendario Completo</h1>
+          <p className="text-muted">Visualizza tutte le prenotazioni nel calendario</p>
         </div>
 
         {/* Calendar Navigation */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex justify-between items-center mb-6">
-            <button
-              onClick={() => changeMonth(-1)}
-              className="p-2 hover:bg-gray-100 rounded-lg"
-            >
-              ← Precedente
-            </button>
-            <h2 className="text-xl font-bold capitalize">{monthName}</h2>
-            <button
-              onClick={() => changeMonth(1)}
-              className="p-2 hover:bg-gray-100 rounded-lg"
-            >
-              Successivo →
-            </button>
-          </div>
+        <div className="card border-0 shadow-sm mb-4">
+          <div className="card-body">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <button
+                onClick={() => changeMonth(-1)}
+                className="btn btn-outline-secondary"
+              >
+                ← Precedente
+              </button>
+              <h2 className="h5 mb-0 fw-bold text-capitalize">{monthName}</h2>
+              <button
+                onClick={() => changeMonth(1)}
+                className="btn btn-outline-secondary"
+              >
+                Successivo →
+              </button>
+            </div>
 
-          {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-2">
-            {['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'].map(day => (
-              <div key={day} className="text-center font-semibold text-gray-600 py-2">
-                {day}
-              </div>
-            ))}
-
-            {days.map((day, index) => {
-              if (!day) {
-                return <div key={`empty-${index}`} className="p-4" />;
-              }
-
-              const dayBookings = getBookingsForDate(day);
-              const isToday =
-                day.getDate() === new Date().getDate() &&
-                day.getMonth() === new Date().getMonth() &&
-                day.getFullYear() === new Date().getFullYear();
-
-              return (
-                <div
-                  key={index}
-                  className={`min-h-[100px] p-2 border rounded-lg ${
-                    isToday ? 'bg-blue-50 border-blue-500' : 'border-gray-200'
-                  }`}
-                >
-                  <div className={`text-sm font-semibold mb-2 ${isToday ? 'text-blue-600' : 'text-gray-700'}`}>
-                    {day.getDate()}
-                  </div>
-                  <div className="space-y-1">
-                    {dayBookings.slice(0, 3).map(booking => (
-                      <div
-                        key={booking.id}
-                        className={`text-xs p-1 rounded truncate ${
-                          booking.status === 'APPROVED'
-                            ? 'bg-green-100 text-green-800'
-                            : booking.status === 'PENDING'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}
-                        title={`${booking.title} - ${booking.resource.name}`}
-                      >
-                        {booking.title}
-                      </div>
-                    ))}
-                    {dayBookings.length > 3 && (
-                      <div className="text-xs text-gray-500 text-center">
-                        +{dayBookings.length - 3} altre
-                      </div>
-                    )}
-                  </div>
+            {/* Calendar Grid */}
+            <div className="row g-2">
+              {['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'].map(day => (
+                <div key={day} className="col text-center fw-semibold text-muted small py-2">
+                  {day}
                 </div>
-              );
-            })}
+              ))}
+            </div>
+
+            <div className="row g-2">
+              {days.map((day, index) => {
+                if (!day) {
+                  return <div key={`empty-${index}`} className="col p-3" />;
+                }
+
+                const dayBookings = getBookingsForDate(day);
+                const isToday =
+                  day.getDate() === new Date().getDate() &&
+                  day.getMonth() === new Date().getMonth() &&
+                  day.getFullYear() === new Date().getFullYear();
+
+                return (
+                  <div key={index} className="col">
+                    <div
+                      className={`border rounded p-2 ${
+                        isToday ? 'bg-primary bg-opacity-10 border-primary' : 'border-secondary'
+                      }`}
+                      style={{ minHeight: '100px' }}
+                    >
+                      <div className={`small fw-semibold mb-2 ${isToday ? 'text-primary' : ''}`}>
+                        {day.getDate()}
+                      </div>
+                      <div className="d-flex flex-column gap-1">
+                        {dayBookings.slice(0, 3).map(booking => (
+                          <div
+                            key={booking.id}
+                            className={`small p-1 rounded text-truncate ${
+                              booking.status === 'APPROVED'
+                                ? 'bg-success bg-opacity-25 text-success-emphasis'
+                                : booking.status === 'PENDING'
+                                ? 'bg-warning bg-opacity-25 text-warning-emphasis'
+                                : 'bg-secondary bg-opacity-25 text-secondary-emphasis'
+                            }`}
+                            title={`${booking.title} - ${booking.resource.name}`}
+                            style={{ fontSize: '0.7rem' }}
+                          >
+                            {booking.title}
+                          </div>
+                        ))}
+                        {dayBookings.length > 3 && (
+                          <div className="text-muted text-center" style={{ fontSize: '0.7rem' }}>
+                            +{dayBookings.length - 3} altre
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
         {/* Legend */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="font-semibold mb-4">Legenda</h3>
-          <div className="flex gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-100 border border-green-200 rounded"></div>
-              <span className="text-sm text-gray-700">Approvate</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-yellow-100 border border-yellow-200 rounded"></div>
-              <span className="text-sm text-gray-700">In Attesa</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-gray-100 border border-gray-200 rounded"></div>
-              <span className="text-sm text-gray-700">Cancellate/Rifiutate</span>
+        <div className="card border-0 shadow-sm">
+          <div className="card-body">
+            <h3 className="h6 fw-semibold mb-3">Legenda</h3>
+            <div className="d-flex gap-4 flex-wrap">
+              <div className="d-flex align-items-center gap-2">
+                <div
+                  className="bg-success bg-opacity-25 border border-success rounded"
+                  style={{ width: '16px', height: '16px' }}
+                ></div>
+                <span className="small">Approvate</span>
+              </div>
+              <div className="d-flex align-items-center gap-2">
+                <div
+                  className="bg-warning bg-opacity-25 border border-warning rounded"
+                  style={{ width: '16px', height: '16px' }}
+                ></div>
+                <span className="small">In Attesa</span>
+              </div>
+              <div className="d-flex align-items-center gap-2">
+                <div
+                  className="bg-secondary bg-opacity-25 border border-secondary rounded"
+                  style={{ width: '16px', height: '16px' }}
+                ></div>
+                <span className="small">Cancellate/Rifiutate</span>
+              </div>
             </div>
           </div>
         </div>

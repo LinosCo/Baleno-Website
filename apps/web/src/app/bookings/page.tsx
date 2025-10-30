@@ -68,174 +68,176 @@ export default function BookingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Caricamento...</div>
+      <div className="min-vh-100 d-flex align-items-center justify-content-center">
+        <div className="text-center">
+          <div className="spinner-border text-primary mb-3" role="status">
+            <span className="visually-hidden">Caricamento...</span>
+          </div>
+          <p className="text-muted">Caricamento prenotazioni...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-primary shadow">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="flex items-center">
-                <Image
-                  src="/BALENO-LOGO-BIANCO.png"
-                  alt="Baleno Sanzeno"
-                  width={140}
-                  height={45}
-                  className="h-10 w-auto"
-                />
-              </Link>
-              <span className="text-white text-lg">|</span>
-              <h1 className="text-xl font-bold text-white">Le Mie Prenotazioni</h1>
-            </div>
-            <Link href="/dashboard" className="text-white hover:text-accent transition font-medium">
-              ← Dashboard
+    <div className="min-vh-100 bg-light">
+      {/* Navbar */}
+      <nav className="navbar navbar-dark bg-primary shadow">
+        <div className="container-fluid">
+          <div className="d-flex align-items-center gap-3">
+            <Link href="/dashboard" className="d-flex align-items-center">
+              <Image
+                src="/BALENO-LOGO-BIANCO.png"
+                alt="Baleno Sanzeno"
+                width={140}
+                height={45}
+                style={{ height: '40px', width: 'auto' }}
+              />
             </Link>
+            <span className="text-white fs-5">|</span>
+            <h1 className="h5 mb-0 text-white fw-bold">Le Mie Prenotazioni</h1>
           </div>
+          <Link href="/dashboard" className="text-white text-decoration-none fw-medium">
+            ← Dashboard
+          </Link>
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="container py-4">
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <div className="alert alert-danger d-flex align-items-center mb-4" role="alert">
+              <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+              </svg>
               {error}
             </div>
           )}
 
-          <div className="mb-6">
-            <Link
-              href="/bookings/new"
-              className="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition font-medium"
-            >
+          <div className="mb-4">
+            <Link href="/bookings/new" className="btn btn-primary fw-semibold">
               + Nuova Prenotazione
             </Link>
           </div>
 
           {bookings.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-12 text-center">
-              <div className="text-4xl mb-4">📅</div>
-              <p className="text-lg text-gray-600 mb-4">Non hai ancora prenotazioni</p>
-              <Link
-                href="/bookings/new"
-                className="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition font-medium"
-              >
-                Crea la tua prima prenotazione
-              </Link>
+            <div className="card border-0 shadow-sm text-center py-5">
+              <div className="card-body">
+                <div className="fs-1 mb-3">📅</div>
+                <p className="fs-5 text-muted mb-4">Non hai ancora prenotazioni</p>
+                <Link href="/bookings/new" className="btn btn-primary fw-semibold">
+                  Crea la tua prima prenotazione
+                </Link>
+              </div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="d-flex flex-column gap-3">
               {bookings.map(booking => (
-                <div
-                  key={booking.id}
-                  className="bg-white rounded-lg shadow p-6 hover:shadow-md transition"
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        <h3 className="text-xl font-bold text-gray-900">
-                          {booking.resource.name}
-                        </h3>
-                        <span
-                          className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                            booking.status === 'APPROVED'
-                              ? 'bg-green-100 text-green-800'
-                              : booking.status === 'PENDING'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : booking.status === 'REJECTED'
-                              ? 'bg-red-100 text-red-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}
-                        >
-                          {booking.status}
-                        </span>
-                      </div>
+                <div key={booking.id} className="card border-0 shadow-sm">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-start">
+                      <div className="flex-grow-1">
+                        <div className="d-flex align-items-center gap-3 mb-3">
+                          <h3 className="h5 fw-bold mb-0 text-baleno-primary">
+                            {booking.resource.name}
+                          </h3>
+                          <span
+                            className={`badge ${
+                              booking.status === 'APPROVED'
+                                ? 'bg-success'
+                                : booking.status === 'PENDING'
+                                ? 'bg-warning text-dark'
+                                : booking.status === 'REJECTED'
+                                ? 'bg-danger'
+                                : 'bg-secondary'
+                            }`}
+                          >
+                            {booking.status}
+                          </span>
+                        </div>
 
-                      <p className="text-sm text-gray-600 mb-2">
-                        Tipo: {booking.resource.type}
-                      </p>
-
-                      <p className="text-sm text-gray-700 mb-3">
-                        <span className="font-medium">Titolo:</span> {booking.title}
-                      </p>
-                      {booking.description && (
-                        <p className="text-sm text-gray-600 mb-3">
-                          {booking.description}
+                        <p className="small text-muted mb-2">
+                          Tipo: {booking.resource.type}
                         </p>
-                      )}
 
-                      <div className="grid md:grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="text-gray-600">Inizio:</p>
-                          <p className="font-medium">
-                            {new Date(booking.startTime).toLocaleString('it-IT', {
-                              day: '2-digit',
-                              month: 'long',
-                              year: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
+                        <p className="small mb-3">
+                          <span className="fw-semibold">Titolo:</span> {booking.title}
+                        </p>
+                        {booking.description && (
+                          <p className="small text-muted mb-3">
+                            {booking.description}
                           </p>
-                        </div>
-                        <div>
-                          <p className="text-gray-600">Fine:</p>
-                          <p className="font-medium">
-                            {new Date(booking.endTime).toLocaleString('it-IT', {
-                              day: '2-digit',
-                              month: 'long',
-                              year: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </p>
-                        </div>
-                      </div>
+                        )}
 
-                      {booking.payment && (
-                        <div className="mt-3 pt-3 border-t">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600">Pagamento:</span>
-                            <span
-                              className={`px-2 py-1 text-xs font-semibold rounded ${
-                                booking.payment.status === 'COMPLETED'
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-yellow-100 text-yellow-800'
-                              }`}
-                            >
-                              {booking.payment.status}
-                            </span>
+                        <div className="row g-3 small">
+                          <div className="col-md-6">
+                            <p className="text-muted mb-1">Inizio:</p>
+                            <p className="fw-medium mb-0">
+                              {new Date(booking.startTime).toLocaleString('it-IT', {
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </p>
+                          </div>
+                          <div className="col-md-6">
+                            <p className="text-muted mb-1">Fine:</p>
+                            <p className="fw-medium mb-0">
+                              {new Date(booking.endTime).toLocaleString('it-IT', {
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </p>
                           </div>
                         </div>
-                      )}
-                    </div>
 
-                    <div className="text-right ml-6">
-                      {booking.totalPrice && (
-                        <p className="text-2xl font-bold text-primary mb-2">
-                          €{booking.totalPrice.toFixed(2)}
-                        </p>
-                      )}
+                        {booking.payment && (
+                          <div className="mt-3 pt-3 border-top">
+                            <div className="d-flex align-items-center gap-2">
+                              <span className="small text-muted">Pagamento:</span>
+                              <span
+                                className={`badge ${
+                                  booking.payment.status === 'COMPLETED'
+                                    ? 'bg-success'
+                                    : 'bg-warning text-dark'
+                                }`}
+                              >
+                                {booking.payment.status}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
 
-                      {booking.status === 'PENDING' && (
-                        <button
-                          onClick={() => handleCancel(booking.id)}
-                          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm font-medium"
-                        >
-                          Cancella
-                        </button>
-                      )}
+                      <div className="text-end ms-4">
+                        {booking.totalPrice && (
+                          <p className="display-6 fw-bold text-primary mb-3">
+                            €{booking.totalPrice.toFixed(2)}
+                          </p>
+                        )}
 
-                      {booking.status === 'APPROVED' && !booking.payment && (
-                        <button
-                          className="bg-accent text-primary px-4 py-2 rounded-lg hover:bg-accent/90 transition text-sm font-medium"
-                        >
-                          Paga Ora
-                        </button>
-                      )}
+                        {booking.status === 'PENDING' && (
+                          <button
+                            onClick={() => handleCancel(booking.id)}
+                            className="btn btn-danger btn-sm fw-semibold"
+                          >
+                            Cancella
+                          </button>
+                        )}
+
+                        {booking.status === 'APPROVED' && !booking.payment && (
+                          <button
+                            className="btn btn-warning btn-sm fw-semibold"
+                          >
+                            Paga Ora
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

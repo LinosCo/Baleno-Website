@@ -59,8 +59,13 @@ export default function AdminPaymentsPage() {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-xl">Caricamento pagamenti...</div>
+        <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '400px' }}>
+          <div className="text-center">
+            <div className="spinner-border text-primary mb-3" role="status">
+              <span className="visually-hidden">Caricamento...</span>
+            </div>
+            <p className="text-muted">Caricamento pagamenti...</p>
+          </div>
         </div>
       </AdminLayout>
     );
@@ -68,102 +73,123 @@ export default function AdminPaymentsPage() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gestione Pagamenti</h1>
-          <p className="text-gray-600 mt-1">Storico transazioni e pagamenti degli utenti</p>
+      <div>
+        {/* Header */}
+        <div className="mb-4">
+          <h1 className="h3 fw-bold text-baleno-primary">Gestione Pagamenti</h1>
+          <p className="text-muted">Storico transazioni e pagamenti degli utenti</p>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600">Entrate Totali</p>
-            <p className="text-3xl font-bold text-green-600">€{stats.total.toFixed(2)}</p>
+        <div className="row g-4 mb-4">
+          <div className="col-md-6 col-lg-3">
+            <div className="card border-0 shadow-sm">
+              <div className="card-body">
+                <p className="text-muted small mb-2">Entrate Totali</p>
+                <p className="display-6 fw-bold text-success mb-0">€{stats.total.toFixed(2)}</p>
+              </div>
+            </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600">Completati</p>
-            <p className="text-3xl font-bold text-blue-600">{stats.completed}</p>
+          <div className="col-md-6 col-lg-3">
+            <div className="card border-0 shadow-sm">
+              <div className="card-body">
+                <p className="text-muted small mb-2">Completati</p>
+                <p className="display-6 fw-bold text-primary mb-0">{stats.completed}</p>
+              </div>
+            </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600">In Attesa</p>
-            <p className="text-3xl font-bold text-yellow-600">{stats.pending}</p>
+          <div className="col-md-6 col-lg-3">
+            <div className="card border-0 shadow-sm">
+              <div className="card-body">
+                <p className="text-muted small mb-2">In Attesa</p>
+                <p className="display-6 fw-bold text-warning mb-0">{stats.pending}</p>
+              </div>
+            </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600">Rimborsati</p>
-            <p className="text-3xl font-bold text-red-600">{stats.refunded}</p>
+          <div className="col-md-6 col-lg-3">
+            <div className="card border-0 shadow-sm">
+              <div className="card-body">
+                <p className="text-muted small mb-2">Rimborsati</p>
+                <p className="display-6 fw-bold text-danger mb-0">{stats.refunded}</p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Payments Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          {payments.length === 0 ? (
-            <div className="p-12 text-center text-gray-500">
-              Nessun pagamento registrato
-            </div>
-          ) : (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Utente</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prenotazione</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Importo</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stato</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {payments.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-mono text-gray-500">
-                      {payment.id.slice(0, 8)}...
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {payment.booking.user.firstName} {payment.booking.user.lastName}
-                      </div>
-                      <div className="text-sm text-gray-500">{payment.booking.user.email}</div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {payment.booking.title}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-bold text-gray-900">
-                        €{parseFloat(payment.amount.toString()).toFixed(2)}
-                      </div>
-                      {payment.refundedAmount && (
-                        <div className="text-xs text-red-600">
-                          Rimborsato: €{parseFloat(payment.refundedAmount.toString()).toFixed(2)}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                          payment.status === 'SUCCEEDED'
-                            ? 'bg-green-100 text-green-800'
-                            : payment.status === 'PENDING' || payment.status === 'PROCESSING'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : payment.status === 'FAILED'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-purple-100 text-purple-800'
-                        }`}
-                      >
-                        {payment.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {new Date(payment.createdAt).toLocaleDateString('it-IT', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+        <div className="card border-0 shadow-sm">
+          <div className="card-body p-0">
+            {payments.length === 0 ? (
+              <div className="text-center text-muted py-5">
+                <p className="mb-0">Nessun pagamento registrato</p>
+              </div>
+            ) : (
+              <div className="table-responsive">
+                <table className="table table-hover mb-0">
+                  <thead className="table-light">
+                    <tr>
+                      <th className="fw-semibold text-uppercase small">ID</th>
+                      <th className="fw-semibold text-uppercase small">Utente</th>
+                      <th className="fw-semibold text-uppercase small">Prenotazione</th>
+                      <th className="fw-semibold text-uppercase small">Importo</th>
+                      <th className="fw-semibold text-uppercase small">Stato</th>
+                      <th className="fw-semibold text-uppercase small">Data</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {payments.map((payment) => (
+                      <tr key={payment.id}>
+                        <td className="font-monospace text-muted small">
+                          {payment.id.slice(0, 8)}...
+                        </td>
+                        <td>
+                          <div className="fw-semibold">
+                            {payment.booking.user.firstName} {payment.booking.user.lastName}
+                          </div>
+                          <div className="text-muted small">{payment.booking.user.email}</div>
+                        </td>
+                        <td className="fw-medium">
+                          {payment.booking.title}
+                        </td>
+                        <td>
+                          <div className="fw-bold">
+                            €{parseFloat(payment.amount.toString()).toFixed(2)}
+                          </div>
+                          {payment.refundedAmount && (
+                            <div className="text-danger small">
+                              Rimborsato: €{parseFloat(payment.refundedAmount.toString()).toFixed(2)}
+                            </div>
+                          )}
+                        </td>
+                        <td>
+                          <span
+                            className={`badge ${
+                              payment.status === 'SUCCEEDED'
+                                ? 'bg-success'
+                                : payment.status === 'PENDING' || payment.status === 'PROCESSING'
+                                ? 'bg-warning text-dark'
+                                : payment.status === 'FAILED'
+                                ? 'bg-danger'
+                                : 'bg-info'
+                            }`}
+                          >
+                            {payment.status}
+                          </span>
+                        </td>
+                        <td className="text-muted small">
+                          {new Date(payment.createdAt).toLocaleDateString('it-IT', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </AdminLayout>

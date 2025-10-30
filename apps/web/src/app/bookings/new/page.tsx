@@ -100,153 +100,172 @@ export default function NewBookingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Caricamento...</div>
+      <div className="min-vh-100 d-flex align-items-center justify-content-center">
+        <div className="text-center">
+          <div className="spinner-border text-primary mb-3" role="status">
+            <span className="visually-hidden">Caricamento...</span>
+          </div>
+          <p className="text-muted">Caricamento risorse...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Nuova Prenotazione</h1>
-            <Link href="/dashboard" className="text-blue-600 hover:underline">
-              ← Torna alla dashboard
-            </Link>
-          </div>
+    <div className="min-vh-100 bg-light">
+      {/* Navbar */}
+      <nav className="navbar bg-white shadow-sm">
+        <div className="container-fluid">
+          <h1 className="h4 mb-0 text-baleno-primary fw-bold">Nuova Prenotazione</h1>
+          <Link href="/dashboard" className="text-decoration-none fw-medium" style={{ color: 'var(--baleno-primary)' }}>
+            ← Torna alla dashboard
+          </Link>
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-lg shadow p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                  {error}
+      <div className="container py-4">
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <div className="card border-0 shadow-sm">
+            <div className="card-body p-4 p-md-5">
+              <form onSubmit={handleSubmit}>
+                {error && (
+                  <div className="alert alert-danger d-flex align-items-center mb-4" role="alert">
+                    <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </svg>
+                    {error}
+                  </div>
+                )}
+
+                {success && (
+                  <div className="alert alert-success d-flex align-items-center mb-4" role="alert">
+                    <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                    </svg>
+                    {success}
+                  </div>
+                )}
+
+                <div className="mb-4">
+                  <label htmlFor="resourceId" className="form-label fw-semibold">
+                    Risorsa *
+                  </label>
+                  <select
+                    id="resourceId"
+                    value={formData.resourceId}
+                    onChange={(e) => setFormData({ ...formData, resourceId: e.target.value })}
+                    required
+                    className="form-select form-select-lg"
+                  >
+                    <option value="">Seleziona una risorsa</option>
+                    {resources.map(resource => (
+                      <option key={resource.id} value={resource.id}>
+                        {resource.name} - {resource.type} (€{resource.pricePerHour}/ora)
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              )}
 
-              {success && (
-                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-                  {success}
-                </div>
-              )}
-
-              <div>
-                <label htmlFor="resourceId" className="block text-sm font-medium text-gray-700 mb-2">
-                  Risorsa *
-                </label>
-                <select
-                  id="resourceId"
-                  value={formData.resourceId}
-                  onChange={(e) => setFormData({ ...formData, resourceId: e.target.value })}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Seleziona una risorsa</option>
-                  {resources.map(resource => (
-                    <option key={resource.id} value={resource.id}>
-                      {resource.name} - {resource.type} (€{resource.pricePerHour}/ora)
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {selectedResource && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-blue-900 mb-2">{selectedResource.name}</h3>
-                  <p className="text-sm text-blue-800 mb-2">{selectedResource.description}</p>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-blue-700">Capacità:</span>{' '}
-                      <span className="font-medium">{selectedResource.capacity} persone</span>
-                    </div>
-                    <div>
-                      <span className="text-blue-700">Prezzo:</span>{' '}
-                      <span className="font-medium">€{selectedResource.pricePerHour}/ora</span>
+                {selectedResource && (
+                  <div className="alert alert-info border-0 mb-4">
+                    <h3 className="h6 fw-bold mb-2 text-info-emphasis">{selectedResource.name}</h3>
+                    <p className="small mb-3">{selectedResource.description}</p>
+                    <div className="row g-3 small">
+                      <div className="col-6">
+                        <span className="text-muted">Capacità:</span>{' '}
+                        <span className="fw-semibold">{selectedResource.capacity} persone</span>
+                      </div>
+                      <div className="col-6">
+                        <span className="text-muted">Prezzo:</span>{' '}
+                        <span className="fw-semibold">€{selectedResource.pricePerHour}/ora</span>
+                      </div>
                     </div>
                   </div>
+                )}
+
+                <div className="mb-4">
+                  <label htmlFor="startTime" className="form-label fw-semibold">
+                    Data e Ora Inizio *
+                  </label>
+                  <input
+                    id="startTime"
+                    type="datetime-local"
+                    value={formData.startTime}
+                    onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                    required
+                    min={new Date().toISOString().slice(0, 16)}
+                    className="form-control form-control-lg"
+                  />
                 </div>
-              )}
 
-              <div>
-                <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 mb-2">
-                  Data e Ora Inizio *
-                </label>
-                <input
-                  id="startTime"
-                  type="datetime-local"
-                  value={formData.startTime}
-                  onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                  required
-                  min={new Date().toISOString().slice(0, 16)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
+                <div className="mb-4">
+                  <label htmlFor="endTime" className="form-label fw-semibold">
+                    Data e Ora Fine *
+                  </label>
+                  <input
+                    id="endTime"
+                    type="datetime-local"
+                    value={formData.endTime}
+                    onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+                    required
+                    min={formData.startTime || new Date().toISOString().slice(0, 16)}
+                    className="form-control form-control-lg"
+                  />
+                </div>
 
-              <div>
-                <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 mb-2">
-                  Data e Ora Fine *
-                </label>
-                <input
-                  id="endTime"
-                  type="datetime-local"
-                  value={formData.endTime}
-                  onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                  required
-                  min={formData.startTime || new Date().toISOString().slice(0, 16)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
+                <div className="mb-4">
+                  <label htmlFor="title" className="form-label fw-semibold">
+                    Titolo Prenotazione *
+                  </label>
+                  <input
+                    id="title"
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    required
+                    placeholder="Es: Riunione team di progetto"
+                    className="form-control form-control-lg"
+                  />
+                </div>
 
-              <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                  Titolo Prenotazione *
-                </label>
-                <input
-                  id="title"
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  required
-                  placeholder="Es: Riunione team di progetto"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
+                <div className="mb-4">
+                  <label htmlFor="description" className="form-label fw-semibold">
+                    Descrizione (opzionale)
+                  </label>
+                  <textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={4}
+                    placeholder="Aggiungi dettagli sulla prenotazione..."
+                    className="form-control"
+                  />
+                </div>
 
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                  Descrizione (opzionale)
-                </label>
-                <textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={4}
-                  placeholder="Aggiungi dettagli sulla prenotazione..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="flex gap-4">
-                <button
-                  type="submit"
-                  disabled={submitting || !formData.resourceId || !formData.startTime || !formData.endTime || !formData.title}
-                  className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 font-medium"
-                >
-                  {submitting ? 'Creazione in corso...' : 'Crea Prenotazione'}
-                </button>
-                <Link
-                  href="/dashboard"
-                  className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition font-medium text-center"
-                >
-                  Annulla
-                </Link>
-              </div>
-            </form>
+                <div className="d-flex gap-3">
+                  <button
+                    type="submit"
+                    disabled={submitting || !formData.resourceId || !formData.startTime || !formData.endTime || !formData.title}
+                    className="btn btn-primary btn-lg flex-fill fw-semibold"
+                  >
+                    {submitting ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Creazione in corso...
+                      </>
+                    ) : (
+                      'Crea Prenotazione'
+                    )}
+                  </button>
+                  <Link
+                    href="/dashboard"
+                    className="btn btn-secondary btn-lg flex-fill fw-semibold text-center"
+                  >
+                    Annulla
+                  </Link>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
