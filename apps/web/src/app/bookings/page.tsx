@@ -82,22 +82,23 @@ export default function BookingsPage() {
   return (
     <div className="min-vh-100 bg-light">
       {/* Navbar */}
-      <nav className="navbar navbar-dark bg-primary shadow">
-        <div className="container-fluid">
+      <nav className="navbar navbar-dark bg-primary shadow-lg sticky-top" style={{ padding: '1rem 0' }}>
+        <div className="container-fluid px-4">
           <div className="d-flex align-items-center gap-3">
             <Link href="/dashboard" className="d-flex align-items-center">
               <Image
                 src="/BALENO-LOGO-BIANCO.png"
                 alt="Baleno Sanzeno"
-                width={140}
-                height={45}
-                style={{ height: '40px', width: 'auto' }}
+                width={200}
+                height={65}
+                style={{ height: '55px', width: 'auto' }}
+                priority
               />
             </Link>
-            <span className="text-white fs-5">|</span>
-            <h1 className="h5 mb-0 text-white fw-bold">Le Mie Prenotazioni</h1>
+            <span className="text-white fs-5 d-none d-md-inline">|</span>
+            <h1 className="h5 mb-0 text-white fw-bold d-none d-md-block">Le Mie Prenotazioni</h1>
           </div>
-          <Link href="/dashboard" className="text-white text-decoration-none fw-medium">
+          <Link href="/dashboard" className="btn btn-light text-primary fw-semibold px-4">
             ← Dashboard
           </Link>
         </div>

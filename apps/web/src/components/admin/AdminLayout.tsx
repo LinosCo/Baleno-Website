@@ -68,8 +68,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="min-vh-100 bg-light">
-      <nav className="navbar navbar-dark bg-primary fixed-top shadow-sm" style={{ zIndex: 1030 }}>
-        <div className="container-fluid">
+      <nav className="navbar navbar-dark bg-primary fixed-top shadow-lg" style={{ zIndex: 1030, padding: '1rem 0' }}>
+        <div className="container-fluid px-4">
           <div className="d-flex align-items-center gap-3">
             <button
               className="btn btn-link text-white p-0"
@@ -77,34 +77,35 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               onClick={() => setSidebarOpen(!sidebarOpen)}
               aria-label="Toggle sidebar"
             >
-              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <Link href="/admin" className="navbar-brand mb-0">
+            <Link href="/admin" className="navbar-brand mb-0 d-flex align-items-center">
               <Image
                 src="/BALENO-LOGO-BIANCO.png"
                 alt="Baleno Sanzeno"
-                width={120}
-                height={40}
-                style={{ height: '32px', width: 'auto' }}
+                width={200}
+                height={65}
+                style={{ height: '55px', width: 'auto' }}
+                priority
               />
             </Link>
           </div>
           <div className="d-flex align-items-center gap-3">
-            <Link href="/dashboard" className="btn btn-sm btn-outline-light d-none d-md-block">
+            <Link href="/dashboard" className="btn btn-outline-light d-none d-md-block px-4">
               Vista Utente
             </Link>
-            <div className="d-flex align-items-center gap-2">
+            <div className="d-flex align-items-center gap-3">
               <div className="text-end d-none d-md-block">
-                <div className="text-white small fw-semibold">
+                <div className="text-white fw-semibold" style={{ fontSize: '0.95rem' }}>
                   {user.firstName} {user.lastName}
                 </div>
-                <div className="text-white-50" style={{ fontSize: '0.75rem' }}>
+                <div className="text-white-50" style={{ fontSize: '0.8rem' }}>
                   {user.role}
                 </div>
               </div>
-              <button onClick={handleLogout} className="btn btn-sm btn-secondary">
+              <button onClick={handleLogout} className="btn btn-light text-primary fw-semibold px-4">
                 Logout
               </button>
             </div>
@@ -112,17 +113,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
       </nav>
 
-      <div className="d-flex" style={{ marginTop: '56px' }}>
+      <div className="d-flex" style={{ marginTop: '88px' }}>
         <div
           className={`bg-white border-end shadow-sm transition-all ${
             sidebarOpen ? 'd-block' : 'd-none'
           }`}
           style={{
             width: sidebarOpen ? '250px' : '0',
-            minHeight: 'calc(100vh - 56px)',
+            minHeight: 'calc(100vh - 88px)',
             transition: 'width 0.3s ease',
             position: 'sticky',
-            top: '56px',
+            top: '88px',
             alignSelf: 'flex-start',
           }}
         >
@@ -163,7 +164,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           className="flex-grow-1 p-4"
           style={{
             backgroundColor: '#f8f9fa',
-            minHeight: 'calc(100vh - 56px)'
+            minHeight: 'calc(100vh - 88px)'
           }}
         >
           {children}

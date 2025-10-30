@@ -45,24 +45,25 @@ export default function DashboardPage() {
   return (
     <div className="min-vh-100 bg-light">
       {/* Navbar */}
-      <nav className="navbar navbar-dark bg-primary shadow-sm">
-        <div className="container-fluid">
-          <Link href="/dashboard" className="navbar-brand">
+      <nav className="navbar navbar-dark bg-primary shadow-lg sticky-top" style={{ padding: '1rem 0' }}>
+        <div className="container-fluid px-4">
+          <Link href="/dashboard" className="navbar-brand d-flex align-items-center">
             <Image
               src="/BALENO-LOGO-BIANCO.png"
               alt="Baleno Sanzeno"
-              width={140}
-              height={45}
-              style={{ height: '40px', width: 'auto' }}
+              width={200}
+              height={65}
+              style={{ height: '55px', width: 'auto' }}
+              priority
             />
           </Link>
           <div className="d-flex align-items-center gap-3">
-            <span className="text-white d-none d-md-inline">
+            <span className="text-white d-none d-md-inline fw-semibold" style={{ fontSize: '0.95rem' }}>
               {user?.firstName} {user?.lastName}
             </span>
             <button
               onClick={handleLogout}
-              className="btn btn-sm btn-secondary"
+              className="btn btn-light text-primary fw-semibold px-4"
             >
               Logout
             </button>
