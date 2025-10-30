@@ -1,18 +1,13 @@
 import type { Metadata } from 'next';
-import { Work_Sans } from 'next/font/google';
 import './globals.css';
+import 'bootstrap-italia/dist/css/bootstrap-italia.min.css';
 import { Providers } from '@/components/providers';
 import { Toaster } from 'sonner';
 
-const workSans = Work_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-work-sans',
-});
-
 export const metadata: Metadata = {
   title: 'Baleno Sanzeno - Sistema di Prenotazione',
-  description: 'Prenota spazi e risorse per la tua comunità',
+  description: 'Prenota spazi e risorse per la Casa di Quartiere Baleno',
+  keywords: 'baleno, sanzeno, casa quartiere, prenotazione, spazi, sale',
 };
 
 export default function RootLayout({
@@ -22,11 +17,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="it" suppressHydrationWarning>
-      <body className={workSans.className}>
+      <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-italia@2.17.0/dist/css/bootstrap-italia.min.css" />
+      </head>
+      <body>
         <Providers>
           {children}
           <Toaster position="top-right" richColors />
         </Providers>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-italia@2.17.0/dist/js/bootstrap-italia.bundle.min.js" async></script>
       </body>
     </html>
   );
