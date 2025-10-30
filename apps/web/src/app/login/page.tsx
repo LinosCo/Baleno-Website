@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { authAPI } from '@/lib/api-client';
 
 export default function LoginPage() {
@@ -34,87 +35,121 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Accedi
-          </h1>
-          <p className="text-gray-600">
-            Benvenuto su Baleno Booking System
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="tu@email.com"
+    <div className="min-vh-100 bg-light d-flex align-items-center justify-content-center p-4">
+      <div className="card shadow-lg border-0" style={{ maxWidth: '450px', width: '100%' }}>
+        <div className="card-body p-4 p-md-5">
+          {/* Logo */}
+          <div className="text-center mb-4">
+            <Image
+              src="/BALENO-LOGO-BIANCO.png"
+              alt="Baleno Sanzeno"
+              width={160}
+              height={50}
+              className="mb-3"
+              style={{
+                filter: 'brightness(0) saturate(100%) invert(24%) sepia(51%) saturate(1347%) hue-rotate(189deg) brightness(92%) contrast(91%)',
+                height: 'auto'
+              }}
             />
           </div>
 
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
+          <div className="text-center mb-4">
+            <h1 className="h3 fw-bold text-baleno-primary mb-2">
+              Accedi
+            </h1>
+            <p className="text-muted">
+              Benvenuto su Baleno Booking System
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label fw-semibold">
+                Email
               </label>
-              <Link
-                href="/forgot-password"
-                className="text-sm text-blue-600 hover:underline"
-              >
-                Password dimenticata?
-              </Link>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="form-control form-control-lg"
+                placeholder="tu@email.com"
+              />
             </div>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="••••••••"
-            />
+
+            <div className="mb-3">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <label htmlFor="password" className="form-label fw-semibold mb-0">
+                  Password
+                </label>
+                <Link
+                  href="/forgot-password"
+                  className="small text-decoration-none"
+                  style={{ color: 'var(--baleno-primary)' }}
+                >
+                  Password dimenticata?
+                </Link>
+              </div>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="form-control form-control-lg"
+                placeholder="••••••••"
+              />
+            </div>
+
+            {error && (
+              <div className="alert alert-danger d-flex align-items-center" role="alert">
+                <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                </svg>
+                <div>{error}</div>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn btn-primary btn-lg w-100 fw-semibold"
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Accesso in corso...
+                </>
+              ) : (
+                'Accedi'
+              )}
+            </button>
+          </form>
+
+          <div className="text-center mt-4">
+            <p className="text-muted mb-0">
+              Non hai un account?{' '}
+              <Link
+                href="/register"
+                className="fw-semibold text-decoration-none"
+                style={{ color: 'var(--baleno-primary)' }}
+              >
+                Registrati
+              </Link>
+            </p>
           </div>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              {error}
-            </div>
-          )}
+          <hr className="my-4" />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 font-medium"
-          >
-            {loading ? 'Accesso in corso...' : 'Accedi'}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Non hai un account?{' '}
-            <Link href="/register" className="text-blue-600 hover:underline font-medium">
-              Registrati
+          <div className="text-center">
+            <Link
+              href="/"
+              className="btn btn-link text-muted text-decoration-none"
+            >
+              ← Torna alla home
             </Link>
-          </p>
-        </div>
-
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <Link
-            href="/"
-            className="block text-center text-sm text-gray-600 hover:text-gray-900"
-          >
-            ← Torna alla home
-          </Link>
+          </div>
         </div>
       </div>
     </div>
