@@ -493,8 +493,13 @@ Il progetto include documentazione dettagliata nella cartella `docs/`:
 ## 🎉 Stato Progetto
 
 **Versione**: 1.0.0
-**Stato**: Production Ready - Pronto per Deployment
+**Stato**: ✅ DEPLOYED IN PRODUZIONE
 **Ultimo Aggiornamento**: 30 Ottobre 2025
+
+### 🌐 URL Produzione
+- **Frontend**: https://baleno-website.vercel.app
+- **Backend API**: https://baleno-website-production.up.railway.app/api
+- **Database**: PostgreSQL su Railway (postgres.railway.internal)
 
 ### Completato ✅
 - [x] Backend NestJS completo
@@ -517,14 +522,25 @@ Il progetto include documentazione dettagliata nella cartella `docs/`:
 - [x] **railway.json configurato**
 - [x] **Documentazione deployment completa** (docs/DEPLOY_GUIDE.md)
 
-### In Deployment 🚀
-- [x] Progetto su GitHub pronto
-- [ ] Railway backend deployment (IN CORSO)
-  - [x] PostgreSQL database aggiunto
-  - [ ] Variabili d'ambiente da completare
-  - [ ] Prima deploy da eseguire
-- [ ] Vercel frontend deployment
-- [ ] Test produzione completo
+### Deployment Completato 🚀
+- [x] Progetto su GitHub deployato
+- [x] **Railway backend deployment** ✅ LIVE
+  - [x] PostgreSQL database configurato e connesso
+  - [x] Variabili d'ambiente configurate
+  - [x] Migrazioni Prisma eseguite con successo
+  - [x] Script di startup personalizzato (start.sh)
+  - [x] CORS configurato per Vercel
+  - [x] API endpoint testati e funzionanti
+- [x] **Vercel frontend deployment** ✅ LIVE
+  - [x] Build Next.js completato
+  - [x] NEXT_PUBLIC_API_URL configurato
+  - [x] Connessione API backend verificata
+  - [x] Login e registrazione funzionanti
+- [x] **Test produzione completo** ✅
+  - [x] Registrazione utenti
+  - [x] Autenticazione JWT
+  - [x] Creazione prenotazioni
+  - [x] Pannello admin accessibile
 
 ### In Sviluppo 🚧
 - [ ] Integrazione email produzione
@@ -543,18 +559,85 @@ Il progetto include documentazione dettagliata nella cartella `docs/`:
 
 ## 📝 Note Recenti
 
+### ✅ Deployment Produzione Completato (30 Ottobre 2025)
+
+**Sistema deployato con successo su Railway + Vercel!**
+
+#### Configurazione Produzione
+
+**Railway (Backend)**
+- Servizio: `Baleno-Website`
+- Database: PostgreSQL configurato
+- Variabili d'ambiente:
+  - `DATABASE_URL`: Collegamento al PostgreSQL interno
+  - `FRONTEND_URL`: https://baleno-website.vercel.app
+  - `JWT_SECRET` e `JWT_REFRESH_SECRET`: Configurati
+  - `NODE_ENV`: production
+  - `PORT`: 4000
+- **Script di startup personalizzato** (`apps/api/start.sh`):
+  - Esegue migrazioni Prisma automaticamente all'avvio
+  - Avvia l'applicazione dopo il setup del database
+- **CORS**: Configurato per accettare richieste dal frontend Vercel
+
+**Vercel (Frontend)**
+- Progetto: `baleno-website`
+- Root Directory: `apps/web`
+- Build Command: `pnpm build`
+- Variabili d'ambiente:
+  - `NEXT_PUBLIC_API_URL`: https://baleno-website-production.up.railway.app/api
+
+#### Problemi Risolti Durante il Deployment
+
+1. **Network Error al Login/Registrazione**
+   - Causa: Variabile `NEXT_PUBLIC_API_URL` non configurata su Vercel
+   - Soluzione: Aggiunta variabile d'ambiente e redeploy
+
+2. **CORS Error**
+   - Causa: URL frontend diverso tra preview e produzione
+   - Soluzione: `FRONTEND_URL` su Railway configurato con URL di produzione
+
+3. **Database Tables Not Found**
+   - Causa: Migrazioni Prisma non eseguite su Railway
+   - Soluzione: Creato script `start.sh` che esegue le migrazioni all'avvio
+   - File: `apps/api/start.sh`
+   ```bash
+   #!/bin/bash
+   npx prisma migrate deploy --schema=../../prisma/schema.prisma
+   node dist/main
+   ```
+
+4. **Migration Execution During Build**
+   - Causa: Database non accessibile durante fase di build
+   - Soluzione: Spostamento esecuzione migrazioni da `buildCommand` a `startCommand`
+
+#### File Modificati per il Deployment
+
+1. **`railway.json`** - Configurazione Railway
+   - buildCommand: Install + generate + build
+   - startCommand: Esegue `start.sh` con migrazioni
+
+2. **`apps/api/start.sh`** - Script startup
+   - Nuovo file creato per gestire migrazioni automatiche
+
+3. **`apps/web/vercel.json`** - Configurazione Vercel
+   - Framework: Next.js
+   - Build command: pnpm build
+
+#### Accesso al Sistema in Produzione
+
+1. **Frontend**: https://baleno-website.vercel.app
+2. **Registrazione**: Crea un nuovo account dalla pagina di registrazione
+3. **Login**: Usa le credenziali create
+4. **Promozione ad Admin**: Esegui query SQL sul database Railway:
+   ```sql
+   UPDATE "User" SET role = 'ADMIN' WHERE email = 'tuo-email@esempio.com';
+   ```
+5. **Pannello Admin**: Accedi a https://baleno-website.vercel.app/admin
+
 ### Pulizia Progetto e Organizzazione (30 Ottobre 2025)
 - ✅ Bootstrap Italia integrato in tutte le 16 pagine
 - ✅ Documentazione consolidata e organizzata in `docs/`
 - ✅ File ridondanti rimossi
 - ✅ README aggiornato con riferimenti corretti
 - ✅ Progetto pulito e pronto per deployment professionale
-
-### Prossimi Passi per Deployment
-Consulta [docs/DEPLOY_GUIDE.md](docs/DEPLOY_GUIDE.md) per la guida completa:
-1. Deploy backend su Railway (con PostgreSQL)
-2. Deploy frontend su Vercel
-3. Configurare variabili d'ambiente su entrambe le piattaforme
-4. Eseguire migrations database
-5. Eseguire seed per dati iniziali
-6. Test completo sistema
+- ✅ **Sistema completamente deployato e funzionante in produzione**
