@@ -5,26 +5,48 @@ import { Calendar, Users, Shield, CreditCard } from 'lucide-react';
 export default function HomePage() {
   return (
     <div className="min-vh-100">
-      {/* Navbar Bootstrap Italia */}
-      <nav className="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow">
+      {/* Enhanced Navbar */}
+      <nav className="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-lg" style={{ padding: '1rem 0' }}>
         <div className="container">
-          <Link href="/" className="navbar-brand">
+          <Link href="/" className="navbar-brand d-flex align-items-center">
             <Image
               src="/BALENO-LOGO-BIANCO.png"
               alt="Baleno Sanzeno"
-              width={140}
-              height={45}
-              className="d-inline-block align-top"
-              style={{ height: '40px', width: 'auto' }}
+              width={160}
+              height={50}
+              className="d-inline-block"
+              style={{ height: '50px', width: 'auto' }}
+              priority
             />
           </Link>
-          <div className="d-flex gap-2">
-            <Link href="/login" className="btn btn-outline-light">
-              Accedi
-            </Link>
-            <Link href="/register" className="btn btn-secondary">
-              Registrati
-            </Link>
+
+          <button
+            className="navbar-toggler border-0"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+
+          <div className="collapse navbar-collapse" id="mainNavbar">
+            <div className="navbar-nav ms-auto d-flex align-items-lg-center gap-3">
+              <Link href="/calendar" className="nav-link text-white d-lg-block">
+                <Calendar size={18} className="me-2 d-inline" />
+                Calendario
+              </Link>
+              <div className="d-flex gap-2 mt-3 mt-lg-0">
+                <Link href="/login" className="btn btn-outline-light px-4">
+                  Accedi
+                </Link>
+                <Link href="/register" className="btn btn-light text-primary fw-semibold px-4">
+                  Registrati
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </nav>
@@ -92,21 +114,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-4 border-top mt-5">
-        <div className="container">
-          <div className="row">
-            <div className="col-12 text-center">
-              <p className="text-muted mb-0">
-                &copy; 2025 Baleno Sanzeno - Casa di Quartiere. Tutti i diritti riservati.
-              </p>
-              <p className="text-muted small mt-2">
-                Sviluppato da <a href="https://linosco.com" className="text-baleno-primary text-decoration-none">Lino's & Co</a>
-              </p>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
