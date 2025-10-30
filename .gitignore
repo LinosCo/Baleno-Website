@@ -43,7 +43,9 @@ Thumbs.db
 # Database
 *.db
 *.db-journal
-prisma/migrations/
+
+# Prisma
+# Note: migrations/ should be tracked in git for version control
 
 # Docker
 docker-compose.override.yml

@@ -312,7 +312,7 @@ const prisma = new PrismaClient();
 Il progetto è configurato per deployment su **Railway** (backend + database) e **Vercel** (frontend).
 
 ### Documentazione Completa
-Consulta `DEPLOY_CONFIG.md` per la guida dettagliata con tutte le variabili d'ambiente e i segreti JWT pre-generati.
+Consulta [docs/DEPLOY_GUIDE.md](docs/DEPLOY_GUIDE.md) per la guida dettagliata passo-passo per il deployment su Railway e Vercel.
 
 ### Quick Start Railway (Backend)
 
@@ -482,52 +482,19 @@ Per problemi o domande:
 - Apri una issue su GitHub
 - Contatta: info@balenosanzeno.it
 
-## 🌐 Demo Pubblica con ngrok
+## 📚 Documentazione Completa
 
-Per condividere una preview del progetto con clienti o collaboratori:
+Il progetto include documentazione dettagliata nella cartella `docs/`:
 
-### Setup ngrok
-```bash
-# 1. Installa ngrok (se non già installato)
-brew install ngrok  # macOS
-# oppure scarica da https://ngrok.com/download
-
-# 2. Configura ngrok.yml
-nano ~/.config/ngrok/ngrok.yml
-
-# Aggiungi la configurazione:
-tunnels:
-  backend:
-    proto: http
-    addr: 4000
-  frontend:
-    proto: http
-    addr: 3000
-
-# 3. Avvia i server locali
-pnpm dev
-
-# 4. In un nuovo terminale, avvia ngrok
-ngrok start --all
-
-# 5. Aggiorna le variabili d'ambiente con gli URL ngrok:
-# - FRONTEND_URL in apps/api/.env
-# - NEXT_PUBLIC_API_URL in apps/web/.env
-
-# 6. Riavvia i server per applicare le modifiche
-```
-
-Gli URL ngrok saranno del tipo:
-- Frontend: `https://xxxxx.ngrok-free.app`
-- Backend API: `https://yyyyy.ngrok-free.app/api`
-
-**Nota**: Gli URL ngrok cambiano ad ogni riavvio con il piano gratuito. Per URL permanenti, considera l'upgrade a ngrok Pro.
+- **[docs/DEPLOY_GUIDE.md](docs/DEPLOY_GUIDE.md)** - Guida completa per il deployment su Railway e Vercel
+- **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)** - Guide di sviluppo, architettura e best practices
+- **[docs/MIGRATION_HISTORY.md](docs/MIGRATION_HISTORY.md)** - Storia della migrazione a Bootstrap Italia
 
 ## 🎉 Stato Progetto
 
 **Versione**: 1.0.0
-**Stato**: Production Ready - In Deployment
-**Ultimo Aggiornamento**: 29 Ottobre 2025
+**Stato**: Production Ready - Pronto per Deployment
+**Ultimo Aggiornamento**: 30 Ottobre 2025
 
 ### Completato ✅
 - [x] Backend NestJS completo
@@ -541,14 +508,14 @@ Gli URL ngrok saranno del tipo:
 - [x] Reports e analytics
 - [x] Calendario pubblico
 - [x] Password recovery system
-- [x] Supporto ngrok per demo pubbliche
 - [x] Client API centralizzato con Axios
 - [x] Gestione ruoli admin automatica
+- [x] **Bootstrap Italia design system** (v2.17.0 integrato in tutte le 16 pagine)
 - [x] **Branding Baleno completo** (logo, colori, font Work Sans)
 - [x] **Configurazione deployment Railway + Vercel**
 - [x] **JWT secrets generati per produzione**
-- [x] **railway.json e vercel.json configurati**
-- [x] **Documentazione deployment completa (DEPLOY_CONFIG.md)**
+- [x] **railway.json configurato**
+- [x] **Documentazione deployment completa** (docs/DEPLOY_GUIDE.md)
 
 ### In Deployment 🚀
 - [x] Progetto su GitHub pronto
@@ -576,23 +543,18 @@ Gli URL ngrok saranno del tipo:
 
 ## 📝 Note Recenti
 
-### Deployment Setup (29 Ottobre 2025)
-- Railway: Database PostgreSQL configurato, servizio @baleno/api pronto
-- Prossimi passi:
-  1. Completare aggiunta variabili d'ambiente su Railway
-  2. Eseguire primo deploy backend su Railway
-  3. Copiare URL Railway pubblico
-  4. Configurare Vercel con NEXT_PUBLIC_API_URL
-  5. Deploy frontend su Vercel
-  6. Aggiornare FRONTEND_URL su Railway
-  7. Eseguire migrations database
-  8. Creare primo utente admin
-  9. Configurare Stripe webhooks
-  10. Test completo sistema
+### Pulizia Progetto e Organizzazione (30 Ottobre 2025)
+- ✅ Bootstrap Italia integrato in tutte le 16 pagine
+- ✅ Documentazione consolidata e organizzata in `docs/`
+- ✅ File ridondanti rimossi
+- ✅ README aggiornato con riferimenti corretti
+- ✅ Progetto pulito e pronto per deployment professionale
 
-### Variabili Railway da Aggiungere
-Vedi `DEPLOY_CONFIG.md` per lista completa. Importante:
-- `DATABASE_URL` → Selezionare dal reference `${{Postgres.DATABASE_URL}}`
-- JWT secrets già generati e sicuri
-- SMTP da configurare con credenziali Gmail reali
-- Stripe keys da sostituire con quelle di produzione
+### Prossimi Passi per Deployment
+Consulta [docs/DEPLOY_GUIDE.md](docs/DEPLOY_GUIDE.md) per la guida completa:
+1. Deploy backend su Railway (con PostgreSQL)
+2. Deploy frontend su Vercel
+3. Configurare variabili d'ambiente su entrambe le piattaforme
+4. Eseguire migrations database
+5. Eseguire seed per dati iniziali
+6. Test completo sistema
