@@ -38,48 +38,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }, [router]);
 
   const navigation = [
-    {
-      name: 'Dashboard',
-      href: '/admin',
-      icon: 'üìä',
-      allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'],
-    },
-    {
-      name: 'Prenotazioni',
-      href: '/admin/bookings',
-      icon: 'üìÖ',
-      allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'],
-    },
-    {
-      name: 'Risorse',
-      href: '/admin/resources',
-      icon: 'üè¢',
-      allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'],
-    },
-    {
-      name: 'Utenti',
-      href: '/admin/users',
-      icon: 'üë•',
-      allowedRoles: ['ADMIN'],
-    },
-    {
-      name: 'Pagamenti',
-      href: '/admin/payments',
-      icon: 'üí≥',
-      allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'],
-    },
-    {
-      name: 'Calendario',
-      href: '/admin/calendar',
-      icon: 'üìÜ',
-      allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'],
-    },
-    {
-      name: 'Report',
-      href: '/admin/reports',
-      icon: 'üìà',
-      allowedRoles: ['ADMIN'],
-    },
+    { name: 'Dashboard', href: '/admin', icon: '= ', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
+    { name: 'Prenotazioni', href: '/admin/bookings', icon: '=≈', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
+    { name: 'Risorse', href: '/admin/resources', icon: '<‚', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
+    { name: 'Utenti', href: '/admin/users', icon: '=e', allowedRoles: ['ADMIN'] },
+    { name: 'Pagamenti', href: '/admin/payments', icon: '=≥', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
+    { name: 'Calendario', href: '/admin/calendar', icon: '=∆', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
+    { name: 'Report', href: '/admin/reports', icon: '=»', allowedRoles: ['ADMIN'] },
   ];
 
   const filteredNavigation = navigation.filter(item =>
@@ -103,7 +68,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="min-vh-100 bg-light">
-      {/* Top Navbar Bootstrap Italia */}
       <nav className="navbar navbar-dark bg-primary fixed-top shadow-sm" style={{ zIndex: 1030 }}>
         <div className="container-fluid">
           <div className="d-flex align-items-center gap-3">
@@ -127,12 +91,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               />
             </Link>
           </div>
-
           <div className="d-flex align-items-center gap-3">
-            <Link
-              href="/dashboard"
-              className="btn btn-sm btn-outline-light d-none d-md-block"
-            >
+            <Link href="/dashboard" className="btn btn-sm btn-outline-light d-none d-md-block">
               Vista Utente
             </Link>
             <div className="d-flex align-items-center gap-2">
@@ -144,10 +104,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   {user.role}
                 </div>
               </div>
-              <button
-                onClick={handleLogout}
-                className="btn btn-sm btn-secondary"
-              >
+              <button onClick={handleLogout} className="btn btn-sm btn-secondary">
                 Logout
               </button>
             </div>
@@ -156,7 +113,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </nav>
 
       <div className="d-flex" style={{ marginTop: '56px' }}>
-        {/* Sidebar */}
         <div
           className={`bg-white border-end shadow-sm transition-all ${
             sidebarOpen ? 'd-block' : 'd-none'
@@ -183,9 +139,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                           ? 'bg-primary text-white fw-semibold'
                           : 'text-dark'
                       }`}
-                      style={{
-                        padding: '0.75rem 1rem',
-                      }}
+                      style={{ padding: '0.75rem 1rem' }}
                     >
                       <span style={{ fontSize: '1.25rem' }}>{item.icon}</span>
                       <span>{item.name}</span>
@@ -206,7 +160,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
         </div>
 
-        {/* Main Content */}
         <main
           className="flex-grow-1 p-4"
           style={{
