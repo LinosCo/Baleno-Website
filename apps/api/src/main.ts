@@ -13,9 +13,12 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
 
-  // CORS
+  // CORS - Support multiple origins
+  const frontendUrls = configService.get('FRONTEND_URL') || 'http://localhost:3000';
+  const allowedOrigins = frontendUrls.split(',').map(url => url.trim());
+
   app.enableCors({
-    origin: configService.get('FRONTEND_URL') || 'http://localhost:3000',
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],
