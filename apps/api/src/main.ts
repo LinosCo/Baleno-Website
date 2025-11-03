@@ -13,12 +13,28 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
 
-  // CORS - Support multiple origins
+  // CORS - Support multiple origins including all Vercel deployments
   const frontendUrls = configService.get('FRONTEND_URL') || 'http://localhost:3000';
   const allowedOrigins = frontendUrls.split(',').map(url => url.trim());
 
   app.enableCors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true);
+
+      // Check if origin is in the allowed list
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Allow all Vercel preview deployments
+      if (origin.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
+
+      // Deny other origins
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],
