@@ -4,7 +4,7 @@ Sistema completo di prenotazione spazi e risorse per Baleno San Zeno, con backen
 
 ## 🎨 Branding Baleno
 
-Il sistema utilizza l'identità visiva ufficiale di Baleno Sanzeno:
+Il sistema utilizza l'identità visiva ufficiale di Baleno San Zeno:
 - **Logo**: BALENO-LOGO-BIANCO.png (logo bianco su sfondi scuri)
 - **Colori**:
   - Primary (Blu Baleno): #2B548E

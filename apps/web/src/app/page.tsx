@@ -11,7 +11,7 @@ export default function HomePage() {
           <Link href="/" className="navbar-brand d-flex align-items-center">
             <Image
               src="/BALENO-LOGO-BIANCO.png"
-              alt="Baleno Sanzeno"
+              alt="Baleno San Zeno"
               width={200}
               height={65}
               className="d-inline-block"
@@ -53,7 +53,7 @@ export default function HomePage() {
           <div className="row justify-content-center">
             <div className="col-lg-10 text-center">
               <h1 className="display-3 fw-bold mb-4 text-baleno-primary">
-                Baleno Sanzeno
+                Baleno San Zeno
               </h1>
               <p className="lead fs-3 text-secondary mb-5">
                 Sistema completo di gestione e prenotazione spazi per la Casa di Quartiere

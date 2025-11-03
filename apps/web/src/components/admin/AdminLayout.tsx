@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <Link href="/admin" className="position-absolute start-50 translate-middle-x navbar-brand mb-0">
             <Image
               src="/BALENO-LOGO-BIANCO.png"
-              alt="Baleno Sanzeno"
+              alt="Baleno San Zeno"
               width={200}
               height={65}
               style={{ height: '55px', width: 'auto' }}

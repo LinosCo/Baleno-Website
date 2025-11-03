@@ -50,7 +50,7 @@ export default function DashboardPage() {
           <Link href="/dashboard" className="navbar-brand d-flex align-items-center">
             <Image
               src="/BALENO-LOGO-BIANCO.png"
-              alt="Baleno Sanzeno"
+              alt="Baleno San Zeno"
               width={200}
               height={65}
               style={{ height: '55px', width: 'auto' }}

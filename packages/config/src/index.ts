@@ -1,6 +1,6 @@
 // ============ APP CONSTANTS ============
 
-export const APP_NAME = 'Baleno Sanzeno';
+export const APP_NAME = 'Baleno San Zeno';
 export const APP_DESCRIPTION = 'Sistema di gestione e prenotazione spazi';
 
 // ============ API CONSTANTS ============

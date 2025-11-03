@@ -42,7 +42,7 @@ export default function LoginPage() {
           <div className="text-center mb-4">
             <Image
               src="/BALENO-LOGO-BIANCO.png"
-              alt="Baleno Sanzeno"
+              alt="Baleno San Zeno"
               width={160}
               height={50}
               className="mb-3"

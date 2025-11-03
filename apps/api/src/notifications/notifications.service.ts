@@ -19,7 +19,7 @@ export class NotificationsService {
   }
 
   async sendBookingConfirmation(booking: any, user: any) {
-    const subject = 'Booking Confirmation - Baleno Sanzeno';
+    const subject = 'Booking Confirmation - Baleno San Zeno';
     const html = `
       <h2>Booking Confirmed</h2>
       <p>Dear ${user.firstName},</p>
@@ -37,7 +37,7 @@ export class NotificationsService {
   }
 
   async sendBookingCancellation(booking: any, user: any) {
-    const subject = 'Booking Cancelled - Baleno Sanzeno';
+    const subject = 'Booking Cancelled - Baleno San Zeno';
     const html = `
       <h2>Booking Cancelled</h2>
       <p>Dear ${user.firstName},</p>
@@ -53,7 +53,7 @@ export class NotificationsService {
   }
 
   async sendBookingApproval(booking: any, user: any) {
-    const subject = 'Booking Approved - Baleno Sanzeno';
+    const subject = 'Booking Approved - Baleno San Zeno';
     const html = `
       <h2>Booking Approved!</h2>
       <p>Dear ${user.firstName},</p>
@@ -70,7 +70,7 @@ export class NotificationsService {
   }
 
   async sendBookingRejection(booking: any, user: any, reason: string) {
-    const subject = 'Booking Rejected - Baleno Sanzeno';
+    const subject = 'Booking Rejected - Baleno San Zeno';
     const html = `
       <h2>Booking Rejected</h2>
       <p>Dear ${user.firstName},</p>
@@ -87,7 +87,7 @@ export class NotificationsService {
   }
 
   async sendPaymentReceipt(payment: any, user: any) {
-    const subject = 'Payment Receipt - Baleno Sanzeno';
+    const subject = 'Payment Receipt - Baleno San Zeno';
     const html = `
       <h2>Payment Receipt</h2>
       <p>Dear ${user.firstName},</p>
@@ -103,7 +103,7 @@ export class NotificationsService {
   }
 
   async sendRefundNotification(payment: any, user: any) {
-    const subject = 'Refund Processed - Baleno Sanzeno';
+    const subject = 'Refund Processed - Baleno San Zeno';
     const html = `
       <h2>Refund Processed</h2>
       <p>Dear ${user.firstName},</p>
