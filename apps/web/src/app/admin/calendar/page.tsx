@@ -114,8 +114,10 @@ export default function AdminCalendarPage() {
   const weekDays = getWeekDays(new Date(selectedDate));
   const monthDays = getDaysInMonth(selectedDate);
   const monthName = selectedDate.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
-  const weekRange = weekDays.length > 0
-    ? `${weekDays[0].getDate()} ${weekDays[0].toLocaleDateString('it-IT', { month: 'short' })} - ${weekDays[6].getDate()} ${weekDays[6].toLocaleDateString('it-IT', { month: 'short', year: 'numeric' })}`
+  const firstDay = weekDays[0];
+  const lastDay = weekDays[6];
+  const weekRange = firstDay && lastDay
+    ? `${firstDay.getDate()} ${firstDay.toLocaleDateString('it-IT', { month: 'short' })} - ${lastDay.getDate()} ${lastDay.toLocaleDateString('it-IT', { month: 'short', year: 'numeric' })}`
     : '';
 
   if (loading) {
