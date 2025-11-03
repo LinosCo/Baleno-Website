@@ -15,10 +15,10 @@ async function bootstrap() {
 
   // CORS - Support multiple origins including all Vercel deployments
   const frontendUrls = configService.get('FRONTEND_URL') || 'http://localhost:3000';
-  const allowedOrigins = frontendUrls.split(',').map(url => url.trim());
+  const allowedOrigins = frontendUrls.split(',').map((url: string) => url.trim());
 
   app.enableCors({
-    origin: (origin, callback) => {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
       // Allow requests with no origin (like mobile apps, Postman, etc.)
       if (!origin) return callback(null, true);
 

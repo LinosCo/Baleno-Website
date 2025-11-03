@@ -178,7 +178,7 @@ export class SeedController {
       return {
         success: false,
         message: 'Error seeding database',
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       };
     }
   }
