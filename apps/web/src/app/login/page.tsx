@@ -20,8 +20,11 @@ export default function LoginPage() {
       const response = await authAPI.login({ email, password });
       const data = response.data;
 
-      // Salva il token e reindirizza in base al ruolo
+      // Salva i token e reindirizza in base al ruolo
       localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
       if (data.user.role === 'ADMIN' || data.user.role === 'COMMUNITY_MANAGER') {
         window.location.href = '/admin';
       } else {
