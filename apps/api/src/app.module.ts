@@ -15,6 +15,7 @@ import { ReportsModule } from './reports/reports.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AppController } from './app.controller';
 import { SeedController } from './seed-endpoint.controller';
+import { CleanupDuplicatesController } from './cleanup-duplicates.controller';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
 @Module({
@@ -48,7 +49,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     ResourcesModule,
     ReportsModule,
   ],
-  controllers: [AppController, SeedController],
+  controllers: [AppController, SeedController, CleanupDuplicatesController],
   providers: [
     {
       provide: APP_GUARD,
