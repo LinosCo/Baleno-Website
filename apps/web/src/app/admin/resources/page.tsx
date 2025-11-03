@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../components/admin/AdminLayout';
+import { API_ENDPOINTS } from '../../../config/api';
 
 interface Resource {
   id: string;
@@ -34,7 +35,7 @@ export default function AdminResourcesPage() {
   const fetchResources = () => {
     const token = localStorage.getItem('accessToken');
 
-    fetch('http://localhost:4000/api/resources', {
+    fetch(API_ENDPOINTS.resources, {
       headers: { 'Authorization': `Bearer ${token}` },
     })
       .then(res => res.json())
@@ -65,8 +66,8 @@ export default function AdminResourcesPage() {
 
     try {
       const url = editingResource
-        ? `http://localhost:4000/api/resources/${editingResource.id}`
-        : 'http://localhost:4000/api/resources';
+        ? `${API_ENDPOINTS.resources}/${editingResource.id}`
+        : API_ENDPOINTS.resources;
 
       const method = editingResource ? 'PUT' : 'POST';
 
@@ -109,7 +110,7 @@ export default function AdminResourcesPage() {
     const token = localStorage.getItem('accessToken');
 
     try {
-      await fetch(`http://localhost:4000/api/resources/${id}`, {
+      await fetch(`${API_ENDPOINTS.resources}/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
