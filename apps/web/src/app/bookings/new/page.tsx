@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { API_ENDPOINTS } from '../../../config/api';
 
 interface Resource {
   id: string;
@@ -38,7 +39,7 @@ export default function NewBookingPage() {
     }
 
     // Fetch available resources
-    fetch('http://localhost:4000/api/resources', {
+    fetch(API_ENDPOINTS.resources, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -70,7 +71,7 @@ export default function NewBookingPage() {
         endTime: new Date(formData.endTime).toISOString(),
       };
 
-      const response = await fetch('http://localhost:4000/api/bookings', {
+      const response = await fetch(API_ENDPOINTS.bookings, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
