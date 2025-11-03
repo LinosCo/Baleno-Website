@@ -152,10 +152,10 @@ export default function AdminResourcesPage() {
     <AdminLayout>
       <div>
         {/* Header */}
-        <div className="d-flex justify-content-between align-items-start mb-4">
+        <div className="d-flex justify-content-between align-items-start mb-3">
           <div>
-            <h1 className="h3 fw-bold text-baleno-primary">Gestione Risorse</h1>
-            <p className="text-muted">Aggiungi, modifica o rimuovi risorse prenotabili</p>
+            <h1 className="h3 fw-bold text-baleno-primary mb-1">Gestione Risorse</h1>
+            <p className="text-muted mb-0">Aggiungi, modifica o rimuovi risorse prenotabili</p>
           </div>
           <button
             onClick={() => {
@@ -170,7 +170,7 @@ export default function AdminResourcesPage() {
         </div>
 
         {/* Resources Grid */}
-        <div className="row g-4">
+        <div className="row g-3">
           {resources.map((resource) => (
             <div key={resource.id} className="col-md-6 col-lg-4">
               <div className="card border-0 shadow-sm h-100">
