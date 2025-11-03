@@ -1,0 +1,266 @@
+// Prisma Schema per Baleno Booking System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ ENUMS ============
+
+enum UserRole {
+  ADMIN
+  COMMUNITY_MANAGER
+  USER
+}
+
+enum BookingStatus {
+  PENDING        // In attesa di approvazione
+  APPROVED       // Approvata
+  REJECTED       // Rifiutata
+  CANCELLED      // Cancellata dall'utente
+  COMPLETED      // Completata
+}
+
+enum PaymentStatus {
+  PENDING        // In attesa
+  PROCESSING     // In elaborazione
+  SUCCEEDED      // Completato con successo
+  FAILED         // Fallito
+  REFUNDED       // Rimborsato
+  PARTIALLY_REFUNDED // Rimborsato parzialmente
+}
+
+enum ResourceType {
+  ROOM           // Sala
+  SPACE          // Spazio generico
+  EQUIPMENT      // Attrezzatura
+  SERVICE        // Servizio
+}
+
+enum NotificationType {
+  BOOKING_CONFIRMATION
+  BOOKING_APPROVED
+  BOOKING_REJECTED
+  BOOKING_CANCELLED
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+  REFUND_PROCESSED
+  REMINDER
+}
+
+// ============ MODELS ============
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String?  // Null per OAuth users
+  firstName     String
+  lastName      String
+  phone         String?
+  role          UserRole @default(USER)
+
+  // OAuth fields
+  googleId      String?  @unique
+  avatar        String?
+
+  // Metadata
+  emailVerified Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lastLogin     DateTime?
+
+  // Relations
+  bookings      Booking[]
+  payments      Payment[]
+  refreshTokens RefreshToken[]
+  notifications Notification[]
+
+  // Audit fields per tracking chi ha fatto modifiche
+  approvedBookings Booking[] @relation("BookingApprover")
+  rejectedBookings Booking[] @relation("BookingRejector")
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+model Resource {
+  id          String       @id @default(cuid())
+  name        String
+  description String?      @db.Text
+  type        ResourceType
+
+  // Capacity and pricing
+  capacity    Int?         // Capacità persone
+  pricePerHour Decimal     @db.Decimal(10, 2)
+
+  // Availability
+  isActive    Boolean      @default(true)
+
+  // Additional info
+  images      String[]     // URLs delle immagini
+  amenities   String[]     // Servizi inclusi
+  rules       String?      @db.Text
+
+  // Location (opzionale)
+  location    String?
+  floor       String?
+
+  // Metadata
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  bookings    Booking[]
+
+  @@index([type])
+  @@index([isActive])
+  @@map("resources")
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+
+  // Relations
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  resourceId  String
+  resource    Resource      @relation(fields: [resourceId], references: [id], onDelete: Restrict)
+
+  // Booking details
+  startTime   DateTime
+  endTime     DateTime
+
+  // Status tracking
+  status      BookingStatus @default(PENDING)
+
+  // Approval/Rejection info
+  approvedBy  String?
+  approver    User?         @relation("BookingApprover", fields: [approvedBy], references: [id])
+  approvedAt  DateTime?
+
+  rejectedBy  String?
+  rejector    User?         @relation("BookingRejector", fields: [rejectedBy], references: [id])
+  rejectedAt  DateTime?
+  rejectionReason String?   @db.Text
+
+  cancelledAt DateTime?
+  cancellationReason String? @db.Text
+
+  // Additional info
+  title       String        // Titolo/motivo prenotazione
+  description String?       @db.Text
+  attendees   Int?          // Numero partecipanti
+  notes       String?       @db.Text
+
+  // Metadata
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  payments    Payment[]
+
+  @@index([userId])
+  @@index([resourceId])
+  @@index([status])
+  @@index([startTime, endTime])
+  @@map("bookings")
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+
+  // Relations
+  bookingId   String
+  booking     Booking       @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  // Payment details
+  amount      Decimal       @db.Decimal(10, 2)
+  currency    String        @default("EUR")
+  status      PaymentStatus @default(PENDING)
+
+  // Stripe integration
+  stripePaymentIntentId String? @unique
+  stripeChargeId        String? @unique
+  stripeRefundId        String?
+
+  // Receipt
+  receiptUrl  String?
+
+  // Refund info
+  refundedAmount Decimal?   @db.Decimal(10, 2)
+  refundedAt     DateTime?
+  refundReason   String?    @db.Text
+
+  // Metadata
+  metadata    Json?         // Per eventuali dati aggiuntivi Stripe
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([bookingId])
+  @@index([userId])
+  @@index([status])
+  @@index([stripePaymentIntentId])
+  @@map("payments")
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+
+  // Relations
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Notification details
+  type        NotificationType
+  title       String
+  message     String           @db.Text
+
+  // Status
+  read        Boolean          @default(false)
+  readAt      DateTime?
+
+  // Email tracking
+  emailSent   Boolean          @default(false)
+  emailSentAt DateTime?
+
+  // Metadata
+  metadata    Json?            // Per dati aggiuntivi (link, azioni, etc)
+  createdAt   DateTime         @default(now())
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// ============ VIEWS & ANALYTICS (opzionale, per future implementazioni) ============
+
+// Potremmo aggiungere tabelle per:
+// - Review/Feedback sulle prenotazioni
+// - Event management (eventi pubblici)
+// - Membership/Subscriptions
+// - File uploads (documenti, immagini)
+// - Audit logs (tracking di tutte le azioni importanti)

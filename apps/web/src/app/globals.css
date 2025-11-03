@@ -1,0 +1,187 @@
+/* Baleno Sanzeno - Custom Styles with Bootstrap Italia */
+
+/* Colori Baleno personalizzati basati su balenosanzeno.it */
+:root {
+  /* Primary - Blu Baleno */
+  --baleno-primary: #2B548E;
+  --baleno-primary-dark: #1e3a63;
+  --baleno-primary-light: #3f6cb5;
+
+  /* Accent - Giallo Baleno */
+  --baleno-accent: #EDBB00;
+  --baleno-accent-dark: #c49e00;
+  --baleno-accent-light: #f5cb33;
+
+  /* Secondary - Blu chiaro */
+  --baleno-secondary: #1863DC;
+
+  /* Neutral colors */
+  --baleno-gray-50: #f9fafb;
+  --baleno-gray-100: #f3f4f6;
+  --baleno-gray-200: #e5e7eb;
+  --baleno-gray-300: #d1d5db;
+  --baleno-gray-400: #9ca3af;
+  --baleno-gray-500: #6b7280;
+  --baleno-gray-600: #4b5563;
+  --baleno-gray-700: #374151;
+  --baleno-gray-800: #1f2937;
+  --baleno-gray-900: #111827;
+}
+
+/* Override Bootstrap Italia primary colors with Baleno colors */
+.bg-primary,
+.btn-primary {
+  background-color: var(--baleno-primary) !important;
+  border-color: var(--baleno-primary) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--baleno-primary-dark) !important;
+  border-color: var(--baleno-primary-dark) !important;
+}
+
+.text-primary {
+  color: var(--baleno-primary) !important;
+}
+
+.bg-secondary {
+  background-color: var(--baleno-accent) !important;
+}
+
+.text-secondary {
+  color: var(--baleno-accent) !important;
+}
+
+/* Custom Baleno classes */
+.bg-baleno-primary {
+  background-color: var(--baleno-primary);
+}
+
+.bg-baleno-accent {
+  background-color: var(--baleno-accent);
+}
+
+.text-baleno-primary {
+  color: var(--baleno-primary);
+}
+
+.text-baleno-accent {
+  color: var(--baleno-accent);
+}
+
+.border-baleno-primary {
+  border-color: var(--baleno-primary);
+}
+
+.border-baleno-accent {
+  border-color: var(--baleno-accent);
+}
+
+/* Link colors */
+a {
+  color: var(--baleno-primary);
+}
+
+a:hover {
+  color: var(--baleno-primary-dark);
+}
+
+/* Global styles */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: var(--baleno-gray-900);
+  background: var(--baleno-gray-50);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--baleno-gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--baleno-gray-400);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--baleno-gray-500);
+}
+
+/* Focus styles per accessibilità */
+*:focus {
+  outline: 2px solid var(--baleno-accent);
+  outline-offset: 2px;
+}
+
+button:focus,
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--baleno-accent);
+  outline-offset: 2px;
+}
+
+/* Card shadows */
+.card {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Utility classes */
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.shadow {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Transition utilities */
+.transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
