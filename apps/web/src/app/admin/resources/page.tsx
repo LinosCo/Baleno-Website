@@ -152,7 +152,7 @@ export default function AdminResourcesPage() {
     <AdminLayout>
       <div>
         {/* Header */}
-        <div className="d-flex justify-content-between align-items-start mb-3">
+        <div className="d-flex justify-content-between align-items-start mb-2">
           <div>
             <h1 className="h3 fw-bold text-baleno-primary mb-1">Gestione Risorse</h1>
             <p className="text-muted mb-0">Aggiungi, modifica o rimuovi risorse prenotabili</p>
@@ -174,8 +174,8 @@ export default function AdminResourcesPage() {
           {resources.map((resource) => (
             <div key={resource.id} className="col-md-6 col-lg-4">
               <div className="card border-0 shadow-sm h-100">
-                <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-start mb-3">
+                <div className="card-body d-flex flex-column">
+                  <div className="d-flex justify-content-between align-items-start mb-2">
                     <h3 className="h5 fw-bold mb-0">{resource.name}</h3>
                     <span
                       className={`badge ${
@@ -188,9 +188,9 @@ export default function AdminResourcesPage() {
                     </span>
                   </div>
 
-                  <p className="text-muted small mb-4">{resource.description}</p>
+                  <p className="text-muted small mb-3">{resource.description}</p>
 
-                  <div className="d-flex flex-column gap-2 mb-4">
+                  <div className="d-flex flex-column gap-2 mb-3">
                     <div className="d-flex justify-content-between small">
                       <span className="text-muted">Tipo:</span>
                       <span className="fw-semibold">{resource.type}</span>
@@ -205,7 +205,7 @@ export default function AdminResourcesPage() {
                     </div>
                   </div>
 
-                  <div className="d-flex gap-2">
+                  <div className="d-flex gap-2 mt-auto">
                     <button
                       onClick={() => handleEdit(resource)}
                       className="btn btn-sm btn-outline-primary flex-fill fw-semibold"
