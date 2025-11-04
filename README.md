@@ -494,7 +494,7 @@ Il progetto include documentazione dettagliata nella cartella `docs/`:
 
 **Versione**: 1.0.0
 **Stato**: ✅ DEPLOYED IN PRODUZIONE
-**Ultimo Aggiornamento**: 30 Ottobre 2025
+**Ultimo Aggiornamento**: 4 Novembre 2025
 
 ### 🌐 URL Produzione
 - **Frontend**: https://baleno-website.vercel.app
@@ -521,6 +521,7 @@ Il progetto include documentazione dettagliata nella cartella `docs/`:
 - [x] **JWT secrets generati per produzione**
 - [x] **railway.json configurato**
 - [x] **Documentazione deployment completa** (docs/DEPLOY_GUIDE.md)
+- [x] **Layout dashboard admin ottimizzato** (ridotto spazio bianco, ~50px risparmiati)
 
 ### Deployment Completato 🚀
 - [x] Progetto su GitHub deployato
@@ -644,7 +645,40 @@ Il progetto include documentazione dettagliata nella cartella `docs/`:
 
 ---
 
-## 🎯 Ultimo Aggiornamento - 3 Novembre 2025
+## 🎯 Ultimo Aggiornamento - 4 Novembre 2025
+
+### ✨ Ottimizzazione Layout Dashboard Admin
+
+**Problema Risolto**: Ridotto spazio bianco eccessivo nella parte superiore del dashboard admin
+
+#### Modifiche Implementate:
+
+1. **Navbar Compatta** ✅
+   - Padding ridotto da `1rem` a `0.5rem`
+   - Logo ridimensionato da 55px a 45px di altezza
+   - Margine superiore contenuto: da 88px a **70px**
+
+2. **Spaziature Ottimizzate** ✅
+   - Main container: padding verticale ridotto da `p-4` a `py-3`
+   - Header dashboard: margine da `mb-3` a `mb-2`
+   - Griglie card: gap ridotto da `g-3` a `g-2`
+   - Sottotitolo: classe `small` per font più compatto
+
+3. **Card Più Compatte** ✅
+   - Padding card stats: `py-2 px-3` (ridotto)
+   - Padding quick actions: `py-2 px-3`
+   - Card header prenotazioni: da `py-3` a `py-2`
+   - Margini interni ridotti: da `mb-2` a `mb-1`
+
+**Risultato**: Layout più denso e professionale con **~50px di spazio verticale risparmiato** ⚡
+
+#### File Modificati:
+- `apps/web/src/components/admin/AdminLayout.tsx` - Navbar e struttura layout
+- `apps/web/src/app/admin/page.tsx` - Dashboard con spaziature ottimizzate
+
+---
+
+## 🎯 Aggiornamento - 3 Novembre 2025
 
 ### ✨ Miglioramenti UI/UX Completati
 
