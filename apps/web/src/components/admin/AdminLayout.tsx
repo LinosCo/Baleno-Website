@@ -68,7 +68,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="min-vh-100" style={{ backgroundColor: '#ffffff' }}>
-      <nav className="navbar navbar-dark bg-primary fixed-top shadow-lg" style={{ zIndex: 1030, padding: '1rem 0' }}>
+      <nav className="navbar navbar-dark bg-primary fixed-top shadow-lg" style={{ zIndex: 1030, padding: '0.5rem 0' }}>
         <div className="container-fluid px-4 position-relative">
           <button
             className="btn btn-link text-white p-0"
@@ -85,9 +85,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <Image
               src="/BALENO-LOGO-BIANCO.png"
               alt="Baleno San Zeno"
-              width={200}
-              height={65}
-              style={{ height: '55px', width: 'auto' }}
+              width={160}
+              height={52}
+              style={{ height: '45px', width: 'auto' }}
               priority
             />
           </Link>
@@ -118,17 +118,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
       </nav>
 
-      <div className="d-flex" style={{ marginTop: '88px' }}>
+      <div className="d-flex" style={{ marginTop: '70px' }}>
         <div
           className={`bg-white border-end shadow-sm transition-all ${
             sidebarOpen ? 'd-block' : 'd-none'
           }`}
           style={{
             width: sidebarOpen ? '250px' : '0',
-            minHeight: 'calc(100vh - 88px)',
+            minHeight: 'calc(100vh - 70px)',
             transition: 'width 0.3s ease',
             position: 'sticky',
-            top: '88px',
+            top: '70px',
             alignSelf: 'flex-start',
           }}
         >
@@ -157,10 +157,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
 
         <main
-          className="flex-grow-1 p-4"
+          className="flex-grow-1 px-4 py-3"
           style={{
             backgroundColor: '#ffffff',
-            minHeight: 'calc(100vh - 88px)'
+            minHeight: 'calc(100vh - 70px)'
           }}
         >
           {children}

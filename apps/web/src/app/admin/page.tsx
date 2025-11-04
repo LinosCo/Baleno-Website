@@ -62,16 +62,16 @@ export default function AdminDashboard() {
     <AdminLayout>
       <div>
         {/* Header */}
-        <div className="mb-3">
+        <div className="mb-2">
           <h1 className="h3 fw-bold text-baleno-primary mb-1">Dashboard</h1>
-          <p className="text-muted mb-0">Panoramica del sistema di prenotazione</p>
+          <p className="text-muted mb-0 small">Panoramica del sistema di prenotazione</p>
         </div>
 
         {/* Stats Grid */}
-        <div className="row g-3 mb-3">
+        <div className="row g-2 mb-3">
           <div className="col-md-6 col-xl-3">
             <div className="card border-0 shadow-sm h-100">
-              <div className="card-body">
+              <div className="card-body py-2 px-3">
                 <div className="d-flex justify-content-between align-items-start mb-2">
                   <span className="text-muted small">Prenotazioni</span>
                   <svg width="20" height="20" fill="currentColor" className="text-primary" viewBox="0 0 16 16">
@@ -88,7 +88,7 @@ export default function AdminDashboard() {
 
           <div className="col-md-6 col-xl-3">
             <div className="card border-0 shadow-sm h-100">
-              <div className="card-body">
+              <div className="card-body py-2 px-3">
                 <div className="d-flex justify-content-between align-items-start mb-2">
                   <span className="text-muted small">In Attesa</span>
                   <svg width="20" height="20" fill="currentColor" className="text-warning" viewBox="0 0 16 16">
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
 
           <div className="col-md-6 col-xl-3">
             <div className="card border-0 shadow-sm h-100">
-              <div className="card-body">
+              <div className="card-body py-2 px-3">
                 <div className="d-flex justify-content-between align-items-start mb-2">
                   <span className="text-muted small">Approvate</span>
                   <svg width="20" height="20" fill="currentColor" className="text-success" viewBox="0 0 16 16">
@@ -124,7 +124,7 @@ export default function AdminDashboard() {
 
           <div className="col-md-6 col-xl-3">
             <div className="card border-0 shadow-sm h-100">
-              <div className="card-body">
+              <div className="card-body py-2 px-3">
                 <div className="d-flex justify-content-between align-items-start mb-2">
                   <span className="text-muted small">Entrate</span>
                   <svg width="20" height="20" fill="currentColor" className="text-success" viewBox="0 0 16 16">
@@ -141,10 +141,10 @@ export default function AdminDashboard() {
         </div>
 
         {/* Secondary Stats */}
-        <div className="row g-3 mb-3">
+        <div className="row g-2 mb-3">
           <div className="col-md-6">
             <div className="card border-0 shadow-sm">
-              <div className="card-body py-3">
+              <div className="card-body py-2 px-3">
                 <div className="d-flex align-items-center">
                   <div className="me-3">
                     <svg width="32" height="32" fill="currentColor" className="text-primary opacity-75" viewBox="0 0 16 16">
@@ -162,7 +162,7 @@ export default function AdminDashboard() {
 
           <div className="col-md-6">
             <div className="card border-0 shadow-sm">
-              <div className="card-body py-3">
+              <div className="card-body py-2 px-3">
                 <div className="d-flex align-items-center">
                   <div className="me-3">
                     <svg width="32" height="32" fill="currentColor" className="text-primary opacity-75" viewBox="0 0 16 16">
@@ -182,7 +182,7 @@ export default function AdminDashboard() {
 
         {/* Recent Bookings */}
         <div className="card border-0 shadow-sm mb-3">
-          <div className="card-header bg-white border-0 py-3">
+          <div className="card-header bg-white border-0 py-2">
             <h2 className="h6 fw-bold mb-0">Prenotazioni Recenti</h2>
           </div>
           <div className="card-body p-0">
@@ -231,12 +231,12 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="row g-3">
+        <div className="row g-2">
           <div className="col-md-4">
             <Link href="/admin/bookings" className="text-decoration-none">
               <div className="card border-0 shadow-sm h-100 hover-card">
-                <div className="card-body">
-                  <div className="d-flex align-items-center mb-2">
+                <div className="card-body py-2 px-3">
+                  <div className="d-flex align-items-center mb-1">
                     <svg width="24" height="24" fill="currentColor" className="text-primary me-2" viewBox="0 0 16 16">
                       <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
                     </svg>
@@ -251,8 +251,8 @@ export default function AdminDashboard() {
           <div className="col-md-4">
             <Link href="/admin/resources" className="text-decoration-none">
               <div className="card border-0 shadow-sm h-100 hover-card">
-                <div className="card-body">
-                  <div className="d-flex align-items-center mb-2">
+                <div className="card-body py-2 px-3">
+                  <div className="d-flex align-items-center mb-1">
                     <svg width="24" height="24" fill="currentColor" className="text-primary me-2" viewBox="0 0 16 16">
                       <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V1Zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3V1Z"/>
                       <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1ZM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Z"/>
@@ -268,8 +268,8 @@ export default function AdminDashboard() {
           <div className="col-md-4">
             <Link href="/admin/reports" className="text-decoration-none">
               <div className="card border-0 shadow-sm h-100 hover-card">
-                <div className="card-body">
-                  <div className="d-flex align-items-center mb-2">
+                <div className="card-body py-2 px-3">
+                  <div className="d-flex align-items-center mb-1">
                     <svg width="24" height="24" fill="currentColor" className="text-primary me-2" viewBox="0 0 16 16">
                       <path d="M4 11H2v3h2v-3zm5-4H7v7h2V7zm5-5v12h-2V2h2zm-2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-2zM6 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm-5 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3z"/>
                     </svg>
