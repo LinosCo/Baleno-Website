@@ -455,19 +455,19 @@ export default function AdminCalendarPage() {
 
             {/* Month View */}
             {viewMode === 'month' && (
-              <div>
-                <div className="row g-0 border-bottom" style={{ backgroundColor: '#f8f9fa' }}>
+              <div style={{ height: '700px', overflow: 'auto' }}>
+                <div className="row g-0 border-bottom sticky-top" style={{ backgroundColor: '#f8f9fa', zIndex: 5 }}>
                   {['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].map(day => (
-                    <div key={day} className="col text-center fw-semibold text-muted py-2" style={{ fontSize: '0.85rem' }}>
+                    <div key={day} className="col text-center fw-semibold text-muted py-3 border-end" style={{ fontSize: '0.9rem' }}>
                       {day}
                     </div>
                   ))}
                 </div>
-                <div className="row g-0">
+                <div className="row g-0" style={{ minHeight: '600px' }}>
                   {monthDays.map((day, index) => {
                     if (!day) {
                       return (
-                        <div key={`empty-${index}`} className="col border" style={{ minHeight: '130px', backgroundColor: '#fafafa' }}>
+                        <div key={`empty-${index}`} className="col border" style={{ minHeight: '150px', backgroundColor: '#fafafa' }}>
                         </div>
                       );
                     }
@@ -479,16 +479,22 @@ export default function AdminCalendarPage() {
                       day.getFullYear() === new Date().getFullYear();
 
                     return (
-                      <div key={index} className="col border position-relative" style={{ minHeight: '130px', cursor: 'pointer', backgroundColor: 'white' }}>
-                        <div className="p-1">
+                      <div key={index} className="col border position-relative" style={{ minHeight: '150px', cursor: 'pointer', backgroundColor: 'white' }}>
+                        <div className="p-2">
                           <div
-                            className={`d-inline-block px-2 py-1 mb-1 ${isToday ? 'bg-primary text-white rounded-circle' : ''}`}
-                            style={{ fontSize: '0.75rem', fontWeight: isToday ? '600' : '400' }}
+                            className={`d-inline-flex align-items-center justify-content-center mb-2 ${isToday ? 'bg-primary text-white rounded-circle' : ''}`}
+                            style={{
+                              fontSize: '0.9rem',
+                              fontWeight: isToday ? '600' : '500',
+                              width: isToday ? '28px' : 'auto',
+                              height: isToday ? '28px' : 'auto',
+                              padding: isToday ? '0' : '4px'
+                            }}
                           >
                             {day.getDate()}
                           </div>
-                          <div className="d-flex flex-column" style={{ gap: '3px' }}>
-                            {dayBookings.slice(0, 5).map(booking => {
+                          <div className="d-flex flex-column" style={{ gap: '4px' }}>
+                            {dayBookings.slice(0, 6).map(booking => {
                               const startTime = new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
                               const colors = getStatusColor(booking.status);
                               return (
@@ -497,21 +503,22 @@ export default function AdminCalendarPage() {
                                   className="text-truncate"
                                   title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
                                   style={{
-                                    fontSize: '0.75rem',
-                                    padding: '4px 8px',
+                                    fontSize: '0.8rem',
+                                    padding: '5px 10px',
                                     backgroundColor: colors.bg,
                                     color: colors.text,
                                     borderRadius: '4px',
-                                    fontWeight: '500'
+                                    fontWeight: '500',
+                                    lineHeight: '1.3'
                                   }}
                                 >
-                                  <span style={{ opacity: 0.9 }}>{startTime}</span> {booking.title}
+                                  <span style={{ opacity: 0.95, fontWeight: '600' }}>{startTime}</span> {booking.title}
                                 </div>
                               );
                             })}
-                            {dayBookings.length > 5 && (
-                              <div className="text-muted ps-2" style={{ fontSize: '0.7rem', fontWeight: '500' }}>
-                                +{dayBookings.length - 5} altri
+                            {dayBookings.length > 6 && (
+                              <div className="text-muted ps-2" style={{ fontSize: '0.75rem', fontWeight: '600' }}>
+                                +{dayBookings.length - 6} altri
                               </div>
                             )}
                           </div>
