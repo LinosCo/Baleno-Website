@@ -453,7 +453,7 @@ export default function AdminCalendarPage() {
               </div>
             )}
 
-            {/* Month View - Griglia classica con CELLE GRANDI */}
+            {/* Month View - Griglia compatta in un unico riquadro */}
             {viewMode === 'month' && (
               <div>
                 {/* Header giorni settimana */}
@@ -461,15 +461,15 @@ export default function AdminCalendarPage() {
                   {['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'].map((day, idx) => (
                     <div
                       key={day}
-                      className="col text-center py-2 border-end"
-                      style={{ fontSize: '0.85rem', fontWeight: '600', color: '#6c757d' }}
+                      className="col text-center py-1 border-end"
+                      style={{ fontSize: '0.75rem', fontWeight: '600', color: '#6c757d' }}
                     >
                       {day.toUpperCase()}
                     </div>
                   ))}
                 </div>
 
-                {/* Griglia giorni - DIVISA IN RIGHE */}
+                {/* Griglia giorni - COMPATTA */}
                 {(() => {
                   const weeks: (Date | null)[][] = [];
                   for (let i = 0; i < monthDays.length; i += 7) {
@@ -489,7 +489,7 @@ export default function AdminCalendarPage() {
                             <div
                               key={`empty-${weekIdx}-${dayIdx}`}
                               className="col border"
-                              style={{ minHeight: '160px', backgroundColor: '#fafafa' }}
+                              style={{ minHeight: '90px', backgroundColor: '#fafafa' }}
                             />
                           );
                         }
@@ -504,26 +504,26 @@ export default function AdminCalendarPage() {
                           <div
                             key={`day-${weekIdx}-${dayIdx}`}
                             className="col border"
-                            style={{ minHeight: '160px', backgroundColor: 'white', cursor: 'pointer' }}
+                            style={{ minHeight: '90px', backgroundColor: 'white', cursor: 'pointer' }}
                           >
-                            <div className="p-2">
+                            <div className="p-1">
                               {/* Numero giorno */}
                               <div
-                                className={`d-inline-flex align-items-center justify-content-center mb-2 ${isToday ? 'bg-primary text-white rounded-circle' : ''}`}
+                                className={`d-inline-flex align-items-center justify-content-center mb-1 ${isToday ? 'bg-primary text-white rounded-circle' : ''}`}
                                 style={{
-                                  fontSize: '0.85rem',
+                                  fontSize: '0.75rem',
                                   fontWeight: isToday ? '600' : '500',
                                   color: isToday ? '#fff' : '#6c757d',
-                                  width: isToday ? '28px' : 'auto',
-                                  height: isToday ? '28px' : 'auto'
+                                  width: isToday ? '22px' : 'auto',
+                                  height: isToday ? '22px' : 'auto'
                                 }}
                               >
                                 {day.getDate()}
                               </div>
 
                               {/* Eventi */}
-                              <div className="d-flex flex-column" style={{ gap: '4px' }}>
-                                {dayBookings.slice(0, 5).map(booking => {
+                              <div className="d-flex flex-column" style={{ gap: '2px' }}>
+                                {dayBookings.slice(0, 3).map(booking => {
                                   const startTime = new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
                                   const colors = getStatusColor(booking.status);
 
@@ -533,8 +533,8 @@ export default function AdminCalendarPage() {
                                       className="rounded text-truncate"
                                       title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
                                       style={{
-                                        fontSize: '0.8rem',
-                                        padding: '4px 8px',
+                                        fontSize: '0.65rem',
+                                        padding: '2px 4px',
                                         backgroundColor: colors.bg,
                                         color: colors.text,
                                         fontWeight: '500'
@@ -544,9 +544,9 @@ export default function AdminCalendarPage() {
                                     </div>
                                   );
                                 })}
-                                {dayBookings.length > 5 && (
-                                  <div style={{ fontSize: '0.75rem', color: '#6c757d', paddingLeft: '8px', fontWeight: '500' }}>
-                                    +{dayBookings.length - 5} altri
+                                {dayBookings.length > 3 && (
+                                  <div style={{ fontSize: '0.65rem', color: '#6c757d', paddingLeft: '4px', fontWeight: '500' }}>
+                                    +{dayBookings.length - 3}
                                   </div>
                                 )}
                               </div>
