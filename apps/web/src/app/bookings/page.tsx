@@ -124,7 +124,9 @@ export default function BookingsPage() {
           {bookings.length === 0 ? (
             <div className="card border-0 shadow-sm text-center py-5">
               <div className="card-body">
-                <div className="fs-1 mb-3">📅</div>
+                <svg width="64" height="64" fill="currentColor" className="text-muted mb-3" viewBox="0 0 16 16">
+                  <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                </svg>
                 <p className="fs-5 text-muted mb-4">Non hai ancora prenotazioni</p>
                 <Link href="/bookings/new" className="btn btn-primary fw-semibold">
                   Crea la tua prima prenotazione

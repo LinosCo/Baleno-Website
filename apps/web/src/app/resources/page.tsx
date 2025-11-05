@@ -340,7 +340,9 @@ export default function ResourcesPage() {
           {filteredResources.length === 0 ? (
             <div className="card border-0 shadow-sm text-center py-5">
               <div className="card-body">
-                <div className="fs-1 mb-3">🔍</div>
+                <svg width="64" height="64" fill="currentColor" className="text-muted mb-3" viewBox="0 0 16 16">
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
                 <p className="fs-5 text-muted">Nessuna risorsa trovata con i filtri selezionati</p>
                 <button onClick={resetFilters} className="btn btn-outline-primary mt-3">
                   Resetta Filtri
@@ -359,12 +361,26 @@ export default function ResourcesPage() {
                         background: 'linear-gradient(135deg, #2B548E 0%, #1863DC 100%)'
                       }}
                     >
-                      <div style={{ fontSize: '4rem' }}>
-                        {resource.type === 'ROOM' && '🏠'}
-                        {resource.type === 'EQUIPMENT' && '⚙️'}
-                        {resource.type === 'SPACE' && '📍'}
-                        {resource.type === 'SERVICE' && '🛎️'}
-                      </div>
+                      <svg width="80" height="80" fill="currentColor" viewBox="0 0 16 16">
+                        {resource.type === 'ROOM' && (
+                          <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
+                        )}
+                        {resource.type === 'EQUIPMENT' && (
+                          <>
+                            <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                            <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319z"/>
+                          </>
+                        )}
+                        {resource.type === 'SPACE' && (
+                          <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                        )}
+                        {resource.type === 'SERVICE' && (
+                          <>
+                            <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V1Zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3V1Z"/>
+                            <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Z"/>
+                          </>
+                        )}
+                      </svg>
                       {resource.wheelchairAccessible && (
                         <span
                           className="badge bg-white text-dark position-absolute top-0 end-0 m-2"
