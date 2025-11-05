@@ -20,11 +20,18 @@ interface Booking {
   };
 }
 
-type ViewMode = 'week' | 'month';
+type ViewMode = 'day' | 'week' | 'month';
 
 interface Resource {
   id: string;
   name: string;
+}
+
+interface PositionedBooking extends Booking {
+  top: number;
+  height: number;
+  left: number;
+  width: number;
 }
 
 export default function AdminCalendarPage() {
@@ -104,7 +111,6 @@ export default function AdminCalendarPage() {
 
   // Get week days starting from Monday
   const getWeekDays = (date: Date) => {
-    // Create a copy to avoid mutating the original date
     const dateCopy = new Date(date);
     const day = dateCopy.getDay();
     const diff = dateCopy.getDate() - day + (day === 0 ? -6 : 1);
@@ -136,6 +142,71 @@ export default function AdminCalendarPage() {
     });
   };
 
+  // Calculate event position and height (Google Calendar style)
+  const calculateEventPosition = (booking: Booking, pixelsPerHour: number = 60): { top: number; height: number } => {
+    const start = new Date(booking.startTime);
+    const end = new Date(booking.endTime);
+
+    const startHour = start.getHours() + start.getMinutes() / 60;
+    const endHour = end.getHours() + end.getMinutes() / 60;
+
+    const top = (startHour - 0) * pixelsPerHour; // 0 = midnight
+    const height = (endHour - startHour) * pixelsPerHour;
+
+    return { top, height: Math.max(height, 20) }; // Min 20px height
+  };
+
+  // Detect overlapping events and calculate horizontal positioning
+  const positionOverlappingEvents = (bookings: Booking[], pixelsPerHour: number = 60): PositionedBooking[] => {
+    if (bookings.length === 0) return [];
+
+    // Sort by start time
+    const sorted = [...bookings].sort((a, b) =>
+      new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+    );
+
+    const positioned: PositionedBooking[] = [];
+    const columns: { start: Date; end: Date; events: PositionedBooking[] }[] = [];
+
+    sorted.forEach(booking => {
+      const start = new Date(booking.startTime);
+      const end = new Date(booking.endTime);
+      const { top, height } = calculateEventPosition(booking, pixelsPerHour);
+
+      // Find a column where this event doesn't overlap
+      let columnIndex = columns.findIndex(col =>
+        new Date(col.end).getTime() <= start.getTime()
+      );
+
+      if (columnIndex === -1) {
+        // Create new column
+        columnIndex = columns.length;
+        columns.push({ start, end, events: [] });
+      } else {
+        // Update column end time
+        columns[columnIndex].end = end;
+      }
+
+      const totalColumns = columns.filter(col =>
+        new Date(col.start).getTime() < end.getTime() &&
+        new Date(col.end).getTime() > start.getTime()
+      ).length;
+
+      const positionedBooking: PositionedBooking = {
+        ...booking,
+        top,
+        height,
+        left: (columnIndex / Math.max(totalColumns, 1)) * 100,
+        width: (1 / Math.max(totalColumns, 1)) * 100
+      };
+
+      positioned.push(positionedBooking);
+      columns[columnIndex].events.push(positionedBooking);
+    });
+
+    return positioned;
+  };
+
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -143,7 +214,10 @@ export default function AdminCalendarPage() {
     const lastDay = new Date(year, month + 1, 0);
     const days = [];
 
-    for (let i = 0; i < firstDay.getDay(); i++) {
+    // Add empty cells for days before month start
+    const firstDayOfWeek = firstDay.getDay();
+    const offset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; // Monday = 0
+    for (let i = 0; i < offset; i++) {
       days.push(null);
     }
 
@@ -154,15 +228,15 @@ export default function AdminCalendarPage() {
     return days;
   };
 
-  const changeWeek = (delta: number) => {
+  const changeDate = (delta: number) => {
     const newDate = new Date(selectedDate);
-    newDate.setDate(newDate.getDate() + (delta * 7));
-    setSelectedDate(newDate);
-  };
-
-  const changeMonth = (delta: number) => {
-    const newDate = new Date(selectedDate);
-    newDate.setMonth(newDate.getMonth() + delta);
+    if (viewMode === 'day') {
+      newDate.setDate(newDate.getDate() + delta);
+    } else if (viewMode === 'week') {
+      newDate.setDate(newDate.getDate() + (delta * 7));
+    } else {
+      newDate.setMonth(newDate.getMonth() + delta);
+    }
     setSelectedDate(newDate);
   };
 
@@ -170,11 +244,21 @@ export default function AdminCalendarPage() {
     setSelectedDate(new Date());
   };
 
-  // Generate time slots (8:00 - 20:00)
+  // Generate time slots (0:00 - 23:00)
   const timeSlots = [];
-  for (let i = 8; i <= 20; i++) {
-    timeSlots.push(`${i}:00`);
+  for (let i = 0; i < 24; i++) {
+    timeSlots.push(i);
   }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'APPROVED': return { bg: '#34a853', text: '#fff' }; // Green
+      case 'PENDING': return { bg: '#fbbc04', text: '#000' }; // Yellow
+      case 'REJECTED': return { bg: '#ea4335', text: '#fff' }; // Red
+      case 'CANCELLED': return { bg: '#9aa0a6', text: '#fff' }; // Gray
+      default: return { bg: '#5f6368', text: '#fff' };
+    }
+  };
 
   const weekDays = getWeekDays(new Date(selectedDate));
   const monthDays = getDaysInMonth(selectedDate);
@@ -184,6 +268,13 @@ export default function AdminCalendarPage() {
   const weekRange = firstDay && lastDay
     ? `${firstDay.getDate()} ${firstDay.toLocaleDateString('it-IT', { month: 'short' })} - ${lastDay.getDate()} ${lastDay.toLocaleDateString('it-IT', { month: 'short', year: 'numeric' })}`
     : '';
+  const dayString = selectedDate.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  const getDateTitle = () => {
+    if (viewMode === 'day') return dayString;
+    if (viewMode === 'week') return weekRange;
+    return monthName;
+  };
 
   if (loading) {
     return (
@@ -268,6 +359,13 @@ export default function AdminCalendarPage() {
                   <div className="btn-group" role="group">
                     <button
                       type="button"
+                      className={`btn btn-sm ${viewMode === 'day' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                      onClick={() => setViewMode('day')}
+                    >
+                      Giorno
+                    </button>
+                    <button
+                      type="button"
                       className={`btn btn-sm ${viewMode === 'week' ? 'btn-primary' : 'btn-outline-secondary'}`}
                       onClick={() => setViewMode('week')}
                     >
@@ -292,7 +390,7 @@ export default function AdminCalendarPage() {
           <div className="card-body p-0">
             <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
               <button
-                onClick={() => viewMode === 'week' ? changeWeek(-1) : changeMonth(-1)}
+                onClick={() => changeDate(-1)}
                 className="btn btn-sm btn-outline-secondary"
               >
                 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -300,10 +398,10 @@ export default function AdminCalendarPage() {
                 </svg>
               </button>
               <h2 className="h5 mb-0 fw-bold text-capitalize">
-                {viewMode === 'week' ? weekRange : monthName}
+                {getDateTitle()}
               </h2>
               <button
-                onClick={() => viewMode === 'week' ? changeWeek(1) : changeMonth(1)}
+                onClick={() => changeDate(1)}
                 className="btn btn-sm btn-outline-secondary"
               >
                 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -312,73 +410,176 @@ export default function AdminCalendarPage() {
               </button>
             </div>
 
+            {/* Day View */}
+            {viewMode === 'day' && (
+              <div className="overflow-auto" style={{ maxHeight: '700px' }}>
+                <div className="d-flex" style={{ minHeight: '1440px' }}>
+                  {/* Time column */}
+                  <div style={{ width: '60px', flexShrink: 0 }}>
+                    {timeSlots.map((hour) => (
+                      <div
+                        key={hour}
+                        className="text-end pe-2 text-muted"
+                        style={{ height: '60px', fontSize: '0.75rem', paddingTop: '2px' }}
+                      >
+                        {hour === 0 ? '' : `${hour}:00`}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Event column */}
+                  <div className="flex-grow-1 position-relative border-start" style={{ borderLeft: '1px solid #e0e0e0' }}>
+                    {/* Hour lines */}
+                    {timeSlots.map((hour) => (
+                      <div
+                        key={hour}
+                        className="border-top"
+                        style={{
+                          height: '60px',
+                          borderColor: '#e0e0e0',
+                          borderTopWidth: hour === 0 ? '0' : '1px'
+                        }}
+                      />
+                    ))}
+
+                    {/* Events */}
+                    {positionOverlappingEvents(getBookingsForDate(selectedDate), 60).map((booking) => {
+                      const colors = getStatusColor(booking.status);
+                      const startTime = new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+                      const endTime = new Date(booking.endTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+                      return (
+                        <div
+                          key={booking.id}
+                          className="position-absolute rounded shadow-sm"
+                          style={{
+                            top: `${booking.top}px`,
+                            left: `calc(${booking.left}% + 4px)`,
+                            width: `calc(${booking.width}% - 8px)`,
+                            height: `${booking.height}px`,
+                            backgroundColor: colors.bg,
+                            color: colors.text,
+                            padding: '4px 8px',
+                            cursor: 'pointer',
+                            overflow: 'hidden',
+                            fontSize: '0.85rem',
+                            zIndex: 1
+                          }}
+                          title={`${booking.title}\n${booking.resource.name}\n${startTime} - ${endTime}`}
+                        >
+                          <div className="fw-semibold text-truncate">{booking.title}</div>
+                          <div style={{ fontSize: '0.75rem', opacity: 0.9 }}>
+                            {startTime} - {endTime}
+                          </div>
+                          {booking.height > 40 && (
+                            <div className="text-truncate" style={{ fontSize: '0.75rem', opacity: 0.85 }}>
+                              {booking.resource.name}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Week View */}
             {viewMode === 'week' && (
-              <div className="overflow-auto" style={{ maxHeight: '600px' }}>
-                <table className="table table-bordered mb-0" style={{ minWidth: '900px' }}>
-                  <thead className="sticky-top bg-white" style={{ zIndex: 10 }}>
-                    <tr>
-                      <th style={{ width: '80px', minWidth: '80px' }} className="text-center bg-light"></th>
-                      {weekDays.map((day, idx) => {
-                        const isToday =
-                          day.getDate() === new Date().getDate() &&
-                          day.getMonth() === new Date().getMonth() &&
-                          day.getFullYear() === new Date().getFullYear();
-                        return (
-                          <th key={idx} className={`text-center ${isToday ? 'bg-primary bg-opacity-25' : ''}`}>
-                            <div className="small text-muted">
+              <div className="overflow-auto" style={{ maxHeight: '700px' }}>
+                <div className="d-flex" style={{ minHeight: '1440px' }}>
+                  {/* Time column */}
+                  <div style={{ width: '60px', flexShrink: 0 }}>
+                    <div style={{ height: '40px' }} /> {/* Header spacer */}
+                    {timeSlots.map((hour) => (
+                      <div
+                        key={hour}
+                        className="text-end pe-2 text-muted"
+                        style={{ height: '60px', fontSize: '0.75rem', paddingTop: '2px' }}
+                      >
+                        {hour === 0 ? '' : `${hour}:00`}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Day columns */}
+                  <div className="flex-grow-1 d-flex">
+                    {weekDays.map((day, dayIdx) => {
+                      const isToday =
+                        day.getDate() === new Date().getDate() &&
+                        day.getMonth() === new Date().getMonth() &&
+                        day.getFullYear() === new Date().getFullYear();
+
+                      return (
+                        <div
+                          key={dayIdx}
+                          className="flex-grow-1 position-relative border-start"
+                          style={{ borderLeft: '1px solid #e0e0e0' }}
+                        >
+                          {/* Header */}
+                          <div
+                            className={`text-center py-2 border-bottom ${isToday ? 'bg-primary bg-opacity-10' : ''}`}
+                            style={{ height: '40px', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }}
+                          >
+                            <div className="small text-muted" style={{ fontSize: '0.7rem' }}>
                               {day.toLocaleDateString('it-IT', { weekday: 'short' }).toUpperCase()}
                             </div>
-                            <div className={`fw-bold ${isToday ? 'text-primary' : ''}`}>
+                            <div className={`fw-bold ${isToday ? 'text-primary' : ''}`} style={{ fontSize: '0.9rem' }}>
                               {day.getDate()}
                             </div>
-                          </th>
-                        );
-                      })}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {timeSlots.map((time, timeIdx) => (
-                      <tr key={timeIdx} style={{ height: '60px' }}>
-                        <td className="text-center small text-muted bg-light align-top pt-1">
-                          {time}
-                        </td>
-                        {weekDays.map((day, dayIdx) => {
-                          const dayBookings = getBookingsForDate(day).filter(booking => {
-                            const bookingStart = new Date(booking.startTime);
-                            const hour = bookingStart.getHours();
-                            const timeHour = time.split(':')[0];
-                            return hour === parseInt(timeHour || '0');
-                          });
+                          </div>
 
-                          return (
-                            <td key={dayIdx} className="p-1 position-relative" style={{ verticalAlign: 'top' }}>
-                              {dayBookings.map(booking => (
-                                <div
-                                  key={booking.id}
-                                  className={`small p-2 rounded mb-1 ${
-                                    booking.status === 'APPROVED'
-                                      ? 'bg-success bg-opacity-25 border border-success text-success-emphasis'
-                                      : booking.status === 'PENDING'
-                                      ? 'bg-warning bg-opacity-25 border border-warning text-warning-emphasis'
-                                      : 'bg-secondary bg-opacity-25 border border-secondary text-secondary-emphasis'
-                                  }`}
-                                  style={{ fontSize: '0.75rem', cursor: 'pointer' }}
-                                  title={`${booking.title}\n${booking.resource.name}\n${new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} - ${new Date(booking.endTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}`}
-                                >
-                                  <div className="fw-semibold text-truncate">{booking.title}</div>
-                                  <div className="text-truncate" style={{ fontSize: '0.7rem' }}>
-                                    {new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+                          {/* Hour lines */}
+                          {timeSlots.map((hour) => (
+                            <div
+                              key={hour}
+                              className="border-top"
+                              style={{
+                                height: '60px',
+                                borderColor: '#e0e0e0',
+                                borderTopWidth: hour === 0 ? '0' : '1px'
+                              }}
+                            />
+                          ))}
+
+                          {/* Events */}
+                          {positionOverlappingEvents(getBookingsForDate(day), 60).map((booking) => {
+                            const colors = getStatusColor(booking.status);
+                            const startTime = new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+                            return (
+                              <div
+                                key={booking.id}
+                                className="position-absolute rounded shadow-sm"
+                                style={{
+                                  top: `${booking.top + 40}px`, // +40 for header
+                                  left: `calc(${booking.left}% + 4px)`,
+                                  width: `calc(${booking.width}% - 8px)`,
+                                  height: `${booking.height}px`,
+                                  backgroundColor: colors.bg,
+                                  color: colors.text,
+                                  padding: '4px 6px',
+                                  cursor: 'pointer',
+                                  overflow: 'hidden',
+                                  fontSize: '0.75rem',
+                                  zIndex: 1
+                                }}
+                                title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
+                              >
+                                <div className="fw-semibold text-truncate">{booking.title}</div>
+                                {booking.height > 30 && (
+                                  <div style={{ fontSize: '0.7rem', opacity: 0.9 }}>
+                                    {startTime}
                                   </div>
-                                </div>
-                              ))}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             )}
 
@@ -408,39 +609,37 @@ export default function AdminCalendarPage() {
                       <div key={index} className="col">
                         <div
                           className={`border rounded p-2 ${
-                            isToday ? 'bg-primary bg-opacity-25 border-primary border-2' : 'bg-white'
+                            isToday ? 'bg-primary bg-opacity-10 border-primary border-2' : 'bg-white'
                           }`}
-                          style={{ minHeight: '140px', cursor: 'pointer' }}
+                          style={{ minHeight: '120px', cursor: 'pointer' }}
                         >
-                          <div className={`fw-bold mb-2 ${isToday ? 'text-primary' : 'text-dark'}`} style={{ fontSize: '1rem' }}>
+                          <div className={`fw-bold mb-2 ${isToday ? 'text-primary' : 'text-dark'}`} style={{ fontSize: '0.9rem' }}>
                             {day.getDate()}
                           </div>
-                          <div className="d-flex flex-column gap-2">
+                          <div className="d-flex flex-column gap-1">
                             {dayBookings.slice(0, 3).map(booking => {
                               const startTime = new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+                              const colors = getStatusColor(booking.status);
                               return (
                                 <div
                                   key={booking.id}
-                                  className={`rounded text-truncate ${
-                                    booking.status === 'APPROVED'
-                                      ? 'bg-success text-white'
-                                      : booking.status === 'PENDING'
-                                      ? 'bg-warning text-dark'
-                                      : 'bg-secondary text-white'
-                                  }`}
+                                  className="rounded text-truncate"
                                   title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
-                                  style={{ fontSize: '0.8rem', padding: '4px 6px', fontWeight: '500' }}
+                                  style={{
+                                    fontSize: '0.75rem',
+                                    padding: '3px 6px',
+                                    fontWeight: '500',
+                                    backgroundColor: colors.bg,
+                                    color: colors.text
+                                  }}
                                 >
-                                  <div className="d-flex align-items-center gap-1">
-                                    <span style={{ fontSize: '0.7rem', opacity: 0.9 }}>{startTime}</span>
-                                    <span className="text-truncate">{booking.title}</span>
-                                  </div>
+                                  <span className="text-truncate">{startTime} {booking.title}</span>
                                 </div>
                               );
                             })}
                             {dayBookings.length > 3 && (
-                              <div className="text-center fw-semibold text-muted" style={{ fontSize: '0.75rem' }}>
-                                +{dayBookings.length - 3} altre
+                              <div className="text-center fw-semibold text-muted" style={{ fontSize: '0.7rem' }}>
+                                +{dayBookings.length - 3}
                               </div>
                             )}
                           </div>
@@ -460,25 +659,20 @@ export default function AdminCalendarPage() {
             <div className="d-flex gap-4 flex-wrap align-items-center">
               <span className="small fw-semibold text-muted">Legenda:</span>
               <div className="d-flex align-items-center gap-2">
-                <div
-                  className="bg-success bg-opacity-25 border border-success rounded"
-                  style={{ width: '16px', height: '16px' }}
-                ></div>
+                <div className="rounded" style={{ width: '16px', height: '16px', backgroundColor: '#34a853' }}></div>
                 <span className="small">Approvate</span>
               </div>
               <div className="d-flex align-items-center gap-2">
-                <div
-                  className="bg-warning bg-opacity-25 border border-warning rounded"
-                  style={{ width: '16px', height: '16px' }}
-                ></div>
+                <div className="rounded" style={{ width: '16px', height: '16px', backgroundColor: '#fbbc04' }}></div>
                 <span className="small">In Attesa</span>
               </div>
               <div className="d-flex align-items-center gap-2">
-                <div
-                  className="bg-secondary bg-opacity-25 border border-secondary rounded"
-                  style={{ width: '16px', height: '16px' }}
-                ></div>
-                <span className="small">Cancellate/Rifiutate</span>
+                <div className="rounded" style={{ width: '16px', height: '16px', backgroundColor: '#ea4335' }}></div>
+                <span className="small">Rifiutate</span>
+              </div>
+              <div className="d-flex align-items-center gap-2">
+                <div className="rounded" style={{ width: '16px', height: '16px', backgroundColor: '#9aa0a6' }}></div>
+                <span className="small">Cancellate</span>
               </div>
             </div>
           </div>
