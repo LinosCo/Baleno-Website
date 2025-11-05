@@ -159,57 +159,31 @@ export default function PublicCalendarPage() {
       {/* Calendar Content */}
       <div className="container py-4">
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          {error && (
-            <div className="alert alert-danger d-flex align-items-center mb-4" role="alert">
-              <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-              </svg>
-              {error}
-            </div>
-          )}
-
-          {/* Info banner */}
-          <div className="alert alert-info d-flex align-items-center mb-4" role="alert">
-            <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
-            </svg>
-            <span>Visualizzazione calendario pubblico - Solo prenotazioni approvate</span>
-          </div>
-
           {/* Calendar controls */}
           <div className="card border-0 shadow-sm mb-3">
             <div className="card-body py-2">
-              <div className="row g-2 align-items-center">
-                <div className="col-md-6">
-                  <div className="d-flex gap-2">
-                    <button
-                      onClick={goToToday}
-                      className="btn btn-outline-primary btn-sm"
-                    >
-                      Oggi
-                    </button>
-                    <div className="btn-group" role="group">
-                      <button
-                        type="button"
-                        className={`btn btn-sm ${viewMode === 'week' ? 'btn-primary' : 'btn-outline-secondary'}`}
-                        onClick={() => setViewMode('week')}
-                      >
-                        Settimana
-                      </button>
-                      <button
-                        type="button"
-                        className={`btn btn-sm ${viewMode === 'month' ? 'btn-primary' : 'btn-outline-secondary'}`}
-                        onClick={() => setViewMode('month')}
-                      >
-                        Mese
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-6 text-end">
-                  <span className="badge bg-light text-dark me-2">
-                    {bookings.length} prenotazioni approvate
-                  </span>
+              <div className="d-flex gap-2">
+                <button
+                  onClick={goToToday}
+                  className="btn btn-outline-primary btn-sm"
+                >
+                  Oggi
+                </button>
+                <div className="btn-group" role="group">
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${viewMode === 'week' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                    onClick={() => setViewMode('week')}
+                  >
+                    Settimana
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${viewMode === 'month' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                    onClick={() => setViewMode('month')}
+                  >
+                    Mese
+                  </button>
                 </div>
               </div>
             </div>
