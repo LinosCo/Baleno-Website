@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../components/admin/AdminLayout';
+import ImageUpload from '../../../components/admin/ImageUpload';
 import { API_ENDPOINTS } from '../../../config/api';
 
 interface Resource {
@@ -19,6 +20,7 @@ interface Resource {
   maintenanceEnd?: string;
   maintenanceReason?: string;
   location: string;
+  images: string[];
   amenities: string[];
   features: string[];
   tags: string[];
@@ -45,6 +47,7 @@ export default function AdminResourcesPage() {
     maintenanceEnd: '',
     maintenanceReason: '',
     location: '',
+    images: [] as string[],
     amenities: '',
     features: '',
     tags: '',
@@ -91,6 +94,7 @@ export default function AdminResourcesPage() {
       maintenanceEnd: formData.maintenanceEnd || undefined,
       maintenanceReason: formData.maintenanceReason || undefined,
       location: formData.location,
+      images: formData.images,
       amenities: formData.amenities.split(',').map(a => a.trim()).filter(a => a),
       features: formData.features.split(',').map(f => f.trim()).filter(f => f),
       tags: formData.tags.split(',').map(t => t.trim()).filter(t => t),
@@ -140,6 +144,7 @@ export default function AdminResourcesPage() {
       maintenanceEnd: resource.maintenanceEnd ? resource.maintenanceEnd.split('T')[0] : '',
       maintenanceReason: resource.maintenanceReason || '',
       location: resource.location || '',
+      images: resource.images || [],
       amenities: resource.amenities?.join(', ') || '',
       features: resource.features?.join(', ') || '',
       tags: resource.tags?.join(', ') || '',
@@ -180,6 +185,7 @@ export default function AdminResourcesPage() {
       maintenanceEnd: '',
       maintenanceReason: '',
       location: '',
+      images: [],
       amenities: '',
       features: '',
       tags: '',
@@ -579,6 +585,17 @@ export default function AdminResourcesPage() {
                         </div>
                       </>
                     )}
+                  </div>
+
+                  {/* Galleria Immagini */}
+                  <h6 className="fw-bold text-primary mb-3">Galleria Immagini</h6>
+
+                  <div className="mb-4">
+                    <ImageUpload
+                      images={formData.images}
+                      onImagesChange={(newImages) => setFormData({ ...formData, images: newImages })}
+                      maxImages={10}
+                    />
                   </div>
 
                   {/* Opzioni */}

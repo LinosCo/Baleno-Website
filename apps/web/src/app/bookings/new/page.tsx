@@ -9,26 +9,42 @@ interface Resource {
   id: string;
   name: string;
   type: string;
+  category: string;
   description: string;
   capacity: number;
   pricePerHour: number;
+  minBookingHours: number;
   isActive: boolean;
+  maintenanceMode: boolean;
+  location: string;
+  wheelchairAccessible: boolean;
+  amenities: string[];
+  features: string[];
+  tags: string[];
 }
 
-export default function NewBookingPage() {
+export default function NewBookingWizardPage() {
   const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(1);
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const [formData, setFormData] = useState({
+  // Search and filters for Step 1
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('ALL');
+  const [filterType, setFilterType] = useState('ALL');
+
+  // Booking data
+  const [bookingData, setBookingData] = useState({
     resourceId: '',
     startTime: '',
     endTime: '',
     title: '',
     description: '',
+    attendees: '',
   });
 
   useEffect(() => {
@@ -38,15 +54,15 @@ export default function NewBookingPage() {
       return;
     }
 
-    // Fetch available resources
     fetch(API_ENDPOINTS.resources, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+      headers: { 'Authorization': `Bearer ${token}` },
     })
       .then(res => res.json())
       .then(data => {
-        setResources(data.filter((r: Resource) => r.isActive === true));
+        const activeResources = data.filter((r: Resource) =>
+          r.isActive === true && !r.maintenanceMode
+        );
+        setResources(activeResources);
         setLoading(false);
       })
       .catch(err => {
@@ -55,20 +71,41 @@ export default function NewBookingPage() {
       });
   }, [router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const selectedResource = resources.find(r => r.id === bookingData.resourceId);
+
+  const filteredResources = resources.filter(resource => {
+    const matchesSearch = !searchTerm ||
+      resource.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      resource.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesCategory = filterCategory === 'ALL' || resource.category === filterCategory;
+    const matchesType = filterType === 'ALL' || resource.type === filterType;
+
+    return matchesSearch && matchesCategory && matchesType;
+  });
+
+  const calculatePrice = () => {
+    if (!selectedResource || !bookingData.startTime || !bookingData.endTime) {
+      return 0;
+    }
+    const start = new Date(bookingData.startTime);
+    const end = new Date(bookingData.endTime);
+    const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+    return hours * parseFloat(selectedResource.pricePerHour.toString());
+  };
+
+  const handleSubmit = async () => {
     setError('');
     setSuccess('');
     setSubmitting(true);
 
     try {
       const token = localStorage.getItem('accessToken');
-
-      // Convert to ISO strings
-      const bookingData = {
-        ...formData,
-        startTime: new Date(formData.startTime).toISOString(),
-        endTime: new Date(formData.endTime).toISOString(),
+      const payload = {
+        ...bookingData,
+        startTime: new Date(bookingData.startTime).toISOString(),
+        endTime: new Date(bookingData.endTime).toISOString(),
+        attendees: bookingData.attendees ? parseInt(bookingData.attendees) : undefined,
       };
 
       const response = await fetch(API_ENDPOINTS.bookings, {
@@ -77,7 +114,7 @@ export default function NewBookingPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(bookingData),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -86,7 +123,7 @@ export default function NewBookingPage() {
         throw new Error(data.message || 'Errore nella creazione della prenotazione');
       }
 
-      setSuccess('Prenotazione creata con successo! Reindirizzamento...');
+      setSuccess('Prenotazione creata con successo!');
       setTimeout(() => {
         router.push('/bookings');
       }, 2000);
@@ -97,7 +134,18 @@ export default function NewBookingPage() {
     }
   };
 
-  const selectedResource = resources.find(r => r.id === formData.resourceId);
+  const canProceedToStep = (step: number) => {
+    switch (step) {
+      case 2:
+        return !!bookingData.resourceId;
+      case 3:
+        return !!bookingData.resourceId && !!bookingData.startTime && !!bookingData.endTime;
+      case 4:
+        return !!bookingData.resourceId && !!bookingData.startTime && !!bookingData.endTime && !!bookingData.title;
+      default:
+        return true;
+    }
+  };
 
   if (loading) {
     return (
@@ -125,129 +173,428 @@ export default function NewBookingPage() {
       </nav>
 
       <div className="container py-4">
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          {/* Progress Indicator */}
+          <div className="card border-0 shadow-sm mb-4">
+            <div className="card-body p-3">
+              <div className="d-flex justify-content-between align-items-center">
+                {[1, 2, 3, 4].map((step) => (
+                  <div key={step} className="d-flex align-items-center flex-fill">
+                    <div className="d-flex flex-column align-items-center" style={{ minWidth: '80px' }}>
+                      <div
+                        className={`rounded-circle d-flex align-items-center justify-content-center fw-bold ${
+                          currentStep === step
+                            ? 'bg-primary text-white'
+                            : currentStep > step
+                            ? 'bg-success text-white'
+                            : 'bg-light text-muted'
+                        }`}
+                        style={{ width: '40px', height: '40px' }}
+                      >
+                        {currentStep > step ? '✓' : step}
+                      </div>
+                      <div className={`small mt-2 text-center ${currentStep === step ? 'fw-bold text-primary' : 'text-muted'}`}>
+                        {step === 1 && 'Risorsa'}
+                        {step === 2 && 'Data/Ora'}
+                        {step === 3 && 'Dettagli'}
+                        {step === 4 && 'Conferma'}
+                      </div>
+                    </div>
+                    {step < 4 && (
+                      <div
+                        className={`flex-fill mx-2 ${
+                          currentStep > step ? 'bg-success' : 'bg-light'
+                        }`}
+                        style={{ height: '3px' }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Error/Success Messages */}
+          {error && (
+            <div className="alert alert-danger d-flex align-items-center mb-4" role="alert">
+              <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+              </svg>
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="alert alert-success d-flex align-items-center mb-4" role="alert">
+              <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+              </svg>
+              {success}
+            </div>
+          )}
+
+          {/* Step Content */}
           <div className="card border-0 shadow-sm">
             <div className="card-body p-4 p-md-5">
-              <form onSubmit={handleSubmit}>
-                {error && (
-                  <div className="alert alert-danger d-flex align-items-center mb-4" role="alert">
-                    <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-                    </svg>
-                    {error}
-                  </div>
-                )}
+              {/* STEP 1: Select Resource */}
+              {currentStep === 1 && (
+                <div>
+                  <h2 className="h4 fw-bold text-baleno-primary mb-4">Seleziona Risorsa</h2>
 
-                {success && (
-                  <div className="alert alert-success d-flex align-items-center mb-4" role="alert">
-                    <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                    </svg>
-                    {success}
-                  </div>
-                )}
-
-                <div className="mb-4">
-                  <label htmlFor="resourceId" className="form-label fw-semibold">
-                    Risorsa *
-                  </label>
-                  <select
-                    id="resourceId"
-                    value={formData.resourceId}
-                    onChange={(e) => setFormData({ ...formData, resourceId: e.target.value })}
-                    required
-                    className="form-select form-select-lg"
-                  >
-                    <option value="">Seleziona una risorsa</option>
-                    {resources.map(resource => (
-                      <option key={resource.id} value={resource.id}>
-                        {resource.name} - {resource.type} (€{resource.pricePerHour}/ora)
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {selectedResource && (
-                  <div className="alert alert-info border-0 mb-4">
-                    <h3 className="h6 fw-bold mb-2 text-info-emphasis">{selectedResource.name}</h3>
-                    <p className="small mb-3">{selectedResource.description}</p>
-                    <div className="row g-3 small">
-                      <div className="col-6">
-                        <span className="text-muted">Capacità:</span>{' '}
-                        <span className="fw-semibold">{selectedResource.capacity} persone</span>
+                  {/* Search and Filters */}
+                  <div className="mb-4">
+                    <input
+                      type="text"
+                      className="form-control form-control-lg mb-3"
+                      placeholder="🔍 Cerca risorsa..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <div className="row g-2">
+                      <div className="col-md-6">
+                        <select
+                          className="form-select"
+                          value={filterCategory}
+                          onChange={(e) => setFilterCategory(e.target.value)}
+                        >
+                          <option value="ALL">Tutte le categorie</option>
+                          <option value="MEETING_ROOM">Sale Riunioni</option>
+                          <option value="COWORKING">Coworking</option>
+                          <option value="EVENT_SPACE">Spazi Eventi</option>
+                          <option value="EQUIPMENT">Attrezzature</option>
+                          <option value="SERVICE">Servizi</option>
+                          <option value="OTHER">Altro</option>
+                        </select>
                       </div>
-                      <div className="col-6">
-                        <span className="text-muted">Prezzo:</span>{' '}
-                        <span className="fw-semibold">€{selectedResource.pricePerHour}/ora</span>
+                      <div className="col-md-6">
+                        <select
+                          className="form-select"
+                          value={filterType}
+                          onChange={(e) => setFilterType(e.target.value)}
+                        >
+                          <option value="ALL">Tutti i tipi</option>
+                          <option value="ROOM">Stanza</option>
+                          <option value="DESK">Scrivania</option>
+                          <option value="EQUIPMENT">Attrezzatura</option>
+                          <option value="PARKING">Parcheggio</option>
+                          <option value="OTHER">Altro</option>
+                        </select>
                       </div>
                     </div>
                   </div>
+
+                  {/* Resources Grid */}
+                  <div className="row g-3" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                    {filteredResources.length === 0 ? (
+                      <div className="col-12 text-center text-muted py-5">
+                        Nessuna risorsa trovata
+                      </div>
+                    ) : (
+                      filteredResources.map(resource => (
+                        <div key={resource.id} className="col-12">
+                          <div
+                            className={`card h-100 cursor-pointer ${
+                              bookingData.resourceId === resource.id
+                                ? 'border-primary border-2'
+                                : 'border'
+                            }`}
+                            onClick={() => setBookingData({ ...bookingData, resourceId: resource.id })}
+                            style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                          >
+                            <div className="card-body">
+                              <div className="d-flex justify-content-between align-items-start">
+                                <div className="flex-grow-1">
+                                  <h5 className="card-title fw-bold mb-2">
+                                    {resource.name}
+                                    {bookingData.resourceId === resource.id && (
+                                      <span className="ms-2 badge bg-primary">Selezionata</span>
+                                    )}
+                                  </h5>
+                                  <div className="mb-2">
+                                    <span className="badge bg-secondary me-2">{resource.category}</span>
+                                    <span className="badge bg-light text-dark me-2">{resource.type}</span>
+                                    {resource.wheelchairAccessible && (
+                                      <span className="badge bg-info">♿ Accessibile</span>
+                                    )}
+                                  </div>
+                                  <p className="card-text text-muted small mb-2">{resource.description}</p>
+                                  <div className="small">
+                                    <span className="text-muted">📍 {resource.location || 'Non specificata'}</span>
+                                    <span className="mx-2">•</span>
+                                    <span className="text-muted">👥 {resource.capacity} persone</span>
+                                    {resource.minBookingHours > 1 && (
+                                      <>
+                                        <span className="mx-2">•</span>
+                                        <span className="text-muted">⏱️ Min. {resource.minBookingHours}h</span>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="text-end ms-3">
+                                  <div className="h4 fw-bold text-primary mb-0">
+                                    €{parseFloat(resource.pricePerHour.toString()).toFixed(2)}
+                                  </div>
+                                  <div className="small text-muted">per ora</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 2: Select Date/Time */}
+              {currentStep === 2 && (
+                <div>
+                  <h2 className="h4 fw-bold text-baleno-primary mb-4">Seleziona Data e Ora</h2>
+
+                  {selectedResource && (
+                    <div className="alert alert-info border-0 mb-4">
+                      <div className="d-flex justify-content-between align-items-start">
+                        <div>
+                          <h5 className="fw-bold mb-1">{selectedResource.name}</h5>
+                          <p className="small mb-0 text-muted">
+                            €{parseFloat(selectedResource.pricePerHour.toString()).toFixed(2)}/ora
+                            {selectedResource.minBookingHours > 1 && (
+                              <> • Prenotazione minima: {selectedResource.minBookingHours} ore</>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mb-4">
+                    <label htmlFor="startTime" className="form-label fw-semibold">
+                      Data e Ora Inizio *
+                    </label>
+                    <input
+                      id="startTime"
+                      type="datetime-local"
+                      value={bookingData.startTime}
+                      onChange={(e) => setBookingData({ ...bookingData, startTime: e.target.value })}
+                      required
+                      min={new Date().toISOString().slice(0, 16)}
+                      className="form-control form-control-lg"
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label htmlFor="endTime" className="form-label fw-semibold">
+                      Data e Ora Fine *
+                    </label>
+                    <input
+                      id="endTime"
+                      type="datetime-local"
+                      value={bookingData.endTime}
+                      onChange={(e) => setBookingData({ ...bookingData, endTime: e.target.value })}
+                      required
+                      min={bookingData.startTime || new Date().toISOString().slice(0, 16)}
+                      className="form-control form-control-lg"
+                    />
+                  </div>
+
+                  {bookingData.startTime && bookingData.endTime && (
+                    <div className="alert alert-success">
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div>
+                          <strong>Durata:</strong>{' '}
+                          {((new Date(bookingData.endTime).getTime() - new Date(bookingData.startTime).getTime()) / (1000 * 60 * 60)).toFixed(1)} ore
+                        </div>
+                        <div className="h5 mb-0 fw-bold text-success">
+                          €{calculatePrice().toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* STEP 3: Enter Details */}
+              {currentStep === 3 && (
+                <div>
+                  <h2 className="h4 fw-bold text-baleno-primary mb-4">Dettagli Prenotazione</h2>
+
+                  <div className="mb-4">
+                    <label htmlFor="title" className="form-label fw-semibold">
+                      Titolo Prenotazione *
+                    </label>
+                    <input
+                      id="title"
+                      type="text"
+                      value={bookingData.title}
+                      onChange={(e) => setBookingData({ ...bookingData, title: e.target.value })}
+                      required
+                      placeholder="Es: Riunione team di progetto"
+                      className="form-control form-control-lg"
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label htmlFor="attendees" className="form-label fw-semibold">
+                      Numero Partecipanti (opzionale)
+                    </label>
+                    <input
+                      id="attendees"
+                      type="number"
+                      value={bookingData.attendees}
+                      onChange={(e) => setBookingData({ ...bookingData, attendees: e.target.value })}
+                      min="1"
+                      max={selectedResource?.capacity || 100}
+                      placeholder={`Max ${selectedResource?.capacity || 0} persone`}
+                      className="form-control form-control-lg"
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label htmlFor="description" className="form-label fw-semibold">
+                      Descrizione (opzionale)
+                    </label>
+                    <textarea
+                      id="description"
+                      value={bookingData.description}
+                      onChange={(e) => setBookingData({ ...bookingData, description: e.target.value })}
+                      rows={5}
+                      placeholder="Aggiungi dettagli sulla prenotazione..."
+                      className="form-control"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 4: Review & Confirm */}
+              {currentStep === 4 && (
+                <div>
+                  <h2 className="h4 fw-bold text-baleno-primary mb-4">Riepilogo e Conferma</h2>
+
+                  <div className="mb-4">
+                    <h5 className="fw-bold mb-3">Risorsa</h5>
+                    <div className="card border-0 bg-light">
+                      <div className="card-body">
+                        <h6 className="fw-bold">{selectedResource?.name}</h6>
+                        <p className="small text-muted mb-2">{selectedResource?.description}</p>
+                        <div className="small">
+                          <span className="badge bg-secondary me-2">{selectedResource?.category}</span>
+                          <span className="badge bg-light text-dark">{selectedResource?.type}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <h5 className="fw-bold mb-3">Data e Ora</h5>
+                    <div className="card border-0 bg-light">
+                      <div className="card-body">
+                        <div className="row">
+                          <div className="col-md-6 mb-2">
+                            <div className="small text-muted">Inizio</div>
+                            <div className="fw-semibold">
+                              {new Date(bookingData.startTime).toLocaleString('it-IT', {
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </div>
+                          </div>
+                          <div className="col-md-6 mb-2">
+                            <div className="small text-muted">Fine</div>
+                            <div className="fw-semibold">
+                              {new Date(bookingData.endTime).toLocaleString('it-IT', {
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <h5 className="fw-bold mb-3">Dettagli</h5>
+                    <div className="card border-0 bg-light">
+                      <div className="card-body">
+                        <div className="mb-2">
+                          <span className="small text-muted">Titolo:</span>{' '}
+                          <span className="fw-semibold">{bookingData.title}</span>
+                        </div>
+                        {bookingData.attendees && (
+                          <div className="mb-2">
+                            <span className="small text-muted">Partecipanti:</span>{' '}
+                            <span className="fw-semibold">{bookingData.attendees} persone</span>
+                          </div>
+                        )}
+                        {bookingData.description && (
+                          <div>
+                            <div className="small text-muted">Descrizione:</div>
+                            <div className="small">{bookingData.description}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="card border-primary border-2 bg-light">
+                    <div className="card-body">
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div>
+                          <div className="small text-muted">Prezzo Totale</div>
+                          <div className="text-muted small">
+                            {((new Date(bookingData.endTime).getTime() - new Date(bookingData.startTime).getTime()) / (1000 * 60 * 60)).toFixed(1)} ore × €{parseFloat(selectedResource?.pricePerHour.toString() || '0').toFixed(2)}/ora
+                          </div>
+                        </div>
+                        <div className="display-5 fw-bold text-primary">
+                          €{calculatePrice().toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="alert alert-warning mt-4" role="alert">
+                    <small>
+                      <strong>⚠️ Nota:</strong> La prenotazione sarà in stato PENDING fino all'approvazione da parte di un amministratore.
+                      Riceverai una notifica via email quando verrà approvata o rifiutata.
+                    </small>
+                  </div>
+                </div>
+              )}
+
+              {/* Navigation Buttons */}
+              <div className="d-flex gap-3 mt-5">
+                {currentStep > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(currentStep - 1)}
+                    className="btn btn-outline-secondary btn-lg"
+                    disabled={submitting}
+                  >
+                    ← Indietro
+                  </button>
                 )}
 
-                <div className="mb-4">
-                  <label htmlFor="startTime" className="form-label fw-semibold">
-                    Data e Ora Inizio *
-                  </label>
-                  <input
-                    id="startTime"
-                    type="datetime-local"
-                    value={formData.startTime}
-                    onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                    required
-                    min={new Date().toISOString().slice(0, 16)}
-                    className="form-control form-control-lg"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="endTime" className="form-label fw-semibold">
-                    Data e Ora Fine *
-                  </label>
-                  <input
-                    id="endTime"
-                    type="datetime-local"
-                    value={formData.endTime}
-                    onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                    required
-                    min={formData.startTime || new Date().toISOString().slice(0, 16)}
-                    className="form-control form-control-lg"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="title" className="form-label fw-semibold">
-                    Titolo Prenotazione *
-                  </label>
-                  <input
-                    id="title"
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    required
-                    placeholder="Es: Riunione team di progetto"
-                    className="form-control form-control-lg"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="description" className="form-label fw-semibold">
-                    Descrizione (opzionale)
-                  </label>
-                  <textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={4}
-                    placeholder="Aggiungi dettagli sulla prenotazione..."
-                    className="form-control"
-                  />
-                </div>
-
-                <div className="d-flex gap-3">
+                {currentStep < 4 ? (
                   <button
-                    type="submit"
-                    disabled={submitting || !formData.resourceId || !formData.startTime || !formData.endTime || !formData.title}
+                    type="button"
+                    onClick={() => setCurrentStep(currentStep + 1)}
+                    disabled={!canProceedToStep(currentStep + 1)}
                     className="btn btn-primary btn-lg flex-fill fw-semibold"
+                  >
+                    Avanti →
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={submitting || !canProceedToStep(4)}
+                    className="btn btn-success btn-lg flex-fill fw-semibold"
                   >
                     {submitting ? (
                       <>
@@ -255,17 +602,18 @@ export default function NewBookingPage() {
                         Creazione in corso...
                       </>
                     ) : (
-                      'Crea Prenotazione'
+                      '✓ Conferma Prenotazione'
                     )}
                   </button>
-                  <Link
-                    href="/dashboard"
-                    className="btn btn-secondary btn-lg flex-fill fw-semibold text-center"
-                  >
-                    Annulla
-                  </Link>
-                </div>
-              </form>
+                )}
+
+                <Link
+                  href="/dashboard"
+                  className="btn btn-light btn-lg"
+                >
+                  Annulla
+                </Link>
+              </div>
             </div>
           </div>
         </div>
