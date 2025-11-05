@@ -2,8 +2,9 @@ import { Injectable, ForbiddenException, NotFoundException, BadRequestException,
 import { PrismaService } from '../prisma/prisma.service';
 import { PaymentsService } from '../payments/payments.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { AuditLogsService } from '../audit-logs/audit-logs.service';
 import { CreateBookingDto, UpdateBookingDto, RejectBookingDto, CancelBookingDto } from './dto';
-import { BookingStatus, UserRole } from '@prisma/client';
+import { BookingStatus, UserRole, AuditAction } from '@prisma/client';
 
 @Injectable()
 export class BookingsService {
@@ -11,6 +12,7 @@ export class BookingsService {
     private prisma: PrismaService,
     private paymentsService: PaymentsService,
     private notificationsService: NotificationsService,
+    private auditLogsService: AuditLogsService,
   ) {}
 
   async create(createDto: CreateBookingDto, user: any) {
@@ -319,6 +321,22 @@ export class BookingsService {
     // Send approval email
     await this.notificationsService.sendBookingApproval(updatedBooking, booking.user);
 
+    // Log audit
+    await this.auditLogsService.log({
+      userId: user.id,
+      userEmail: user.email,
+      userRole: user.role,
+      action: AuditAction.APPROVE,
+      entity: 'booking',
+      entityId: id,
+      description: `Prenotazione "${booking.title}" approvata`,
+      metadata: {
+        bookingTitle: booking.title,
+        resourceName: booking.resource.name,
+        userName: `${booking.user.firstName} ${booking.user.lastName}`,
+      },
+    });
+
     return updatedBooking;
   }
 
@@ -362,6 +380,23 @@ export class BookingsService {
       booking.user,
       rejectDto.rejectionReason,
     );
+
+    // Log audit
+    await this.auditLogsService.log({
+      userId: user.id,
+      userEmail: user.email,
+      userRole: user.role,
+      action: AuditAction.REJECT,
+      entity: 'booking',
+      entityId: id,
+      description: `Prenotazione "${booking.title}" rifiutata`,
+      metadata: {
+        bookingTitle: booking.title,
+        resourceName: booking.resource.name,
+        userName: `${booking.user.firstName} ${booking.user.lastName}`,
+        reason: rejectDto.rejectionReason,
+      },
+    });
 
     return { message: 'Booking rejected successfully' };
   }
@@ -414,5 +449,59 @@ export class BookingsService {
     });
 
     return conflictingBookings.length === 0;
+  }
+
+  async exportToCsv(query: any, user: any): Promise<string> {
+    // Get bookings with same filters as findAll
+    const bookings = await this.findAll(query, user);
+
+    // CSV headers
+    const headers = [
+      'ID',
+      'Titolo',
+      'Utente',
+      'Email',
+      'Risorsa',
+      'Tipo Risorsa',
+      'Data Inizio',
+      'Data Fine',
+      'Stato',
+      'Partecipanti',
+      'Note',
+      'Data Creazione',
+    ];
+
+    // Convert bookings to CSV rows
+    const rows = bookings.map(booking => [
+      booking.id,
+      this.escapeCsvField(booking.title),
+      `${booking.user.firstName} ${booking.user.lastName}`,
+      booking.user.email,
+      this.escapeCsvField(booking.resource.name),
+      booking.resource.type,
+      new Date(booking.startTime).toLocaleString('it-IT'),
+      new Date(booking.endTime).toLocaleString('it-IT'),
+      booking.status,
+      booking.attendees || '',
+      this.escapeCsvField(booking.notes || ''),
+      new Date(booking.createdAt).toLocaleString('it-IT'),
+    ]);
+
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(',')),
+    ].join('\n');
+
+    return csvContent;
+  }
+
+  private escapeCsvField(field: string): string {
+    if (!field) return '';
+    // Escape double quotes and wrap in quotes if contains comma or quotes
+    if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+      return `"${field.replace(/"/g, '""')}"`;
+    }
+    return field;
   }
 }

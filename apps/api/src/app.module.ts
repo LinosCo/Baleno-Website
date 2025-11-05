@@ -12,6 +12,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ResourcesModule } from './resources/resources.module';
 import { ReportsModule } from './reports/reports.module';
+import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AppController } from './app.controller';
 import { SeedController } from './seed-endpoint.controller';
@@ -47,6 +48,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     NotificationsModule,
     ResourcesModule,
     ReportsModule,
+    AuditLogsModule,
   ],
   controllers: [AppController, SeedController],
   providers: [

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../components/admin/AdminLayout';
+import { API_ENDPOINTS } from '../../../config/api';
 
 interface Booking {
   id: string;
@@ -29,12 +30,13 @@ export default function AdminBookingsPage() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [exporting, setExporting] = useState(false);
 
   const fetchBookings = () => {
     const token = localStorage.getItem('accessToken');
     const url = filter === 'ALL'
-      ? 'http://localhost:4000/api/bookings'
-      : `http://localhost:4000/api/bookings?status=${filter}`;
+      ? API_ENDPOINTS.bookings
+      : `${API_ENDPOINTS.bookings}?status=${filter}`;
 
     fetch(url, {
       headers: { 'Authorization': `Bearer ${token}` },
@@ -58,7 +60,7 @@ export default function AdminBookingsPage() {
     const token = localStorage.getItem('accessToken');
 
     try {
-      const response = await fetch(`http://localhost:4000/api/bookings/${bookingId}/approve`, {
+      const response = await fetch(`${API_ENDPOINTS.bookings}/${bookingId}/approve`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -83,7 +85,7 @@ export default function AdminBookingsPage() {
     const token = localStorage.getItem('accessToken');
 
     try {
-      const response = await fetch(`http://localhost:4000/api/bookings/${bookingId}/reject`, {
+      const response = await fetch(`${API_ENDPOINTS.bookings}/${bookingId}/reject`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -105,6 +107,42 @@ export default function AdminBookingsPage() {
   const openModal = (booking: Booking) => {
     setSelectedBooking(booking);
     setShowModal(true);
+  };
+
+  const handleExportCsv = async () => {
+    setExporting(true);
+    const token = localStorage.getItem('accessToken');
+    const url = filter === 'ALL'
+      ? `${API_ENDPOINTS.bookings}/export/csv`
+      : `${API_ENDPOINTS.bookings}/export/csv?status=${filter}`;
+
+    try {
+      const response = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+
+      if (response.ok) {
+        const csvData = await response.text();
+
+        // Create blob and download
+        const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+
+        link.setAttribute('href', url);
+        link.setAttribute('download', `prenotazioni_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (err) {
+      console.error('Errore export CSV:', err);
+      alert('Errore durante l\'esportazione');
+    } finally {
+      setExporting(false);
+    }
   };
 
   if (loading) {
@@ -142,20 +180,41 @@ export default function AdminBookingsPage() {
         {/* Filters */}
         <div className="card border-0 shadow-sm mb-4">
           <div className="card-body">
-            <div className="d-flex flex-wrap gap-2">
-              {['ALL', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setFilter(status)}
-                  className={`btn ${
-                    filter === status
-                      ? 'btn-primary'
-                      : 'btn-outline-secondary'
-                  }`}
-                >
-                  {statusLabels[status]}
-                </button>
-              ))}
+            <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
+              <div className="d-flex flex-wrap gap-2">
+                {['ALL', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => setFilter(status)}
+                    className={`btn ${
+                      filter === status
+                        ? 'btn-primary'
+                        : 'btn-outline-secondary'
+                    }`}
+                  >
+                    {statusLabels[status]}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={handleExportCsv}
+                disabled={exporting || bookings.length === 0}
+                className="btn btn-success"
+              >
+                {exporting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Esportazione...
+                  </>
+                ) : (
+                  <>
+                    <svg className="icon icon-sm me-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                    Esporta CSV
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>

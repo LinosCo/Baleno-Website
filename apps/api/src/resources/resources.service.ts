@@ -7,15 +7,80 @@ import { ResourceType } from '@prisma/client';
 export class ResourcesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(type?: ResourceType, isActive?: boolean) {
+  async findAll(query: any = {}) {
     const where: any = {};
 
-    if (type) {
-      where.type = type;
+    // Type filter
+    if (query.type) {
+      where.type = query.type;
     }
 
-    if (isActive !== undefined) {
-      where.isActive = isActive;
+    // Category filter
+    if (query.category) {
+      where.category = query.category;
+    }
+
+    // Active status filter
+    if (query.isActive !== undefined) {
+      where.isActive = query.isActive === 'true';
+    }
+
+    // Maintenance mode filter
+    if (query.maintenanceMode !== undefined) {
+      where.maintenanceMode = query.maintenanceMode === 'true';
+    }
+
+    // Capacity filters
+    if (query.minCapacity || query.maxCapacity) {
+      where.capacity = {};
+      if (query.minCapacity) {
+        where.capacity.gte = parseInt(query.minCapacity);
+      }
+      if (query.maxCapacity) {
+        where.capacity.lte = parseInt(query.maxCapacity);
+      }
+    }
+
+    // Price filters
+    if (query.minPrice || query.maxPrice) {
+      where.pricePerHour = {};
+      if (query.minPrice) {
+        where.pricePerHour.gte = parseFloat(query.minPrice);
+      }
+      if (query.maxPrice) {
+        where.pricePerHour.lte = parseFloat(query.maxPrice);
+      }
+    }
+
+    // Wheelchair accessible filter
+    if (query.wheelchairAccessible !== undefined) {
+      where.wheelchairAccessible = query.wheelchairAccessible === 'true';
+    }
+
+    // Tags filter (resources that have ANY of the provided tags)
+    if (query.tags) {
+      const tagsArray = Array.isArray(query.tags) ? query.tags : [query.tags];
+      where.tags = {
+        hasSome: tagsArray,
+      };
+    }
+
+    // Search filter (name or description)
+    if (query.search) {
+      where.OR = [
+        {
+          name: {
+            contains: query.search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          description: {
+            contains: query.search,
+            mode: 'insensitive',
+          },
+        },
+      ];
     }
 
     const resources = await this.prisma.resource.findMany({

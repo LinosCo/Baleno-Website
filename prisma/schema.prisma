@@ -41,6 +41,27 @@ enum ResourceType {
   SERVICE        // Servizio
 }
 
+enum ResourceCategory {
+  MEETING_ROOM   // Sale riunioni
+  COWORKING      // Spazi coworking
+  EVENT_SPACE    // Spazi eventi
+  EQUIPMENT      // Attrezzature
+  SERVICE        // Servizi
+  OTHER          // Altro
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  APPROVE
+  REJECT
+  CANCEL
+  LOGIN
+  LOGOUT
+  ROLE_CHANGE
+}
+
 enum NotificationType {
   BOOKING_CONFIRMATION
   BOOKING_APPROVED
@@ -103,36 +124,52 @@ model RefreshToken {
 }
 
 model Resource {
-  id          String       @id @default(cuid())
+  id          String            @id @default(cuid())
   name        String
-  description String?      @db.Text
+  description String?           @db.Text
   type        ResourceType
+  category    ResourceCategory  @default(OTHER)
 
   // Capacity and pricing
-  capacity    Int?         // Capacità persone
-  pricePerHour Decimal     @db.Decimal(10, 2)
+  capacity    Int?              // Capacità persone
+  pricePerHour Decimal          @db.Decimal(10, 2)
+  minBookingHours Int?          @default(1) // Ore minime prenotazione
 
   // Availability
-  isActive    Boolean      @default(true)
+  isActive    Boolean           @default(true)
+
+  // Maintenance mode
+  maintenanceMode Boolean       @default(false)
+  maintenanceStart DateTime?
+  maintenanceEnd   DateTime?
+  maintenanceReason String?     @db.Text
 
   // Additional info
-  images      String[]     // URLs delle immagini
-  amenities   String[]     // Servizi inclusi
-  rules       String?      @db.Text
+  images      String[]          // URLs delle immagini
+  amenities   String[]          // Servizi inclusi (wifi, proiettore, etc)
+  features    String[]          // Caratteristiche (lavagna, AC, etc)
+  tags        String[]          // Tag per ricerca e filtri
+  rules       String?           @db.Text
+  restrictions String?          @db.Text // Restrizioni d'uso
 
   // Location (opzionale)
   location    String?
   floor       String?
 
+  // Accessibility
+  wheelchairAccessible Boolean  @default(false)
+
   // Metadata
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
 
   // Relations
   bookings    Booking[]
 
   @@index([type])
+  @@index([category])
   @@index([isActive])
+  @@index([maintenanceMode])
   @@map("resources")
 }
 
@@ -256,6 +293,39 @@ model Notification {
   @@map("notifications")
 }
 
+// ============ AUDIT & SECURITY ============
+
+model AuditLog {
+  id          String      @id @default(cuid())
+
+  // Actor
+  userId      String?
+  userEmail   String?
+  userRole    String?
+
+  // Action details
+  action      AuditAction
+  entity      String      // "booking", "resource", "user", etc
+  entityId    String?     // ID della risorsa modificata
+
+  // Details
+  description String      @db.Text
+  metadata    Json?       // Dati aggiuntivi (before/after, IP, etc)
+
+  // Request info
+  ipAddress   String?
+  userAgent   String?
+
+  // Timestamp
+  createdAt   DateTime    @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
 // ============ VIEWS & ANALYTICS (opzionale, per future implementazioni) ============
 
 // Potremmo aggiungere tabelle per:
@@ -263,4 +333,3 @@ model Notification {
 // - Event management (eventi pubblici)
 // - Membership/Subscriptions
 // - File uploads (documenti, immagini)
-// - Audit logs (tracking di tutte le azioni importanti)

@@ -13,9 +13,8 @@ export class ResourcesController {
 
   @Public()
   @Get()
-  async findAll(@Query('type') type?: ResourceType, @Query('isActive') isActive?: string) {
-    const isActiveBoolean = isActive !== undefined ? isActive === 'true' : undefined;
-    return this.resourcesService.findAll(type, isActiveBoolean);
+  async findAll(@Query() query: any) {
+    return this.resourcesService.findAll(query);
   }
 
   @Public()

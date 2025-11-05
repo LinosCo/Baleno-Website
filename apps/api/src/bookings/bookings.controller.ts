@@ -59,4 +59,10 @@ export class BookingsController {
   async checkAvailability(@Query() query: any) {
     return this.bookingsService.checkAvailability(query);
   }
+
+  @Get('export/csv')
+  @Roles(UserRole.ADMIN, UserRole.COMMUNITY_MANAGER)
+  async exportCsv(@Query() query: any, @CurrentUser() user: any) {
+    return this.bookingsService.exportToCsv(query, user);
+  }
 }

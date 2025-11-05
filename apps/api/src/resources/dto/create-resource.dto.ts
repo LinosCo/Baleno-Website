@@ -1,5 +1,6 @@
-import { IsString, IsEnum, IsNumber, IsOptional, IsArray, IsBoolean, Min } from 'class-validator';
-import { ResourceType } from '@prisma/client';
+import { IsString, IsEnum, IsNumber, IsOptional, IsArray, IsBoolean, Min, IsDate } from 'class-validator';
+import { ResourceType, ResourceCategory } from '@prisma/client';
+import { Type } from 'class-transformer';
 
 export class CreateResourceDto {
   @IsString()
@@ -12,6 +13,10 @@ export class CreateResourceDto {
   @IsEnum(ResourceType)
   type!: ResourceType;
 
+  @IsEnum(ResourceCategory)
+  @IsOptional()
+  category?: ResourceCategory;
+
   @IsNumber()
   @IsOptional()
   @Min(1)
@@ -20,6 +25,33 @@ export class CreateResourceDto {
   @IsNumber()
   @Min(0)
   pricePerHour!: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(1)
+  minBookingHours?: number;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  maintenanceMode?: boolean;
+
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  maintenanceStart?: Date;
+
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  maintenanceEnd?: Date;
+
+  @IsString()
+  @IsOptional()
+  maintenanceReason?: string;
 
   @IsArray()
   @IsString({ each: true })
@@ -31,9 +63,23 @@ export class CreateResourceDto {
   @IsOptional()
   amenities?: string[];
 
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  features?: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  tags?: string[];
+
   @IsString()
   @IsOptional()
   rules?: string;
+
+  @IsString()
+  @IsOptional()
+  restrictions?: string;
 
   @IsString()
   @IsOptional()
@@ -45,5 +91,5 @@ export class CreateResourceDto {
 
   @IsBoolean()
   @IsOptional()
-  isActive?: boolean;
+  wheelchairAccessible?: boolean;
 }
