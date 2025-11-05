@@ -26,17 +26,16 @@ export default function PublicCalendarPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('week');
 
   useEffect(() => {
-    // Fetch ONLY approved bookings (no authentication needed)
-    fetch(`${API_ENDPOINTS.bookings}?status=APPROVED`)
+    // Fetch from PUBLIC endpoint (no authentication needed)
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+    fetch(`${apiUrl}/api/bookings/public/calendar`)
       .then(res => {
         if (!res.ok) throw new Error('Errore nel caricamento');
         return res.json();
       })
       .then(data => {
         const bookingsArray = Array.isArray(data) ? data : [];
-        // Filter only APPROVED
-        const approved = bookingsArray.filter(b => b.status === 'APPROVED');
-        setBookings(approved);
+        setBookings(bookingsArray);
         setLoading(false);
       })
       .catch(err => {
