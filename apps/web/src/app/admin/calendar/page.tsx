@@ -453,94 +453,96 @@ export default function AdminCalendarPage() {
               </div>
             )}
 
-            {/* Month View - Stesso stile della vista Settimana */}
+            {/* Month View - Griglia classica con CELLE GRANDI */}
             {viewMode === 'month' && (
-              <div className="overflow-auto" style={{ maxHeight: '600px' }}>
-                {/* Mostra tutte le settimane del mese */}
-                {(() => {
-                  const weeks: Date[][] = [];
-                  let currentWeek: Date[] = [];
-                  monthDays.forEach((day, index) => {
-                    if (day) currentWeek.push(day);
-                    if ((index + 1) % 7 === 0 || index === monthDays.length - 1) {
-                      if (currentWeek.length > 0) {
-                        weeks.push([...currentWeek]);
-                        currentWeek = [];
-                      }
-                    }
-                  });
+              <div>
+                {/* Header giorni settimana */}
+                <div className="row g-0 border-bottom" style={{ backgroundColor: '#f8f9fa' }}>
+                  {['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'].map((day, idx) => (
+                    <div
+                      key={day}
+                      className="col text-center py-2 border-end"
+                      style={{ fontSize: '0.85rem', fontWeight: '600', color: '#6c757d' }}
+                    >
+                      {day.toUpperCase()}
+                    </div>
+                  ))}
+                </div>
 
-                  return weeks.map((week, weekIdx) => (
-                    <div key={weekIdx} className="mb-4">
-                      <table className="table table-bordered mb-0" style={{ minWidth: '900px' }}>
-                        <thead className="sticky-top bg-white" style={{ zIndex: 10 }}>
-                          <tr>
-                            <th style={{ width: '80px' }} className="text-center bg-light">Ora</th>
-                            {week.map((day, idx) => {
-                              const isToday =
-                                day.getDate() === new Date().getDate() &&
-                                day.getMonth() === new Date().getMonth() &&
-                                day.getFullYear() === new Date().getFullYear();
+                {/* Griglia giorni - CELLE GRANDI */}
+                <div className="row g-0">
+                  {monthDays.map((day, index) => {
+                    if (!day) {
+                      return (
+                        <div
+                          key={`empty-${index}`}
+                          className="col border"
+                          style={{ minHeight: '160px', backgroundColor: '#fafafa' }}
+                        />
+                      );
+                    }
+
+                    const dayBookings = getBookingsForDate(day);
+                    const isToday =
+                      day.getDate() === new Date().getDate() &&
+                      day.getMonth() === new Date().getMonth() &&
+                      day.getFullYear() === new Date().getFullYear();
+
+                    return (
+                      <div
+                        key={index}
+                        className="col border"
+                        style={{ minHeight: '160px', backgroundColor: 'white', cursor: 'pointer' }}
+                      >
+                        <div className="p-2">
+                          {/* Numero giorno */}
+                          <div
+                            className={`d-inline-flex align-items-center justify-content-center mb-2 ${isToday ? 'bg-primary text-white rounded-circle' : ''}`}
+                            style={{
+                              fontSize: '0.85rem',
+                              fontWeight: isToday ? '600' : '500',
+                              color: isToday ? '#fff' : '#6c757d',
+                              width: isToday ? '28px' : 'auto',
+                              height: isToday ? '28px' : 'auto'
+                            }}
+                          >
+                            {day.getDate()}
+                          </div>
+
+                          {/* Eventi */}
+                          <div className="d-flex flex-column" style={{ gap: '4px' }}>
+                            {dayBookings.slice(0, 5).map(booking => {
+                              const startTime = new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+                              const colors = getStatusColor(booking.status);
+
                               return (
-                                <th key={idx} className={`text-center ${isToday ? 'bg-primary bg-opacity-10' : ''}`}>
-                                  <div className="small text-muted">
-                                    {day.toLocaleDateString('it-IT', { weekday: 'short' }).toUpperCase()}
-                                  </div>
-                                  <div className={`fw-bold ${isToday ? 'text-primary' : ''}`}>
-                                    {day.getDate()}
-                                  </div>
-                                </th>
+                                <div
+                                  key={booking.id}
+                                  className="rounded text-truncate"
+                                  title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
+                                  style={{
+                                    fontSize: '0.8rem',
+                                    padding: '4px 8px',
+                                    backgroundColor: colors.bg,
+                                    color: colors.text,
+                                    fontWeight: '500'
+                                  }}
+                                >
+                                  <span style={{ opacity: 0.9 }}>{startTime}</span> {booking.title}
+                                </div>
                               );
                             })}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {timeSlots.map((hour) => (
-                            <tr key={hour} style={{ height: '70px' }}>
-                              <td className="text-center small text-muted bg-light align-top pt-1">
-                                {hour}:00
-                              </td>
-                              {week.map((day, dayIdx) => {
-                                const dayBookings = getBookingsForDate(day).filter(booking => {
-                                  const bookingStart = new Date(booking.startTime);
-                                  return bookingStart.getHours() === hour;
-                                });
-
-                                return (
-                                  <td key={dayIdx} className="p-1" style={{ verticalAlign: 'top' }}>
-                                    {dayBookings.map(booking => {
-                                      const colors = getStatusColor(booking.status);
-                                      const startTime = new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-
-                                      return (
-                                        <div
-                                          key={booking.id}
-                                          className="rounded shadow-sm mb-1 p-2"
-                                          style={{
-                                            backgroundColor: colors.bg,
-                                            color: colors.text,
-                                            fontSize: '0.75rem',
-                                            cursor: 'pointer'
-                                          }}
-                                          title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
-                                        >
-                                          <div className="fw-semibold text-truncate">{booking.title}</div>
-                                          <div style={{ fontSize: '0.7rem', opacity: 0.9 }}>
-                                            {startTime}
-                                          </div>
-                                        </div>
-                                      );
-                                    })}
-                                  </td>
-                                );
-                              })}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ));
-                })()}
+                            {dayBookings.length > 5 && (
+                              <div style={{ fontSize: '0.75rem', color: '#6c757d', paddingLeft: '8px', fontWeight: '500' }}>
+                                +{dayBookings.length - 5} altri
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
