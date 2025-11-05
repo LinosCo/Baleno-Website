@@ -85,9 +85,12 @@ export default function AdminCalendarPage() {
 
   // Get week days starting from Monday
   const getWeekDays = (date: Date) => {
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-    const monday = new Date(date.setDate(diff));
+    // Create a copy to avoid mutating the original date
+    const dateCopy = new Date(date);
+    const day = dateCopy.getDay();
+    const diff = dateCopy.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(dateCopy);
+    monday.setDate(diff);
 
     const days = [];
     for (let i = 0; i < 7; i++) {
