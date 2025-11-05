@@ -47,14 +47,23 @@ export default function AdminBookingsPage() {
     fetch(url, {
       headers: { 'Authorization': `Bearer ${token}` },
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
-        setBookings(data);
-        setFilteredBookings(data);
+        // Ensure data is an array
+        const bookingsArray = Array.isArray(data) ? data : [];
+        setBookings(bookingsArray);
+        setFilteredBookings(bookingsArray);
         setLoading(false);
       })
       .catch(err => {
-        console.error(err);
+        console.error('Error fetching bookings:', err);
+        setBookings([]);
+        setFilteredBookings([]);
         setLoading(false);
       });
   };

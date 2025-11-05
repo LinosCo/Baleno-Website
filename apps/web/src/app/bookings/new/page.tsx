@@ -57,16 +57,24 @@ export default function NewBookingWizardPage() {
     fetch(API_ENDPOINTS.resources, {
       headers: { 'Authorization': `Bearer ${token}` },
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
-        const activeResources = data.filter((r: Resource) =>
+        const dataArray = Array.isArray(data) ? data : [];
+        const activeResources = dataArray.filter((r: Resource) =>
           r.isActive === true && !r.maintenanceMode
         );
         setResources(activeResources);
         setLoading(false);
       })
       .catch(err => {
+        console.error('Error fetching resources:', err);
         setError('Errore nel caricamento delle risorse');
+        setResources([]);
         setLoading(false);
       });
   }, [router]);

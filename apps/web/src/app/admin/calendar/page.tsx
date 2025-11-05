@@ -44,26 +44,41 @@ export default function AdminCalendarPage() {
     fetch(API_ENDPOINTS.bookings, {
       headers: { 'Authorization': `Bearer ${token}` },
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
-        setBookings(data);
-        setFilteredBookings(data);
+        const bookingsArray = Array.isArray(data) ? data : [];
+        setBookings(bookingsArray);
+        setFilteredBookings(bookingsArray);
       })
       .catch(err => {
-        console.error(err);
+        console.error('Error fetching bookings:', err);
+        setBookings([]);
+        setFilteredBookings([]);
       });
 
     // Fetch resources for filter
     fetch(API_ENDPOINTS.resources, {
       headers: { 'Authorization': `Bearer ${token}` },
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
-        setResources(data);
+        const resourcesArray = Array.isArray(data) ? data : [];
+        setResources(resourcesArray);
         setLoading(false);
       })
       .catch(err => {
-        console.error(err);
+        console.error('Error fetching resources:', err);
+        setResources([]);
         setLoading(false);
       });
   }, []);
