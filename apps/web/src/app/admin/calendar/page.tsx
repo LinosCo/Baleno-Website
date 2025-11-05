@@ -251,7 +251,7 @@ export default function AdminCalendarPage() {
   };
 
   // Generate time slots (0:00 - 23:00)
-  const timeSlots = [];
+  const timeSlots: number[] = [];
   for (let i = 0; i < 24; i++) {
     timeSlots.push(i);
   }
