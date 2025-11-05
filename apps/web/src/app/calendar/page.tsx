@@ -158,9 +158,10 @@ export default function PublicCalendarPage() {
       {/* Calendar Content */}
       <div className="container py-4">
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          {/* Calendar controls */}
-          <div className="card border-0 shadow-sm mb-3">
-            <div className="card-body py-2">
+          {/* Calendar */}
+          <div className="card border-0 shadow-sm">
+            {/* Controls inside calendar card */}
+            <div className="card-body py-2 border-bottom">
               <div className="d-flex gap-2">
                 <button
                   onClick={goToToday}
@@ -186,10 +187,6 @@ export default function PublicCalendarPage() {
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Calendar */}
-          <div className="card border-0 shadow-sm">
             <div className="card-body p-0">
               <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
                 <button
@@ -388,8 +385,8 @@ export default function PublicCalendarPage() {
 
           {/* CTA */}
           <div className="text-center mt-4">
-            <Link href="/register" className="btn btn-primary btn-lg fw-semibold px-5">
-              Registrati per prenotare
+            <Link href="/login" className="btn btn-primary btn-lg fw-semibold px-5">
+              Accedi per prenotare
             </Link>
           </div>
         </div>
