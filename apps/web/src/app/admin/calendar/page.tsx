@@ -73,11 +73,15 @@ export default function AdminCalendarPage() {
     let filtered = [...bookings];
 
     if (filterResource) {
-      filtered = filtered.filter(b => b.resource && 'id' in b.resource && (b.resource as any).id === filterResource);
+      filtered = filtered.filter(b => {
+        if (!b?.resource) return false;
+        const resource = b.resource as any;
+        return resource && 'id' in resource && resource.id === filterResource;
+      });
     }
 
     if (filterStatus) {
-      filtered = filtered.filter(b => b.status === filterStatus);
+      filtered = filtered.filter(b => b?.status === filterStatus);
     }
 
     setFilteredBookings(filtered);
@@ -103,12 +107,17 @@ export default function AdminCalendarPage() {
 
   const getBookingsForDate = (date: Date) => {
     return filteredBookings.filter(booking => {
-      const bookingDate = new Date(booking.startTime);
-      return (
-        bookingDate.getDate() === date.getDate() &&
-        bookingDate.getMonth() === date.getMonth() &&
-        bookingDate.getFullYear() === date.getFullYear()
-      );
+      if (!booking?.startTime) return false;
+      try {
+        const bookingDate = new Date(booking.startTime);
+        return (
+          bookingDate.getDate() === date.getDate() &&
+          bookingDate.getMonth() === date.getMonth() &&
+          bookingDate.getFullYear() === date.getFullYear()
+        );
+      } catch {
+        return false;
+      }
     });
   };
 

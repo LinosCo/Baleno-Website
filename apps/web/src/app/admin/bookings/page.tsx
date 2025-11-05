@@ -70,23 +70,47 @@ export default function AdminBookingsPage() {
     // Filtro per ricerca testo (titolo, utente, risorsa)
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(b =>
-        b.title.toLowerCase().includes(search) ||
-        b.user.firstName.toLowerCase().includes(search) ||
-        b.user.lastName.toLowerCase().includes(search) ||
-        b.user.email.toLowerCase().includes(search) ||
-        b.resource.name.toLowerCase().includes(search)
-      );
+      filtered = filtered.filter(b => {
+        if (!b) return false;
+
+        const title = b.title?.toLowerCase() || '';
+        const firstName = b.user?.firstName?.toLowerCase() || '';
+        const lastName = b.user?.lastName?.toLowerCase() || '';
+        const email = b.user?.email?.toLowerCase() || '';
+        const resourceName = b.resource?.name?.toLowerCase() || '';
+
+        return (
+          title.includes(search) ||
+          firstName.includes(search) ||
+          lastName.includes(search) ||
+          email.includes(search) ||
+          resourceName.includes(search)
+        );
+      });
     }
 
     // Filtro per data inizio
     if (startDate) {
-      filtered = filtered.filter(b => new Date(b.startTime) >= new Date(startDate));
+      filtered = filtered.filter(b => {
+        if (!b?.startTime) return false;
+        try {
+          return new Date(b.startTime) >= new Date(startDate);
+        } catch {
+          return false;
+        }
+      });
     }
 
     // Filtro per data fine
     if (endDate) {
-      filtered = filtered.filter(b => new Date(b.startTime) <= new Date(endDate));
+      filtered = filtered.filter(b => {
+        if (!b?.startTime) return false;
+        try {
+          return new Date(b.startTime) <= new Date(endDate);
+        } catch {
+          return false;
+        }
+      });
     }
 
     setFilteredBookings(filtered);
