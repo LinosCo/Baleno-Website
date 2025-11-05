@@ -25,12 +25,18 @@ interface Booking {
 
 export default function AdminBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('ALL');
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
   const [exporting, setExporting] = useState(false);
+
+  // Filtri di ricerca
+  const [searchTerm, setSearchTerm] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   const fetchBookings = () => {
     const token = localStorage.getItem('accessToken');
@@ -44,6 +50,7 @@ export default function AdminBookingsPage() {
       .then(res => res.json())
       .then(data => {
         setBookings(data);
+        setFilteredBookings(data);
         setLoading(false);
       })
       .catch(err => {
@@ -55,6 +62,35 @@ export default function AdminBookingsPage() {
   useEffect(() => {
     fetchBookings();
   }, [filter]);
+
+  // Applica filtri di ricerca
+  useEffect(() => {
+    let filtered = [...bookings];
+
+    // Filtro per ricerca testo (titolo, utente, risorsa)
+    if (searchTerm) {
+      const search = searchTerm.toLowerCase();
+      filtered = filtered.filter(b =>
+        b.title.toLowerCase().includes(search) ||
+        b.user.firstName.toLowerCase().includes(search) ||
+        b.user.lastName.toLowerCase().includes(search) ||
+        b.user.email.toLowerCase().includes(search) ||
+        b.resource.name.toLowerCase().includes(search)
+      );
+    }
+
+    // Filtro per data inizio
+    if (startDate) {
+      filtered = filtered.filter(b => new Date(b.startTime) >= new Date(startDate));
+    }
+
+    // Filtro per data fine
+    if (endDate) {
+      filtered = filtered.filter(b => new Date(b.startTime) <= new Date(endDate));
+    }
+
+    setFilteredBookings(filtered);
+  }, [searchTerm, startDate, endDate, bookings]);
 
   const handleApprove = async (bookingId: string) => {
     const token = localStorage.getItem('accessToken');
@@ -177,16 +213,73 @@ export default function AdminBookingsPage() {
           <p className="text-muted">Modera e gestisci tutte le prenotazioni</p>
         </div>
 
+        {/* Barra di ricerca */}
+        <div className="card border-0 shadow-sm mb-3">
+          <div className="card-body py-2">
+            <div className="row g-2 align-items-center">
+              <div className="col-md-5">
+                <div className="input-group input-group-sm">
+                  <span className="input-group-text bg-white border-end-0">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control form-control-sm border-start-0"
+                    placeholder="Cerca per titolo, utente, risorsa..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="col-md-3">
+                <input
+                  type="date"
+                  className="form-control form-control-sm"
+                  placeholder="Data inizio"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
+              <div className="col-md-3">
+                <input
+                  type="date"
+                  className="form-control form-control-sm"
+                  placeholder="Data fine"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+              <div className="col-md-1">
+                {(searchTerm || startDate || endDate) && (
+                  <button
+                    onClick={() => {
+                      setSearchTerm('');
+                      setStartDate('');
+                      setEndDate('');
+                    }}
+                    className="btn btn-link btn-sm text-muted p-0"
+                    title="Resetta ricerca"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Filters */}
         <div className="card border-0 shadow-sm mb-4">
-          <div className="card-body">
+          <div className="card-body py-2">
             <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
               <div className="d-flex flex-wrap gap-2">
                 {['ALL', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].map((status) => (
                   <button
                     key={status}
                     onClick={() => setFilter(status)}
-                    className={`btn ${
+                    className={`btn btn-sm ${
                       filter === status
                         ? 'btn-primary'
                         : 'btn-outline-secondary'
@@ -196,25 +289,30 @@ export default function AdminBookingsPage() {
                   </button>
                 ))}
               </div>
-              <button
-                onClick={handleExportCsv}
-                disabled={exporting || bookings.length === 0}
-                className="btn btn-success"
-              >
-                {exporting ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    Esportazione...
-                  </>
-                ) : (
-                  <>
-                    <svg className="icon icon-sm me-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                    Esporta CSV
-                  </>
-                )}
-              </button>
+              <div className="d-flex align-items-center gap-2">
+                <span className="badge bg-light text-dark">
+                  {filteredBookings.length} prenotazioni
+                </span>
+                <button
+                  onClick={handleExportCsv}
+                  disabled={exporting || bookings.length === 0}
+                  className="btn btn-success btn-sm"
+                >
+                  {exporting ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Esportazione...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="icon icon-sm me-1" fill="currentColor" viewBox="0 0 20 20" width="14" height="14">
+                        <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                      CSV
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -222,9 +320,21 @@ export default function AdminBookingsPage() {
         {/* Bookings Table */}
         <div className="card border-0 shadow-sm">
           <div className="card-body p-0">
-            {bookings.length === 0 ? (
+            {filteredBookings.length === 0 ? (
               <div className="text-center text-muted py-5">
                 <p className="mb-0">Nessuna prenotazione trovata</p>
+                {(searchTerm || startDate || endDate) && (
+                  <button
+                    onClick={() => {
+                      setSearchTerm('');
+                      setStartDate('');
+                      setEndDate('');
+                    }}
+                    className="btn btn-sm btn-outline-primary mt-2"
+                  >
+                    Resetta Filtri
+                  </button>
+                )}
               </div>
             ) : (
               <div className="table-responsive">
@@ -240,7 +350,7 @@ export default function AdminBookingsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {bookings.map((booking) => (
+                    {filteredBookings.map((booking) => (
                       <tr key={booking.id}>
                         <td>
                           <div className="fw-semibold">{booking.title}</div>
