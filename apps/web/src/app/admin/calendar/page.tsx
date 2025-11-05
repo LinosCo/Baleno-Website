@@ -184,7 +184,10 @@ export default function AdminCalendarPage() {
         columns.push({ start, end, events: [] });
       } else {
         // Update column end time
-        columns[columnIndex].end = end;
+        const column = columns[columnIndex];
+        if (column) {
+          column.end = end;
+        }
       }
 
       const totalColumns = columns.filter(col =>
@@ -201,7 +204,10 @@ export default function AdminCalendarPage() {
       };
 
       positioned.push(positionedBooking);
-      columns[columnIndex].events.push(positionedBooking);
+      const column = columns[columnIndex];
+      if (column) {
+        column.events.push(positionedBooking);
+      }
     });
 
     return positioned;
