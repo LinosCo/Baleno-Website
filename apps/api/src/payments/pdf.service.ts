@@ -2,17 +2,41 @@ import { Injectable } from '@nestjs/common';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 
 // Use dynamic import for pdfmake
-const PdfMake = require('pdfmake/build/pdfmake');
-const PdfFonts = require('pdfmake/build/vfs_fonts');
-PdfMake.vfs = PdfFonts.pdfMake.vfs;
+let PdfMake: any;
+try {
+  const pdfMakeBuild = require('pdfmake/build/pdfmake');
+  const pdfFontsBuild = require('pdfmake/build/vfs_fonts');
+
+  // Handle both CommonJS and ES module exports
+  PdfMake = pdfMakeBuild.default || pdfMakeBuild;
+  const pdfFonts = pdfFontsBuild.default || pdfFontsBuild;
+
+  // Set fonts with proper error handling
+  if (pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
+    PdfMake.vfs = pdfFonts.pdfMake.vfs;
+  } else if (pdfFonts && pdfFonts.vfs) {
+    PdfMake.vfs = pdfFonts.vfs;
+  } else {
+    console.warn('pdfMake fonts not loaded, PDFs may not render correctly');
+  }
+} catch (error) {
+  console.error('Error loading pdfMake:', error);
+}
 
 @Injectable()
 export class PdfService {
   constructor() {
     // pdfmake is initialized with fonts
+    if (!PdfMake) {
+      console.error('PdfMake not initialized properly');
+    }
   }
 
   async generateInvoice(payment: any, booking: any, user: any): Promise<Buffer> {
+    if (!PdfMake) {
+      throw new Error('PDF generation is not available. PdfMake not initialized.');
+    }
+
     const invoiceDate = new Date(payment.createdAt);
     const invoiceNumber = `INV-${invoiceDate.getFullYear()}${String(invoiceDate.getMonth() + 1).padStart(2, '0')}-${payment.id.substring(0, 8).toUpperCase()}`;
 
