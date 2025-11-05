@@ -458,8 +458,8 @@ export default function AdminCalendarPage() {
               <div className="overflow-auto" style={{ maxHeight: '600px' }}>
                 {/* Mostra tutte le settimane del mese */}
                 {(() => {
-                  const weeks = [];
-                  let currentWeek = [];
+                  const weeks: Date[][] = [];
+                  let currentWeek: Date[] = [];
                   monthDays.forEach((day, index) => {
                     if (day) currentWeek.push(day);
                     if ((index + 1) % 7 === 0 || index === monthDays.length - 1) {
