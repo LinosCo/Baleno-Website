@@ -453,20 +453,20 @@ export default function AdminCalendarPage() {
               </div>
             )}
 
-            {/* Month View - Google Calendar Style */}
+            {/* Month View - Layout Google Calendar + Colori Bootstrap Italia */}
             {viewMode === 'month' && (
-              <div style={{ backgroundColor: '#1e1e1e', minHeight: '700px' }}>
+              <div style={{ backgroundColor: 'white', minHeight: '700px' }}>
                 {/* Header giorni settimana */}
-                <div className="row g-0 sticky-top" style={{ backgroundColor: '#2d2d2d', zIndex: 5 }}>
-                  {['DOM', 'LUN', 'MAR', 'MER', 'GIO', 'VEN', 'SAB'].map((day, idx) => (
+                <div className="row g-0 sticky-top border-bottom" style={{ backgroundColor: '#f8f9fa', zIndex: 5 }}>
+                  {['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].map((day, idx) => (
                     <div
                       key={day}
-                      className="col text-center py-2"
+                      className="col text-center py-3"
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '500',
-                        color: '#9aa0a6',
-                        borderRight: idx < 6 ? '1px solid #3c4043' : 'none'
+                        fontSize: '0.85rem',
+                        fontWeight: '600',
+                        color: '#5a6772',
+                        borderRight: idx < 6 ? '1px solid #dee2e6' : 'none'
                       }}
                     >
                       {day}
@@ -481,12 +481,10 @@ export default function AdminCalendarPage() {
                       return (
                         <div
                           key={`empty-${index}`}
-                          className="col"
+                          className="col border"
                           style={{
-                            minHeight: '180px',
-                            backgroundColor: '#292929',
-                            borderRight: (index % 7) < 6 ? '1px solid #3c4043' : 'none',
-                            borderBottom: '1px solid #3c4043'
+                            minHeight: '200px',
+                            backgroundColor: '#fafafa'
                           }}
                         />
                       );
@@ -501,37 +499,51 @@ export default function AdminCalendarPage() {
                     return (
                       <div
                         key={index}
-                        className="col"
+                        className="col border"
                         style={{
-                          minHeight: '180px',
-                          backgroundColor: '#1e1e1e',
-                          borderRight: (index % 7) < 6 ? '1px solid #3c4043' : 'none',
-                          borderBottom: '1px solid #3c4043',
+                          minHeight: '200px',
+                          backgroundColor: 'white',
                           cursor: 'pointer'
                         }}
                       >
                         <div className="p-2">
                           {/* Numero giorno */}
                           <div
-                            className={`d-inline-flex align-items-center justify-content-center mb-2 ${isToday ? 'bg-primary rounded-circle' : ''}`}
+                            className={`d-inline-flex align-items-center justify-content-center mb-2 ${isToday ? 'bg-primary text-white rounded-circle' : ''}`}
                             style={{
-                              fontSize: '0.75rem',
-                              fontWeight: '400',
-                              color: isToday ? '#fff' : '#9aa0a6',
-                              width: isToday ? '24px' : 'auto',
-                              height: isToday ? '24px' : 'auto'
+                              fontSize: '0.85rem',
+                              fontWeight: isToday ? '600' : '500',
+                              color: isToday ? '#fff' : '#495057',
+                              width: isToday ? '28px' : 'auto',
+                              height: isToday ? '28px' : 'auto'
                             }}
                           >
                             {day.getDate()}
                           </div>
 
                           {/* Eventi */}
-                          <div className="d-flex flex-column" style={{ gap: '3px' }}>
+                          <div className="d-flex flex-column" style={{ gap: '4px' }}>
                             {dayBookings.slice(0, 8).map(booking => {
                               const startTime = new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-                              const colors = getStatusColor(booking.status);
                               const duration = (new Date(booking.endTime).getTime() - new Date(booking.startTime).getTime()) / (1000 * 60 * 60);
-                              const isAllDay = duration >= 8;
+                              const isAllDay = duration >= 6;
+
+                              // Usa i colori Bootstrap Italia
+                              let bulletColor = '#6c757d';
+                              let barBg = '#6c757d';
+                              if (booking.status === 'APPROVED') {
+                                bulletColor = '#008055';
+                                barBg = '#008055';
+                              } else if (booking.status === 'PENDING') {
+                                bulletColor = '#a66300';
+                                barBg = '#a66300';
+                              } else if (booking.status === 'REJECTED') {
+                                bulletColor = '#cc334d';
+                                barBg = '#cc334d';
+                              } else if (booking.status === 'CANCELLED') {
+                                bulletColor = '#6c757d';
+                                barBg = '#6c757d';
+                              }
 
                               return isAllDay ? (
                                 // Eventi all-day come barre orizzontali
@@ -540,10 +552,10 @@ export default function AdminCalendarPage() {
                                   className="text-truncate"
                                   title={`${booking.title}\n${booking.resource.name}`}
                                   style={{
-                                    fontSize: '0.75rem',
-                                    padding: '4px 8px',
-                                    backgroundColor: colors.bg,
-                                    color: colors.text,
+                                    fontSize: '0.8rem',
+                                    padding: '5px 10px',
+                                    backgroundColor: barBg,
+                                    color: 'white',
                                     borderRadius: '4px',
                                     fontWeight: '600'
                                   }}
@@ -551,26 +563,26 @@ export default function AdminCalendarPage() {
                                   {booking.title}
                                 </div>
                               ) : (
-                                // Eventi normali come lista con bullet
+                                // Eventi normali come lista con bullet colorato
                                 <div
                                   key={booking.id}
-                                  className="d-flex align-items-start text-truncate"
+                                  className="d-flex align-items-start"
                                   title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
                                   style={{
-                                    fontSize: '0.75rem',
-                                    color: '#e8eaed',
-                                    gap: '6px'
+                                    fontSize: '0.8rem',
+                                    color: '#212529',
+                                    gap: '8px'
                                   }}
                                 >
-                                  <span style={{ color: colors.bg, fontSize: '1rem', lineHeight: '1' }}>•</span>
+                                  <span style={{ color: bulletColor, fontSize: '1.2rem', lineHeight: '1', marginTop: '-2px' }}>•</span>
                                   <span className="text-truncate">
-                                    <span style={{ color: '#9aa0a6' }}>{startTime}</span> {booking.title}
+                                    <span style={{ color: '#6c757d', fontWeight: '600' }}>{startTime}</span> {booking.title}
                                   </span>
                                 </div>
                               );
                             })}
                             {dayBookings.length > 8 && (
-                              <div style={{ fontSize: '0.7rem', color: '#9aa0a6', paddingLeft: '12px' }}>
+                              <div style={{ fontSize: '0.75rem', color: '#6c757d', paddingLeft: '20px', fontWeight: '500' }}>
                                 +{dayBookings.length - 8} altri
                               </div>
                             )}
