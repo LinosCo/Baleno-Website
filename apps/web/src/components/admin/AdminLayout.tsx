@@ -45,6 +45,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: 'Pagamenti', href: '/admin/payments', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
     { name: 'Calendario', href: '/admin/calendar', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
     { name: 'Report', href: '/admin/reports', allowedRoles: ['ADMIN'] },
+    { name: 'Audit Logs', href: '/admin/audit-logs', allowedRoles: ['ADMIN'] },
   ];
 
   const filteredNavigation = navigation.filter(item =>

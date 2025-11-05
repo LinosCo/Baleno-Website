@@ -22,21 +22,44 @@ interface Booking {
 
 type ViewMode = 'week' | 'month';
 
+interface Resource {
+  id: string;
+  name: string;
+}
+
 export default function AdminCalendarPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
+  const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('week');
+  const [filterResource, setFilterResource] = useState<string>('');
+  const [filterStatus, setFilterStatus] = useState<string>('');
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
 
-    fetch(`${API_ENDPOINTS.bookings}/public/calendar`, {
+    // Fetch bookings
+    fetch(API_ENDPOINTS.bookings, {
       headers: { 'Authorization': `Bearer ${token}` },
     })
       .then(res => res.json())
       .then(data => {
         setBookings(data);
+        setFilteredBookings(data);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+
+    // Fetch resources for filter
+    fetch(API_ENDPOINTS.resources, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setResources(data);
         setLoading(false);
       })
       .catch(err => {
@@ -44,6 +67,21 @@ export default function AdminCalendarPage() {
         setLoading(false);
       });
   }, []);
+
+  // Apply filters
+  useEffect(() => {
+    let filtered = [...bookings];
+
+    if (filterResource) {
+      filtered = filtered.filter(b => b.resource && 'id' in b.resource && (b.resource as any).id === filterResource);
+    }
+
+    if (filterStatus) {
+      filtered = filtered.filter(b => b.status === filterStatus);
+    }
+
+    setFilteredBookings(filtered);
+  }, [filterResource, filterStatus, bookings]);
 
   // Get week days starting from Monday
   const getWeekDays = (date: Date) => {
@@ -61,7 +99,7 @@ export default function AdminCalendarPage() {
   };
 
   const getBookingsForDate = (date: Date) => {
-    return bookings.filter(booking => {
+    return filteredBookings.filter(booking => {
       const bookingDate = new Date(booking.startTime);
       return (
         bookingDate.getDate() === date.getDate() &&
@@ -139,15 +177,63 @@ export default function AdminCalendarPage() {
     <AdminLayout>
       <div>
         {/* Header */}
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <h1 className="h3 fw-bold text-baleno-primary mb-1">Calendario</h1>
-            <p className="text-muted mb-0">Visualizza tutte le prenotazioni</p>
-          </div>
-          <div className="d-flex gap-2">
-            <button
-              onClick={goToToday}
-              className="btn btn-outline-primary btn-sm"
+        <div className="mb-3">
+          <h1 className="h3 fw-bold text-baleno-primary mb-1">Calendario</h1>
+          <p className="text-muted mb-0">Visualizza tutte le prenotazioni</p>
+        </div>
+
+        {/* Filtri */}
+        <div className="card border-0 shadow-sm mb-3">
+          <div className="card-body py-2">
+            <div className="row g-2 align-items-center">
+              <div className="col-md-3">
+                <select
+                  className="form-select form-select-sm"
+                  value={filterResource}
+                  onChange={(e) => setFilterResource(e.target.value)}
+                >
+                  <option value="">Tutte le risorse</option>
+                  {resources.map(resource => (
+                    <option key={resource.id} value={resource.id}>{resource.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="col-md-3">
+                <select
+                  className="form-select form-select-sm"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                >
+                  <option value="">Tutti gli stati</option>
+                  <option value="PENDING">In Attesa</option>
+                  <option value="APPROVED">Approvate</option>
+                  <option value="REJECTED">Rifiutate</option>
+                  <option value="CANCELLED">Cancellate</option>
+                </select>
+              </div>
+
+              <div className="col-md-4 text-end">
+                <span className="badge bg-light text-dark me-2">
+                  {filteredBookings.length} prenotazioni
+                </span>
+                {(filterResource || filterStatus) && (
+                  <button
+                    onClick={() => {
+                      setFilterResource('');
+                      setFilterStatus('');
+                    }}
+                    className="btn btn-link btn-sm text-muted p-0"
+                  >
+                    Reset filtri
+                  </button>
+                )}
+              </div>
+
+              <div className="col-md-2 text-end">
+                <button
+                  onClick={goToToday}
+                  className="btn btn-outline-primary btn-sm"
             >
               Oggi
             </button>
