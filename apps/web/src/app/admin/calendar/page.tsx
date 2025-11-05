@@ -234,24 +234,26 @@ export default function AdminCalendarPage() {
                 <button
                   onClick={goToToday}
                   className="btn btn-outline-primary btn-sm"
-            >
-              Oggi
-            </button>
-            <div className="btn-group" role="group">
-              <button
-                type="button"
-                className={`btn btn-sm ${viewMode === 'week' ? 'btn-primary' : 'btn-outline-secondary'}`}
-                onClick={() => setViewMode('week')}
-              >
-                Settimana
-              </button>
-              <button
-                type="button"
-                className={`btn btn-sm ${viewMode === 'month' ? 'btn-primary' : 'btn-outline-secondary'}`}
-                onClick={() => setViewMode('month')}
-              >
-                Mese
-              </button>
+                >
+                  Oggi
+                </button>
+                <div className="btn-group" role="group">
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${viewMode === 'week' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                    onClick={() => setViewMode('week')}
+                  >
+                    Settimana
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${viewMode === 'month' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                    onClick={() => setViewMode('month')}
+                  >
+                    Mese
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
