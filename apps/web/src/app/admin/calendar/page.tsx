@@ -240,8 +240,8 @@ export default function AdminCalendarPage() {
                 </select>
               </div>
 
-              <div className="col-md-4 text-end">
-                <span className="badge bg-light text-dark me-2">
+              <div className="col-md-3 text-end">
+                <span className="badge bg-light text-dark">
                   {filteredBookings.length} prenotazioni
                 </span>
                 {(filterResource || filterStatus) && (
@@ -250,14 +250,14 @@ export default function AdminCalendarPage() {
                       setFilterResource('');
                       setFilterStatus('');
                     }}
-                    className="btn btn-link btn-sm text-muted p-0"
+                    className="btn btn-link btn-sm text-muted p-0 ms-2"
                   >
                     Reset filtri
                   </button>
                 )}
               </div>
 
-              <div className="col-md-2">
+              <div className="col-md-3">
                 <div className="d-flex gap-2 justify-content-end">
                   <button
                     onClick={goToToday}

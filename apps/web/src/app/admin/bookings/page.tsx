@@ -416,7 +416,7 @@ export default function AdminBookingsPage() {
                               booking.status === 'APPROVED'
                                 ? 'bg-success'
                                 : booking.status === 'PENDING'
-                                ? 'bg-warning text-dark'
+                                ? 'bg-warning'
                                 : 'bg-danger'
                             }`}
                           >
@@ -518,7 +518,7 @@ export default function AdminBookingsPage() {
                           selectedBooking.status === 'APPROVED'
                             ? 'bg-success'
                             : selectedBooking.status === 'PENDING'
-                            ? 'bg-warning text-dark'
+                            ? 'bg-warning'
                             : 'bg-danger'
                         }`}
                       >
