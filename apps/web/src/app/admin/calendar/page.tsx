@@ -455,18 +455,21 @@ export default function AdminCalendarPage() {
 
             {/* Month View */}
             {viewMode === 'month' && (
-              <div className="p-2">
-                <div className="row g-0 mb-2">
+              <div>
+                <div className="row g-0 border-bottom" style={{ backgroundColor: '#f8f9fa' }}>
                   {['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].map(day => (
-                    <div key={day} className="col text-center fw-semibold text-muted small py-1">
+                    <div key={day} className="col text-center fw-semibold text-muted py-2" style={{ fontSize: '0.85rem' }}>
                       {day}
                     </div>
                   ))}
                 </div>
-                <div className="row g-1">
+                <div className="row g-0">
                   {monthDays.map((day, index) => {
                     if (!day) {
-                      return <div key={`empty-${index}`} className="col" />;
+                      return (
+                        <div key={`empty-${index}`} className="col border" style={{ minHeight: '130px', backgroundColor: '#fafafa' }}>
+                        </div>
+                      );
                     }
 
                     const dayBookings = getBookingsForDate(day);
@@ -476,39 +479,39 @@ export default function AdminCalendarPage() {
                       day.getFullYear() === new Date().getFullYear();
 
                     return (
-                      <div key={index} className="col">
-                        <div
-                          className={`border rounded p-1 ${
-                            isToday ? 'bg-primary bg-opacity-10 border-primary border-2' : 'bg-white'
-                          }`}
-                          style={{ minHeight: '90px', cursor: 'pointer' }}
-                        >
-                          <div className={`small fw-bold mb-1 ${isToday ? 'text-primary' : 'text-dark'}`}>
+                      <div key={index} className="col border position-relative" style={{ minHeight: '130px', cursor: 'pointer', backgroundColor: 'white' }}>
+                        <div className="p-1">
+                          <div
+                            className={`d-inline-block px-2 py-1 mb-1 ${isToday ? 'bg-primary text-white rounded-circle' : ''}`}
+                            style={{ fontSize: '0.75rem', fontWeight: isToday ? '600' : '400' }}
+                          >
                             {day.getDate()}
                           </div>
-                          <div className="d-flex flex-column" style={{ gap: '2px' }}>
-                            {dayBookings.slice(0, 3).map(booking => {
+                          <div className="d-flex flex-column" style={{ gap: '3px' }}>
+                            {dayBookings.slice(0, 5).map(booking => {
                               const startTime = new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
                               const colors = getStatusColor(booking.status);
                               return (
                                 <div
                                   key={booking.id}
-                                  className="rounded text-truncate"
+                                  className="text-truncate"
                                   title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
                                   style={{
-                                    fontSize: '0.7rem',
-                                    padding: '2px 4px',
+                                    fontSize: '0.75rem',
+                                    padding: '4px 8px',
                                     backgroundColor: colors.bg,
-                                    color: colors.text
+                                    color: colors.text,
+                                    borderRadius: '4px',
+                                    fontWeight: '500'
                                   }}
                                 >
-                                  {startTime} {booking.title}
+                                  <span style={{ opacity: 0.9 }}>{startTime}</span> {booking.title}
                                 </div>
                               );
                             })}
-                            {dayBookings.length > 3 && (
-                              <div className="text-center text-muted" style={{ fontSize: '0.65rem' }}>
-                                +{dayBookings.length - 3}
+                            {dayBookings.length > 5 && (
+                              <div className="text-muted ps-2" style={{ fontSize: '0.7rem', fontWeight: '500' }}>
+                                +{dayBookings.length - 5} altri
                               </div>
                             )}
                           </div>
