@@ -473,7 +473,12 @@ export default function AdminCalendarPage() {
                 {(() => {
                   const weeks: (Date | null)[][] = [];
                   for (let i = 0; i < monthDays.length; i += 7) {
-                    weeks.push(monthDays.slice(i, i + 7));
+                    const weekSlice = monthDays.slice(i, i + 7);
+                    // Assicura che ogni settimana abbia sempre 7 celle (aggiungi null per celle vuote)
+                    while (weekSlice.length < 7) {
+                      weekSlice.push(null);
+                    }
+                    weeks.push(weekSlice);
                   }
 
                   return weeks.map((week, weekIdx) => (
