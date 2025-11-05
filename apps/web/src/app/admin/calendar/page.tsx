@@ -469,80 +469,89 @@ export default function AdminCalendarPage() {
                   ))}
                 </div>
 
-                {/* Griglia giorni - CELLE GRANDI */}
-                <div className="row g-0">
-                  {monthDays.map((day, index) => {
-                    if (!day) {
-                      return (
-                        <div
-                          key={`empty-${index}`}
-                          className="col border"
-                          style={{ minHeight: '160px', backgroundColor: '#fafafa' }}
-                        />
-                      );
-                    }
+                {/* Griglia giorni - DIVISA IN RIGHE */}
+                {(() => {
+                  const weeks: (Date | null)[][] = [];
+                  for (let i = 0; i < monthDays.length; i += 7) {
+                    weeks.push(monthDays.slice(i, i + 7));
+                  }
 
-                    const dayBookings = getBookingsForDate(day);
-                    const isToday =
-                      day.getDate() === new Date().getDate() &&
-                      day.getMonth() === new Date().getMonth() &&
-                      day.getFullYear() === new Date().getFullYear();
+                  return weeks.map((week, weekIdx) => (
+                    <div key={weekIdx} className="row g-0">
+                      {week.map((day, dayIdx) => {
+                        if (!day) {
+                          return (
+                            <div
+                              key={`empty-${weekIdx}-${dayIdx}`}
+                              className="col border"
+                              style={{ minHeight: '160px', backgroundColor: '#fafafa' }}
+                            />
+                          );
+                        }
 
-                    return (
-                      <div
-                        key={index}
-                        className="col border"
-                        style={{ minHeight: '160px', backgroundColor: 'white', cursor: 'pointer' }}
-                      >
-                        <div className="p-2">
-                          {/* Numero giorno */}
+                        const dayBookings = getBookingsForDate(day);
+                        const isToday =
+                          day.getDate() === new Date().getDate() &&
+                          day.getMonth() === new Date().getMonth() &&
+                          day.getFullYear() === new Date().getFullYear();
+
+                        return (
                           <div
-                            className={`d-inline-flex align-items-center justify-content-center mb-2 ${isToday ? 'bg-primary text-white rounded-circle' : ''}`}
-                            style={{
-                              fontSize: '0.85rem',
-                              fontWeight: isToday ? '600' : '500',
-                              color: isToday ? '#fff' : '#6c757d',
-                              width: isToday ? '28px' : 'auto',
-                              height: isToday ? '28px' : 'auto'
-                            }}
+                            key={`day-${weekIdx}-${dayIdx}`}
+                            className="col border"
+                            style={{ minHeight: '160px', backgroundColor: 'white', cursor: 'pointer' }}
                           >
-                            {day.getDate()}
-                          </div>
-
-                          {/* Eventi */}
-                          <div className="d-flex flex-column" style={{ gap: '4px' }}>
-                            {dayBookings.slice(0, 5).map(booking => {
-                              const startTime = new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-                              const colors = getStatusColor(booking.status);
-
-                              return (
-                                <div
-                                  key={booking.id}
-                                  className="rounded text-truncate"
-                                  title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
-                                  style={{
-                                    fontSize: '0.8rem',
-                                    padding: '4px 8px',
-                                    backgroundColor: colors.bg,
-                                    color: colors.text,
-                                    fontWeight: '500'
-                                  }}
-                                >
-                                  <span style={{ opacity: 0.9 }}>{startTime}</span> {booking.title}
-                                </div>
-                              );
-                            })}
-                            {dayBookings.length > 5 && (
-                              <div style={{ fontSize: '0.75rem', color: '#6c757d', paddingLeft: '8px', fontWeight: '500' }}>
-                                +{dayBookings.length - 5} altri
+                            <div className="p-2">
+                              {/* Numero giorno */}
+                              <div
+                                className={`d-inline-flex align-items-center justify-content-center mb-2 ${isToday ? 'bg-primary text-white rounded-circle' : ''}`}
+                                style={{
+                                  fontSize: '0.85rem',
+                                  fontWeight: isToday ? '600' : '500',
+                                  color: isToday ? '#fff' : '#6c757d',
+                                  width: isToday ? '28px' : 'auto',
+                                  height: isToday ? '28px' : 'auto'
+                                }}
+                              >
+                                {day.getDate()}
                               </div>
-                            )}
+
+                              {/* Eventi */}
+                              <div className="d-flex flex-column" style={{ gap: '4px' }}>
+                                {dayBookings.slice(0, 5).map(booking => {
+                                  const startTime = new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+                                  const colors = getStatusColor(booking.status);
+
+                                  return (
+                                    <div
+                                      key={booking.id}
+                                      className="rounded text-truncate"
+                                      title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
+                                      style={{
+                                        fontSize: '0.8rem',
+                                        padding: '4px 8px',
+                                        backgroundColor: colors.bg,
+                                        color: colors.text,
+                                        fontWeight: '500'
+                                      }}
+                                    >
+                                      <span style={{ opacity: 0.9 }}>{startTime}</span> {booking.title}
+                                    </div>
+                                  );
+                                })}
+                                {dayBookings.length > 5 && (
+                                  <div style={{ fontSize: '0.75rem', color: '#6c757d', paddingLeft: '8px', fontWeight: '500' }}>
+                                    +{dayBookings.length - 5} altri
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                        );
+                      })}
+                    </div>
+                  ));
+                })()}
               </div>
             )}
           </div>
