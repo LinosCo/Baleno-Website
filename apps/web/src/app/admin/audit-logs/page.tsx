@@ -241,7 +241,7 @@ export default function AuditLogsPage() {
                             <>
                               <div className="fw-medium small">{log.userEmail}</div>
                               {log.userRole && (
-                                <span className="badge bg-secondary bg-opacity-10 text-secondary-emphasis" style={{ fontSize: '0.7rem' }}>
+                                <span className="badge bg-secondary text-white" style={{ fontSize: '0.7rem' }}>
                                   {log.userRole}
                                 </span>
                               )}

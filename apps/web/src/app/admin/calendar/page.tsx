@@ -325,7 +325,7 @@ export default function AdminCalendarPage() {
                           day.getMonth() === new Date().getMonth() &&
                           day.getFullYear() === new Date().getFullYear();
                         return (
-                          <th key={idx} className={`text-center ${isToday ? 'bg-primary bg-opacity-10' : ''}`}>
+                          <th key={idx} className={`text-center ${isToday ? 'bg-primary bg-opacity-25' : ''}`}>
                             <div className="small text-muted">
                               {day.toLocaleDateString('it-IT', { weekday: 'short' }).toUpperCase()}
                             </div>
@@ -408,7 +408,7 @@ export default function AdminCalendarPage() {
                       <div key={index} className="col">
                         <div
                           className={`border rounded p-2 ${
-                            isToday ? 'bg-primary bg-opacity-10 border-primary' : ''
+                            isToday ? 'bg-primary bg-opacity-25 border-primary' : ''
                           }`}
                           style={{ minHeight: '100px', cursor: 'pointer' }}
                         >
