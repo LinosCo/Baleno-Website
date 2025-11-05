@@ -1,4 +1,5 @@
-import { Controller, Post, Get, Body, Param, Headers, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Headers, UseGuards, Res, HttpStatus } from '@nestjs/common';
+import { Response } from 'express';
 import { PaymentsService } from './payments.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Public } from '../common/decorators/public.decorator';
@@ -19,6 +20,23 @@ export class PaymentsController {
   @Get(':id/receipt')
   async getReceipt(@Param('id') id: string, @CurrentUser() user: any) {
     return this.paymentsService.getReceipt(id, user);
+  }
+
+  @Get(':id/invoice/pdf')
+  async downloadInvoice(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+    @Res() res: Response,
+  ) {
+    const pdfBuffer = await this.paymentsService.generateInvoicePdf(id, user);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="fattura-${id.substring(0, 8)}.pdf"`,
+      'Content-Length': pdfBuffer.length,
+    });
+
+    res.status(HttpStatus.OK).end(pdfBuffer);
   }
 
   @Public()

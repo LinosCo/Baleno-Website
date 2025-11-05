@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException, ForbiddenException 
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { PrismaService } from '../prisma/prisma.service';
+import { PdfService } from './pdf.service';
 import { PaymentStatus, UserRole } from '@prisma/client';
 
 @Injectable()
@@ -11,6 +12,7 @@ export class PaymentsService {
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
+    private pdfService: PdfService,
   ) {
     this.stripe = new Stripe(this.configService.get('STRIPE_SECRET_KEY')!, {
       apiVersion: '2023-10-16',
@@ -205,5 +207,38 @@ export class PaymentsService {
     return this.prisma.payment.findFirst({
       where: { bookingId },
     });
+  }
+
+  async generateInvoicePdf(paymentId: string, user: any): Promise<Buffer> {
+    // Fetch payment with booking and user details
+    const payment = await this.prisma.payment.findUnique({
+      where: { id: paymentId },
+      include: {
+        booking: {
+          include: {
+            resource: true,
+            user: true,
+          },
+        },
+        user: true,
+      },
+    });
+
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+
+    // Check if user has access to this payment
+    if (user.role !== UserRole.ADMIN && payment.userId !== user.id) {
+      throw new ForbiddenException('You do not have permission to access this invoice');
+    }
+
+    // Only generate invoice for completed payments
+    if (payment.status !== PaymentStatus.COMPLETED) {
+      throw new BadRequestException('Invoice can only be generated for completed payments');
+    }
+
+    // Generate PDF using PDF service
+    return this.pdfService.generateInvoice(payment, payment.booking, payment.user);
   }
 }
