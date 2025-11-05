@@ -1,23 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import * as PdfPrinter from 'pdfmake/src/printer';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
+
+// Use dynamic import for pdfmake
+const PdfMake = require('pdfmake/build/pdfmake');
+const PdfFonts = require('pdfmake/build/vfs_fonts');
+PdfMake.vfs = PdfFonts.pdfMake.vfs;
 
 @Injectable()
 export class PdfService {
-  private printer: PdfPrinter;
-
   constructor() {
-    // Define fonts
-    const fonts = {
-      Roboto: {
-        normal: 'node_modules/pdfmake/build/vfs_fonts.js',
-        bold: 'node_modules/pdfmake/build/vfs_fonts.js',
-        italics: 'node_modules/pdfmake/build/vfs_fonts.js',
-        bolditalics: 'node_modules/pdfmake/build/vfs_fonts.js',
-      },
-    };
-
-    this.printer = new PdfPrinter(fonts);
+    // pdfmake is initialized with fonts
   }
 
   async generateInvoice(payment: any, booking: any, user: any): Promise<Buffer> {
@@ -76,9 +68,9 @@ export class PdfService {
                 },
                 { text: `ID Transazione: ${payment.stripePaymentId || payment.id}`, fontSize: 9 },
                 {
-                  text: `Stato: ${payment.status === 'COMPLETED' ? 'Completato' : payment.status}`,
+                  text: `Stato: ${payment.status === 'SUCCEEDED' ? 'Completato' : payment.status}`,
                   fontSize: 10,
-                  color: payment.status === 'COMPLETED' ? '#28a745' : '#dc3545',
+                  color: payment.status === 'SUCCEEDED' ? '#28a745' : '#dc3545',
                 },
               ],
             },
@@ -274,22 +266,13 @@ export class PdfService {
 
     return new Promise((resolve, reject) => {
       try {
-        const pdfDoc = this.printer.createPdfKitDocument(docDefinition);
-        const chunks: Buffer[] = [];
+        const pdfDocGenerator = PdfMake.createPdf(docDefinition);
 
-        pdfDoc.on('data', (chunk: Buffer) => {
-          chunks.push(chunk);
-        });
-
-        pdfDoc.on('end', () => {
-          resolve(Buffer.concat(chunks));
-        });
-
-        pdfDoc.on('error', (error: Error) => {
+        pdfDocGenerator.getBuffer((buffer: Buffer) => {
+          resolve(buffer);
+        }, (error: Error) => {
           reject(error);
         });
-
-        pdfDoc.end();
       } catch (error) {
         reject(error);
       }

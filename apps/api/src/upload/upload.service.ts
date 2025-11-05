@@ -76,11 +76,24 @@ export class UploadService {
 
   async deleteImage(imageUrl: string): Promise<void> {
     try {
+      if (!imageUrl) {
+        return;
+      }
+
       // Extract public_id from Cloudinary URL
       const parts = imageUrl.split('/');
       const fileName = parts[parts.length - 1];
-      const publicId = `baleno-resources/${fileName.split('.')[0]}`;
 
+      if (!fileName) {
+        return;
+      }
+
+      const fileNameWithoutExt = fileName.split('.')[0];
+      if (!fileNameWithoutExt) {
+        return;
+      }
+
+      const publicId = `baleno-resources/${fileNameWithoutExt}`;
       await cloudinary.uploader.destroy(publicId);
     } catch (error) {
       console.error('Cloudinary delete error:', error);

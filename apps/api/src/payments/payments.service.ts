@@ -234,7 +234,7 @@ export class PaymentsService {
     }
 
     // Only generate invoice for completed payments
-    if (payment.status !== PaymentStatus.COMPLETED) {
+    if (payment.status !== PaymentStatus.SUCCEEDED) {
       throw new BadRequestException('Invoice can only be generated for completed payments');
     }
 
