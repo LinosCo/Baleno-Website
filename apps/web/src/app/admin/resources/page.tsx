@@ -266,10 +266,10 @@ export default function AdminResourcesPage() {
                   </div>
 
                   <div className="mb-2">
-                    <span className="badge bg-info bg-opacity-10 text-info-emphasis me-1">
+                    <span className="badge bg-info text-white me-1">
                       {categoryLabels[resource.category] || resource.category}
                     </span>
-                    <span className="badge bg-secondary bg-opacity-10 text-secondary-emphasis">
+                    <span className="badge bg-secondary text-white">
                       {resource.type}
                     </span>
                   </div>

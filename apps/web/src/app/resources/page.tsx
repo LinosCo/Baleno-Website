@@ -397,10 +397,10 @@ export default function ResourcesPage() {
                       </div>
 
                       <div className="mb-2">
-                        <span className="badge bg-info bg-opacity-10 text-info-emphasis me-1">
+                        <span className="badge bg-info text-white me-1">
                           {categoryLabels[resource.category] || resource.category}
                         </span>
-                        <span className="badge bg-secondary bg-opacity-10 text-secondary-emphasis">
+                        <span className="badge bg-secondary text-white">
                           {typeLabels[resource.type] || resource.type}
                         </span>
                       </div>
@@ -434,14 +434,14 @@ export default function ResourcesPage() {
                             {resource.amenities.slice(0, 3).map((amenity, idx) => (
                               <span
                                 key={idx}
-                                className="badge bg-success bg-opacity-10 text-success-emphasis"
+                                className="badge bg-success text-white"
                                 style={{ fontSize: '0.7rem' }}
                               >
                                 {amenity}
                               </span>
                             ))}
                             {resource.amenities.length > 3 && (
-                              <span className="badge bg-secondary bg-opacity-10 text-secondary-emphasis" style={{ fontSize: '0.7rem' }}>
+                              <span className="badge bg-secondary text-white" style={{ fontSize: '0.7rem' }}>
                                 +{resource.amenities.length - 3}
                               </span>
                             )}
