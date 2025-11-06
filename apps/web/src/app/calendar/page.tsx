@@ -285,15 +285,15 @@ export default function PublicCalendarPage() {
                 </div>
               )}
 
-              {/* Month View */}
+              {/* Month View - Compatto */}
               {viewMode === 'month' && (
                 <div>
                   <div className="row g-0 border-bottom" style={{ backgroundColor: '#f8f9fa' }}>
                     {['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'].map((day) => (
                       <div
                         key={day}
-                        className="col text-center py-2 border-end"
-                        style={{ fontSize: '0.85rem', fontWeight: '600', color: '#6c757d' }}
+                        className="col text-center py-1 border-end"
+                        style={{ fontSize: '0.75rem', fontWeight: '600', color: '#6c757d' }}
                       >
                         {day.toUpperCase()}
                       </div>
@@ -318,7 +318,7 @@ export default function PublicCalendarPage() {
                               <div
                                 key={`empty-${weekIdx}-${dayIdx}`}
                                 className="col border"
-                                style={{ minHeight: '160px', backgroundColor: '#fafafa' }}
+                                style={{ height: '95px', backgroundColor: '#fafafa' }}
                               />
                             );
                           }
@@ -333,24 +333,25 @@ export default function PublicCalendarPage() {
                             <div
                               key={`day-${weekIdx}-${dayIdx}`}
                               className="col border"
-                              style={{ minHeight: '160px', backgroundColor: 'white' }}
+                              style={{ height: '95px', backgroundColor: 'white' }}
                             >
-                              <div className="p-2">
+                              <div className="p-1" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                                 <div
-                                  className={`d-inline-flex align-items-center justify-content-center mb-2 ${isToday ? 'bg-primary text-white rounded-circle' : ''}`}
+                                  className={`d-inline-flex align-items-center justify-content-center mb-1 ${isToday ? 'bg-primary text-white rounded-circle' : ''}`}
                                   style={{
-                                    fontSize: '0.85rem',
+                                    fontSize: '0.75rem',
                                     fontWeight: isToday ? '600' : '500',
                                     color: isToday ? '#fff' : '#6c757d',
-                                    width: isToday ? '28px' : 'auto',
-                                    height: isToday ? '28px' : 'auto'
+                                    width: isToday ? '22px' : 'auto',
+                                    height: isToday ? '22px' : 'auto',
+                                    flexShrink: 0
                                   }}
                                 >
                                   {day.getDate()}
                                 </div>
 
-                                <div className="d-flex flex-column" style={{ gap: '4px' }}>
-                                  {dayBookings.slice(0, 5).map(booking => {
+                                <div className="d-flex flex-column overflow-hidden" style={{ gap: '2px', flex: 1 }}>
+                                  {dayBookings.slice(0, 3).map(booking => {
                                     const startTime = new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
                                     return (
@@ -359,20 +360,21 @@ export default function PublicCalendarPage() {
                                         className="rounded text-truncate"
                                         title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
                                         style={{
-                                          fontSize: '0.8rem',
-                                          padding: '4px 8px',
+                                          fontSize: '0.65rem',
+                                          padding: '2px 4px',
                                           backgroundColor: '#008055',
                                           color: 'white',
-                                          fontWeight: '500'
+                                          fontWeight: '500',
+                                          lineHeight: 1.2
                                         }}
                                       >
                                         <span style={{ opacity: 0.9 }}>{startTime}</span> {booking.title}
                                       </div>
                                     );
                                   })}
-                                  {dayBookings.length > 5 && (
-                                    <div style={{ fontSize: '0.75rem', color: '#6c757d', paddingLeft: '8px', fontWeight: '500' }}>
-                                      +{dayBookings.length - 5} altri
+                                  {dayBookings.length > 3 && (
+                                    <div style={{ fontSize: '0.6rem', color: '#6c757d', paddingLeft: '4px', fontWeight: '500' }}>
+                                      +{dayBookings.length - 3}
                                     </div>
                                   )}
                                 </div>
