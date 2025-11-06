@@ -25,8 +25,8 @@ export default function PublicCalendarPage() {
 
   useEffect(() => {
     // Fetch from PUBLIC endpoint (no authentication needed)
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-    fetch(`${apiUrl}/api/bookings/public/calendar`)
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+    fetch(`${apiUrl}/bookings/public/calendar`)
       .then(res => {
         if (!res.ok) throw new Error('Errore nel caricamento');
         return res.json();

@@ -40,8 +40,8 @@ export default function ResourcesPage() {
 
   useEffect(() => {
     // Endpoint pubblico - nessuna autenticazione richiesta
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-    fetch(`${apiUrl}/api/resources/public?isActive=true`)
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+    fetch(`${apiUrl}/resources?isActive=true`)
       .then(res => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
