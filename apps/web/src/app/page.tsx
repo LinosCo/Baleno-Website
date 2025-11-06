@@ -59,11 +59,14 @@ export default function HomePage() {
                 Sistema completo di gestione e prenotazione spazi per la Casa di Quartiere
               </p>
               <div className="d-flex gap-3 justify-content-center flex-wrap">
-                <Link href="/bookings" className="btn btn-primary btn-lg">
-                  Prenota Ora
+                <Link href="/resources" className="btn btn-primary btn-lg">
+                  Esplora Spazi
                 </Link>
                 <Link href="/calendar" className="btn btn-outline-primary btn-lg">
                   Vedi Calendario
+                </Link>
+                <Link href="/bookings/new" className="btn btn-success btn-lg">
+                  Prenota Ora
                 </Link>
               </div>
             </div>

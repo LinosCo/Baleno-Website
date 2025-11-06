@@ -48,15 +48,22 @@ export default function NewBookingWizardPage() {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      router.push('/login');
-      return;
+    // Carica dati salvati se torniamo dal login
+    const savedData = sessionStorage.getItem('pendingBooking');
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        setBookingData(parsed);
+        setCurrentStep(4); // Vai direttamente alla conferma
+        sessionStorage.removeItem('pendingBooking');
+      } catch (err) {
+        console.error('Error parsing saved booking data:', err);
+      }
     }
 
-    fetch(API_ENDPOINTS.resources, {
-      headers: { 'Authorization': `Bearer ${token}` },
-    })
+    // Endpoint pubblico - nessuna autenticazione richiesta per visualizzare risorse
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+    fetch(`${apiUrl}/api/resources/public?isActive=true`)
       .then(res => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
@@ -77,7 +84,7 @@ export default function NewBookingWizardPage() {
         setResources([]);
         setLoading(false);
       });
-  }, [router]);
+  }, []);
 
   const selectedResource = resources.find(r => r.id === bookingData.resourceId);
 
@@ -105,10 +112,20 @@ export default function NewBookingWizardPage() {
   const handleSubmit = async () => {
     setError('');
     setSuccess('');
+
+    // Controlla se l'utente è autenticato
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      // Salva i dati della prenotazione in sessionStorage
+      sessionStorage.setItem('pendingBooking', JSON.stringify(bookingData));
+      // Redirect al login con parametro di ritorno
+      router.push('/login?redirect=/bookings/new');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
-      const token = localStorage.getItem('accessToken');
       const payload = {
         ...bookingData,
         startTime: new Date(bookingData.startTime).toISOString(),
@@ -174,9 +191,17 @@ export default function NewBookingWizardPage() {
       <nav className="navbar bg-white shadow-sm">
         <div className="container-fluid">
           <h1 className="h4 mb-0 text-baleno-primary fw-bold">Nuova Prenotazione</h1>
-          <Link href="/dashboard" className="text-decoration-none fw-medium" style={{ color: 'var(--baleno-primary)' }}>
-            ← Torna alla dashboard
-          </Link>
+          <div className="d-flex gap-2">
+            <Link href="/resources" className="btn btn-outline-primary btn-sm">
+              Risorse
+            </Link>
+            <Link href="/calendar" className="btn btn-outline-primary btn-sm">
+              Calendario
+            </Link>
+            <Link href="/" className="text-decoration-none fw-medium d-flex align-items-center" style={{ color: 'var(--baleno-primary)' }}>
+              ← Torna alla home
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -619,7 +644,7 @@ export default function NewBookingWizardPage() {
                 )}
 
                 <Link
-                  href="/dashboard"
+                  href="/"
                   className="btn btn-light btn-lg"
                 >
                   Annulla

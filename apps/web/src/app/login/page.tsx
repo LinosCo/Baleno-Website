@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { authAPI } from '../../lib/api-client';
 
 export default function LoginPage() {
@@ -10,6 +11,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,12 +23,15 @@ export default function LoginPage() {
       const response = await authAPI.login({ email, password });
       const data = response.data;
 
-      // Salva i token e reindirizza in base al ruolo
+      // Salva i token e reindirizza in base al ruolo o al redirect URL
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      if (data.user.role === 'ADMIN' || data.user.role === 'COMMUNITY_MANAGER') {
+      // Se c'è un redirect URL, usalo (per flusso prenotazione)
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else if (data.user.role === 'ADMIN' || data.user.role === 'COMMUNITY_MANAGER') {
         window.location.href = '/admin';
       } else {
         window.location.href = '/dashboard';

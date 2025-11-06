@@ -149,9 +149,14 @@ export default function PublicCalendarPage() {
       <nav className="navbar bg-white shadow-sm">
         <div className="container-fluid">
           <h1 className="h4 mb-0 text-baleno-primary fw-bold">Calendario Prenotazioni</h1>
-          <Link href="/" className="text-decoration-none fw-medium" style={{ color: 'var(--baleno-primary)' }}>
-            ← Torna alla home
-          </Link>
+          <div className="d-flex gap-2">
+            <Link href="/resources" className="btn btn-outline-primary btn-sm">
+              Esplora Spazi
+            </Link>
+            <Link href="/" className="text-decoration-none fw-medium d-flex align-items-center" style={{ color: 'var(--baleno-primary)' }}>
+              ← Torna alla home
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -385,9 +390,15 @@ export default function PublicCalendarPage() {
 
           {/* CTA */}
           <div className="text-center mt-4">
-            <Link href="/login" className="btn btn-primary btn-lg fw-semibold px-5">
-              Accedi per prenotare
-            </Link>
+            <p className="text-muted mb-3">Vedi uno spazio libero? Esplora le risorse disponibili e prenota!</p>
+            <div className="d-flex gap-3 justify-content-center">
+              <Link href="/resources" className="btn btn-primary btn-lg fw-semibold px-4">
+                Esplora Spazi
+              </Link>
+              <Link href="/bookings/new" className="btn btn-success btn-lg fw-semibold px-4">
+                Prenota Ora
+              </Link>
+            </div>
           </div>
         </div>
       </div>
