@@ -188,18 +188,21 @@ export default function NewBookingWizardPage() {
   return (
     <div className="min-vh-100 bg-light">
       {/* Navbar */}
-      <nav className="navbar bg-white shadow-sm">
-        <div className="container-fluid">
+      <nav className="navbar bg-white shadow-sm py-3">
+        <div className="container">
           <h1 className="h4 mb-0 text-baleno-primary fw-bold">Nuova Prenotazione</h1>
-          <div className="d-flex gap-2">
-            <Link href="/resources" className="btn btn-outline-primary btn-sm">
+          <div className="d-flex gap-3 align-items-center">
+            <Link href="/resources" className="btn btn-outline-primary">
               Risorse
             </Link>
-            <Link href="/calendar" className="btn btn-outline-primary btn-sm">
+            <Link href="/calendar" className="btn btn-outline-primary">
               Calendario
             </Link>
-            <Link href="/" className="text-decoration-none fw-medium d-flex align-items-center" style={{ color: 'var(--baleno-primary)' }}>
-              ← Torna alla home
+            <Link href="/" className="text-decoration-none fw-medium d-flex align-items-center gap-1" style={{ color: 'var(--baleno-primary)' }}>
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fillRule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+              </svg>
+              Home
             </Link>
           </div>
         </div>

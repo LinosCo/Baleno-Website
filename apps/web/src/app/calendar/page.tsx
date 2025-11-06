@@ -143,22 +143,25 @@ export default function PublicCalendarPage() {
   return (
     <div className="min-vh-100 bg-light">
       {/* Header */}
-      <nav className="navbar bg-white shadow-sm">
-        <div className="container-fluid">
+      <nav className="navbar bg-white shadow-sm py-3">
+        <div className="container">
           <h1 className="h4 mb-0 text-baleno-primary fw-bold">Calendario Prenotazioni</h1>
-          <div className="d-flex gap-2">
-            <Link href="/resources" className="btn btn-outline-primary btn-sm">
+          <div className="d-flex gap-3 align-items-center">
+            <Link href="/resources" className="btn btn-outline-primary">
               Esplora Spazi
             </Link>
-            <Link href="/" className="text-decoration-none fw-medium d-flex align-items-center" style={{ color: 'var(--baleno-primary)' }}>
-              ← Torna alla home
+            <Link href="/" className="text-decoration-none fw-medium d-flex align-items-center gap-1" style={{ color: 'var(--baleno-primary)' }}>
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fillRule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+              </svg>
+              Home
             </Link>
           </div>
         </div>
       </nav>
 
       {/* Calendar Content */}
-      <div className="container py-4">
+      <div className="container py-5">
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           {/* Calendar */}
           <div className="card border-0 shadow-sm">
