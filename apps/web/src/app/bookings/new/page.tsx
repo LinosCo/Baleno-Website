@@ -388,16 +388,49 @@ export default function NewBookingWizardPage() {
                   <h2 className="h4 fw-bold text-baleno-primary mb-4">Seleziona Data e Ora</h2>
 
                   {selectedResource && (
-                    <div className="alert alert-info border-0 mb-4">
-                      <div className="d-flex justify-content-between align-items-start">
-                        <div>
-                          <h5 className="fw-bold mb-1">{selectedResource.name}</h5>
-                          <p className="small mb-0 text-muted">
-                            €{parseFloat(selectedResource.pricePerHour.toString()).toFixed(2)}/ora
+                    <div className="card border-0 shadow-sm mb-4" style={{ backgroundColor: '#f8f9fa' }}>
+                      <div className="card-body">
+                        <div className="row align-items-center">
+                          <div className="col-md-8">
+                            <h5 className="fw-bold text-baleno-primary mb-2">{selectedResource.name}</h5>
+                            <p className="text-muted mb-2 small" style={{ lineHeight: '1.6' }}>
+                              {selectedResource.description?.substring(0, 150)}
+                              {selectedResource.description && selectedResource.description.length > 150 ? '...' : ''}
+                            </p>
+                            <div className="d-flex flex-wrap gap-2 mb-2">
+                              {selectedResource.capacity && (
+                                <span className="badge bg-secondary">
+                                  <svg width="14" height="14" fill="currentColor" className="me-1" viewBox="0 0 16 16">
+                                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                    <path fillRule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                                  </svg>
+                                  {selectedResource.capacity} persone
+                                </span>
+                              )}
+                              {selectedResource.location && (
+                                <span className="badge bg-light text-dark border">
+                                  <svg width="14" height="14" fill="currentColor" className="me-1" viewBox="0 0 16 16">
+                                    <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                                  </svg>
+                                  {selectedResource.location}
+                                </span>
+                              )}
+                              {selectedResource.wheelchairAccessible && (
+                                <span className="badge bg-info">♿ Accessibile</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="col-md-4 text-md-end">
+                            <div className="h3 fw-bold text-primary mb-1">
+                              €{parseFloat(selectedResource.pricePerHour.toString()).toFixed(2)}
+                            </div>
+                            <p className="small text-muted mb-0">per ora</p>
                             {selectedResource.minBookingHours > 1 && (
-                              <> • Prenotazione minima: {selectedResource.minBookingHours} ore</>
+                              <p className="small text-muted mb-0">
+                                Min. {selectedResource.minBookingHours} ore
+                              </p>
                             )}
-                          </p>
+                          </div>
                         </div>
                       </div>
                     </div>
