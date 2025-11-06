@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { API_ENDPOINTS } from '../../config/api';
 
 interface Booking {
   id: string;
@@ -21,7 +20,6 @@ type ViewMode = 'week' | 'month';
 export default function PublicCalendarPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('week');
 
@@ -40,7 +38,6 @@ export default function PublicCalendarPage() {
       })
       .catch(err => {
         console.error('Error:', err);
-        setError('Errore nel caricamento del calendario');
         setLoading(false);
       });
   }, []);
@@ -289,7 +286,7 @@ export default function PublicCalendarPage() {
               {viewMode === 'month' && (
                 <div>
                   <div className="row g-0 border-bottom" style={{ backgroundColor: '#f8f9fa' }}>
-                    {['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'].map((day, idx) => (
+                    {['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'].map((day) => (
                       <div
                         key={day}
                         className="col text-center py-2 border-end"

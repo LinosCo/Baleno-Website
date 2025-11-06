@@ -458,7 +458,7 @@ export default function AdminCalendarPage() {
               <div>
                 {/* Header giorni settimana */}
                 <div className="row g-0 border-bottom" style={{ backgroundColor: '#f8f9fa' }}>
-                  {['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'].map((day, idx) => (
+                  {['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'].map((day) => (
                     <div
                       key={day}
                       className="col text-center py-1 border-end"

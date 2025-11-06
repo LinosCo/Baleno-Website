@@ -56,7 +56,7 @@ export default function ProfilePage() {
         });
         setLoading(false);
       })
-      .catch(err => {
+      .catch(_err => {
         localStorage.removeItem('accessToken');
         router.push('/login');
       });

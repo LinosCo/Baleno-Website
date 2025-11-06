@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { API_ENDPOINTS } from '../../config/api';
 
 interface Resource {
   id: string;
@@ -24,7 +22,6 @@ interface Resource {
 }
 
 export default function ResourcesPage() {
-  const router = useRouter();
   const [resources, setResources] = useState<Resource[]>([]);
   const [filteredResources, setFilteredResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
