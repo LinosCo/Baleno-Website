@@ -436,45 +436,133 @@ export default function NewBookingWizardPage() {
                     </div>
                   )}
 
-                  <div className="mb-4">
-                    <label htmlFor="startTime" className="form-label fw-semibold">
-                      Data e Ora Inizio *
-                    </label>
-                    <input
-                      id="startTime"
-                      type="datetime-local"
-                      value={bookingData.startTime}
-                      onChange={(e) => setBookingData({ ...bookingData, startTime: e.target.value })}
-                      required
-                      min={new Date().toISOString().slice(0, 16)}
-                      className="form-control form-control-lg"
-                    />
+                  {/* Inizio Prenotazione */}
+                  <div className="card border-0 shadow-sm mb-4">
+                    <div className="card-header bg-white border-bottom">
+                      <h6 className="mb-0 fw-semibold text-baleno-primary">
+                        <svg width="18" height="18" fill="currentColor" className="me-2" viewBox="0 0 16 16">
+                          <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
+                          <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                        </svg>
+                        Inizio Prenotazione
+                      </h6>
+                    </div>
+                    <div className="card-body">
+                      <div className="row g-3">
+                        <div className="col-md-7">
+                          <label htmlFor="startDate" className="form-label fw-semibold">
+                            Data *
+                          </label>
+                          <input
+                            id="startDate"
+                            type="date"
+                            value={bookingData.startTime?.split('T')[0] || ''}
+                            onChange={(e) => {
+                              const date = e.target.value;
+                              const time = bookingData.startTime?.split('T')[1] || '09:00';
+                              setBookingData({ ...bookingData, startTime: `${date}T${time}` });
+                            }}
+                            required
+                            min={new Date().toISOString().split('T')[0]}
+                            className="form-control form-control-lg"
+                          />
+                        </div>
+                        <div className="col-md-5">
+                          <label htmlFor="startTimeInput" className="form-label fw-semibold">
+                            Ora *
+                          </label>
+                          <input
+                            id="startTimeInput"
+                            type="time"
+                            value={bookingData.startTime?.split('T')[1]?.slice(0, 5) || ''}
+                            onChange={(e) => {
+                              const date = bookingData.startTime?.split('T')[0] || new Date().toISOString().split('T')[0];
+                              const time = e.target.value;
+                              setBookingData({ ...bookingData, startTime: `${date}T${time}` });
+                            }}
+                            required
+                            className="form-control form-control-lg"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="mb-4">
-                    <label htmlFor="endTime" className="form-label fw-semibold">
-                      Data e Ora Fine *
-                    </label>
-                    <input
-                      id="endTime"
-                      type="datetime-local"
-                      value={bookingData.endTime}
-                      onChange={(e) => setBookingData({ ...bookingData, endTime: e.target.value })}
-                      required
-                      min={bookingData.startTime || new Date().toISOString().slice(0, 16)}
-                      className="form-control form-control-lg"
-                    />
+                  {/* Fine Prenotazione */}
+                  <div className="card border-0 shadow-sm mb-4">
+                    <div className="card-header bg-white border-bottom">
+                      <h6 className="mb-0 fw-semibold text-baleno-primary">
+                        <svg width="18" height="18" fill="currentColor" className="me-2" viewBox="0 0 16 16">
+                          <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
+                          <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                        </svg>
+                        Fine Prenotazione
+                      </h6>
+                    </div>
+                    <div className="card-body">
+                      <div className="row g-3">
+                        <div className="col-md-7">
+                          <label htmlFor="endDate" className="form-label fw-semibold">
+                            Data *
+                          </label>
+                          <input
+                            id="endDate"
+                            type="date"
+                            value={bookingData.endTime?.split('T')[0] || ''}
+                            onChange={(e) => {
+                              const date = e.target.value;
+                              const time = bookingData.endTime?.split('T')[1] || '18:00';
+                              setBookingData({ ...bookingData, endTime: `${date}T${time}` });
+                            }}
+                            required
+                            min={bookingData.startTime?.split('T')[0] || new Date().toISOString().split('T')[0]}
+                            className="form-control form-control-lg"
+                          />
+                        </div>
+                        <div className="col-md-5">
+                          <label htmlFor="endTimeInput" className="form-label fw-semibold">
+                            Ora *
+                          </label>
+                          <input
+                            id="endTimeInput"
+                            type="time"
+                            value={bookingData.endTime?.split('T')[1]?.slice(0, 5) || ''}
+                            onChange={(e) => {
+                              const date = bookingData.endTime?.split('T')[0] || bookingData.startTime?.split('T')[0] || new Date().toISOString().split('T')[0];
+                              const time = e.target.value;
+                              setBookingData({ ...bookingData, endTime: `${date}T${time}` });
+                            }}
+                            required
+                            className="form-control form-control-lg"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {bookingData.startTime && bookingData.endTime && (
-                    <div className="alert alert-success">
-                      <div className="d-flex justify-content-between align-items-center">
-                        <div>
-                          <strong>Durata:</strong>{' '}
-                          {((new Date(bookingData.endTime).getTime() - new Date(bookingData.startTime).getTime()) / (1000 * 60 * 60)).toFixed(1)} ore
-                        </div>
-                        <div className="h5 mb-0 fw-bold text-success">
-                          €{calculatePrice().toFixed(2)}
+                    <div className="card border-0 shadow-sm" style={{ backgroundColor: '#d1f2eb' }}>
+                      <div className="card-body">
+                        <div className="row align-items-center">
+                          <div className="col-md-6">
+                            <div className="d-flex align-items-center mb-2">
+                              <svg width="20" height="20" fill="currentColor" className="text-success me-2" viewBox="0 0 16 16">
+                                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                              </svg>
+                              <div>
+                                <div className="fw-semibold text-success">Durata</div>
+                                <div className="h5 mb-0 fw-bold">
+                                  {((new Date(bookingData.endTime).getTime() - new Date(bookingData.startTime).getTime()) / (1000 * 60 * 60)).toFixed(1)} ore
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-md-6 text-md-end">
+                            <div className="text-muted small mb-1">Prezzo totale</div>
+                            <div className="display-6 fw-bold text-success">
+                              €{calculatePrice().toFixed(2)}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
