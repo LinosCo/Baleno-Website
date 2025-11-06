@@ -56,6 +56,15 @@ export default function NewBookingWizardPage() {
         setBookingData(parsed);
         setCurrentStep(4); // Vai direttamente alla conferma
         sessionStorage.removeItem('pendingBooking');
+
+        // Auto-submit dopo il caricamento dei dati se l'utente è loggato
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+          // Aspetta che React aggiorni lo stato, poi esegui il submit
+          setTimeout(() => {
+            handleSubmitWithData(parsed, token);
+          }, 100);
+        }
       } catch (err) {
         console.error('Error parsing saved booking data:', err);
       }
@@ -109,6 +118,46 @@ export default function NewBookingWizardPage() {
     return hours * parseFloat(selectedResource.pricePerHour.toString());
   };
 
+  // Funzione separata per il submit con dati specifici (usata anche per auto-submit)
+  const handleSubmitWithData = async (data: typeof bookingData, token: string) => {
+    setError('');
+    setSuccess('');
+    setSubmitting(true);
+
+    try {
+      const payload = {
+        ...data,
+        startTime: new Date(data.startTime).toISOString(),
+        endTime: new Date(data.endTime).toISOString(),
+        attendees: data.attendees ? parseInt(data.attendees) : undefined,
+      };
+
+      const response = await fetch(API_ENDPOINTS.bookings, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Errore nella creazione della prenotazione');
+      }
+
+      setSuccess('Prenotazione creata con successo! Reindirizzamento...');
+      setTimeout(() => {
+        router.push('/bookings');
+      }, 2000);
+    } catch (err: any) {
+      setError(err.message || 'Errore nella creazione della prenotazione');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleSubmit = async () => {
     setError('');
     setSuccess('');
@@ -123,40 +172,8 @@ export default function NewBookingWizardPage() {
       return;
     }
 
-    setSubmitting(true);
-
-    try {
-      const payload = {
-        ...bookingData,
-        startTime: new Date(bookingData.startTime).toISOString(),
-        endTime: new Date(bookingData.endTime).toISOString(),
-        attendees: bookingData.attendees ? parseInt(bookingData.attendees) : undefined,
-      };
-
-      const response = await fetch(API_ENDPOINTS.bookings, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Errore nella creazione della prenotazione');
-      }
-
-      setSuccess('Prenotazione creata con successo!');
-      setTimeout(() => {
-        router.push('/bookings');
-      }, 2000);
-    } catch (err: any) {
-      setError(err.message || 'Errore nella creazione della prenotazione');
-    } finally {
-      setSubmitting(false);
-    }
+    // Usa la funzione separata per il submit
+    await handleSubmitWithData(bookingData, token);
   };
 
   const canProceedToStep = (step: number) => {
