@@ -47,6 +47,10 @@ export default function NewBookingWizardPage() {
     attendees: '',
   });
 
+  // Additional resources (Step 5)
+  const [additionalResources, setAdditionalResources] = useState<Resource[]>([]);
+  const [selectedAdditionalResources, setSelectedAdditionalResources] = useState<Array<{resourceId: string, quantity: number}>>([]);
+
   useEffect(() => {
     // Carica dati salvati se torniamo dal login
     const savedData = sessionStorage.getItem('pendingBooking');
@@ -54,7 +58,7 @@ export default function NewBookingWizardPage() {
       try {
         const parsed = JSON.parse(savedData);
         setBookingData(parsed);
-        setCurrentStep(4); // Vai direttamente alla conferma
+        setCurrentStep(5); // Vai direttamente alla conferma
         sessionStorage.removeItem('pendingBooking');
 
         // Auto-submit dopo il caricamento dei dati se l'utente è loggato
@@ -84,13 +88,20 @@ export default function NewBookingWizardPage() {
         const activeResources = dataArray.filter((r: Resource) =>
           r.isActive === true && !r.maintenanceMode
         );
-        setResources(activeResources);
+
+        // Separa risorse principali (ROOM, SPACE) da attrezzature (EQUIPMENT)
+        const mainResources = activeResources.filter(r => r.type !== 'EQUIPMENT');
+        const equipmentResources = activeResources.filter(r => r.type === 'EQUIPMENT');
+
+        setResources(mainResources);
+        setAdditionalResources(equipmentResources);
         setLoading(false);
       })
       .catch(err => {
         console.error('Error fetching resources:', err);
         setError('Errore nel caricamento delle risorse');
         setResources([]);
+        setAdditionalResources([]);
         setLoading(false);
       });
   }, []);
@@ -115,7 +126,19 @@ export default function NewBookingWizardPage() {
     const start = new Date(bookingData.startTime);
     const end = new Date(bookingData.endTime);
     const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-    return hours * parseFloat(selectedResource.pricePerHour.toString());
+
+    // Prezzo base della risorsa principale
+    let totalPrice = hours * parseFloat(selectedResource.pricePerHour.toString());
+
+    // Aggiungi prezzi risorse aggiuntive
+    selectedAdditionalResources.forEach(selected => {
+      const resource = additionalResources.find(r => r.id === selected.resourceId);
+      if (resource) {
+        totalPrice += hours * parseFloat(resource.pricePerHour.toString()) * selected.quantity;
+      }
+    });
+
+    return totalPrice;
   };
 
   // Funzione separata per il submit con dati specifici (usata anche per auto-submit)
@@ -130,6 +153,7 @@ export default function NewBookingWizardPage() {
         startTime: new Date(data.startTime).toISOString(),
         endTime: new Date(data.endTime).toISOString(),
         attendees: data.attendees ? parseInt(data.attendees) : undefined,
+        additionalResources: selectedAdditionalResources.length > 0 ? selectedAdditionalResources : undefined,
       };
 
       const response = await fetch(API_ENDPOINTS.bookings, {
@@ -183,6 +207,9 @@ export default function NewBookingWizardPage() {
       case 3:
         return !!bookingData.resourceId && !!bookingData.startTime && !!bookingData.endTime;
       case 4:
+        return !!bookingData.resourceId && !!bookingData.startTime && !!bookingData.endTime && !!bookingData.title;
+      case 5:
+        // Step 4 (risorse aggiuntive) è opzionale, basta aver completato step 3
         return !!bookingData.resourceId && !!bookingData.startTime && !!bookingData.endTime && !!bookingData.title;
       default:
         return true;
@@ -639,8 +666,114 @@ export default function NewBookingWizardPage() {
                 </div>
               )}
 
-              {/* STEP 4: Review & Confirm */}
+              {/* STEP 4: Ti serve altro? (Risorse aggiuntive) */}
               {currentStep === 4 && (
+                <div>
+                  <h2 className="h4 fw-bold text-baleno-primary mb-3">Ti serve altro?</h2>
+                  <p className="text-muted mb-4">
+                    Aggiungi attrezzature o servizi aggiuntivi alla tua prenotazione (opzionale)
+                  </p>
+
+                  {additionalResources.length === 0 ? (
+                    <div className="alert alert-info">
+                      <i className="bi bi-info-circle me-2"></i>
+                      Nessuna risorsa aggiuntiva disponibile al momento.
+                    </div>
+                  ) : (
+                    <div className="row g-3">
+                      {additionalResources.map(resource => {
+                        const isSelected = selectedAdditionalResources.some(r => r.resourceId === resource.id);
+                        const selectedItem = selectedAdditionalResources.find(r => r.resourceId === resource.id);
+
+                        return (
+                          <div key={resource.id} className="col-12 col-md-6">
+                            <div
+                              className={`card h-100 ${isSelected ? 'border-primary border-2' : ''}`}
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => {
+                                if (isSelected) {
+                                  setSelectedAdditionalResources(
+                                    selectedAdditionalResources.filter(r => r.resourceId !== resource.id)
+                                  );
+                                } else {
+                                  setSelectedAdditionalResources([
+                                    ...selectedAdditionalResources,
+                                    { resourceId: resource.id, quantity: 1 }
+                                  ]);
+                                }
+                              }}
+                            >
+                              <div className="card-body">
+                                <div className="d-flex align-items-start mb-2">
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    readOnly
+                                    className="form-check-input mt-1 me-2"
+                                    style={{ cursor: 'pointer' }}
+                                  />
+                                  <div className="flex-grow-1">
+                                    <h5 className="card-title mb-1">{resource.name}</h5>
+                                    {resource.description && (
+                                      <p className="card-text text-muted small mb-2">{resource.description}</p>
+                                    )}
+                                    <div className="text-primary fw-semibold">
+                                      €{parseFloat(resource.pricePerHour.toString()).toFixed(2)} per ora
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {isSelected && (
+                                  <div className="mt-3 pt-3 border-top" onClick={(e) => e.stopPropagation()}>
+                                    <label className="form-label small fw-semibold mb-2">Quantità</label>
+                                    <input
+                                      type="number"
+                                      min="1"
+                                      max="10"
+                                      value={selectedItem?.quantity || 1}
+                                      onChange={(e) => {
+                                        const newQuantity = parseInt(e.target.value) || 1;
+                                        setSelectedAdditionalResources(
+                                          selectedAdditionalResources.map(r =>
+                                            r.resourceId === resource.id
+                                              ? { ...r, quantity: newQuantity }
+                                              : r
+                                          )
+                                        );
+                                      }}
+                                      className="form-control form-control-sm"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {selectedAdditionalResources.length > 0 && (
+                    <div className="alert alert-success mt-4">
+                      <strong>Riepilogo risorse aggiuntive:</strong>
+                      <ul className="mb-0 mt-2">
+                        {selectedAdditionalResources.map(selected => {
+                          const resource = additionalResources.find(r => r.id === selected.resourceId);
+                          if (!resource) return null;
+                          return (
+                            <li key={selected.resourceId}>
+                              {resource.name} × {selected.quantity}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* STEP 5: Review & Confirm */}
+              {currentStep === 5 && (
                 <div>
                   <h2 className="h4 fw-bold text-baleno-primary mb-4">Riepilogo e Conferma</h2>
 
@@ -768,7 +901,7 @@ export default function NewBookingWizardPage() {
                   </button>
                 )}
 
-                {currentStep < 4 ? (
+                {currentStep < 5 ? (
                   <button
                     type="button"
                     onClick={() => setCurrentStep(currentStep + 1)}
@@ -781,7 +914,7 @@ export default function NewBookingWizardPage() {
                   <button
                     type="button"
                     onClick={handleSubmit}
-                    disabled={submitting || !canProceedToStep(4)}
+                    disabled={submitting || !canProceedToStep(5)}
                     className="btn btn-success btn-lg flex-fill fw-semibold"
                   >
                     {submitting ? (
