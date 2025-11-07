@@ -43,6 +43,19 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    if (!confirm(`Sei sicuro di voler eliminare l'utente ${userName}? Questa azione non può essere annullata.`)) {
+      return;
+    }
+
+    try {
+      await usersAPI.delete(userId);
+      fetchUsers();
+    } catch (err: any) {
+      alert(err.message || 'Errore nell\'eliminazione dell\'utente');
+    }
+  };
+
   if (loading) {
     return (
       <AdminLayout>
@@ -111,6 +124,7 @@ export default function AdminUsersPage() {
                     <th className="fw-semibold text-uppercase small">Ruolo</th>
                     <th className="fw-semibold text-uppercase small">Registrazione</th>
                     <th className="fw-semibold text-uppercase small">Ultimo Accesso</th>
+                    <th className="fw-semibold text-uppercase small text-end">Azioni</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -151,6 +165,15 @@ export default function AdminUsersPage() {
                         {user.lastLogin
                           ? new Date(user.lastLogin).toLocaleDateString('it-IT')
                           : 'Mai'}
+                      </td>
+                      <td className="align-middle text-end">
+                        <button
+                          onClick={() => handleDeleteUser(user.id, `${user.firstName} ${user.lastName}`)}
+                          className="btn btn-sm btn-outline-danger"
+                          title="Elimina utente"
+                        >
+                          <i className="bi bi-trash"></i> Elimina
+                        </button>
                       </td>
                     </tr>
                   ))}
