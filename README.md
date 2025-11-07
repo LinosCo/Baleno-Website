@@ -845,4 +845,344 @@ curl https://baleno-website-production.up.railway.app/api/resources
 
 # Dovrebbe restituire 9 risorse
 ```
-# Deploy trigger
+---
+
+## 🎯 Aggiornamento - 7 Novembre 2025
+
+### ✨ Nuove Feature Implementate (Ispirate da Reservio.com)
+
+#### 1. **Sistema Risorse Aggiuntive "Ti serve altro?"** ✅
+
+Implementato sistema completo per aggiungere attrezzature e servizi extra alle prenotazioni:
+
+**Backend (`2a55e26`):**
+- Nuovo modello `BookingResource` per relazione many-to-many
+- Migration SQL per tabella `booking_resources`
+- DTO `AdditionalResourceDto` per validazione
+- Logica calcolo prezzi dinamico con quantità
+- Include automatico risorse extra in `findAll()` e `findOne()`
+
+**Frontend (`5635889`):**
+- **Step 5 "Ti serve altro?"** nel wizard prenotazione
+- Selezione visuale con card cliccabili per attrezzature
+- Input quantità per ogni risorsa (1-10)
+- Calcolo prezzo totale real-time (base + extra)
+- Riepilogo risorse aggiuntive prima della conferma
+- Wizard esteso da 4 a 5 step
+
+**Come funziona:**
+1. Utente completa Step 1-3 (spazio, orario, dettagli)
+2. Step 4 mostra risorse di tipo EQUIPMENT disponibili
+3. Utente seleziona opzionalmente: proiettore, lavagna, microfono, catering, ecc.
+4. Per ogni risorsa può scegliere la quantità
+5. Prezzo totale si aggiorna includendo costo attrezzature × ore × quantità
+6. Step 5 conferma con riepilogo completo
+7. Backend salva associazioni in `booking_resources`
+
+**File modificati:**
+```
+prisma/schema.prisma                           # Nuovo modello BookingResource
+prisma/migrations/.../migration.sql             # CREATE TABLE booking_resources
+apps/api/src/bookings/dto/create-booking.dto.ts # AdditionalResourceDto
+apps/api/src/bookings/bookings.service.ts      # Logica calcolo e salvataggio
+apps/web/src/app/bookings/new/page.tsx         # Wizard con step 5
+```
+
+#### 2. **Gestione Utenti Admin - Elimina Utente** ✅
+
+Aggiunto pulsante per eliminare utenti dalla pagina admin (`05bdc08`):
+
+**Implementazione:**
+- Nuova colonna "Azioni" nella tabella utenti
+- Pulsante "Elimina" con icona trash
+- Conferma dialog prima dell'eliminazione
+- Metodo `usersAPI.delete()` nell'API client
+- Backend endpoint già esistente (`DELETE /api/users/:id`)
+
+**Sicurezza:**
+- Conferma obbligatoria con nome utente
+- Solo ADMIN può eliminare utenti
+- Cascade delete delle prenotazioni associate
+
+**File modificati:**
+```
+apps/web/src/app/admin/users/page.tsx  # UI elimina utente
+apps/web/src/lib/api-client.ts          # Metodo delete API
+```
+
+### 🐛 Fix Deployment Vercel
+
+**Problema Risolto:** Sito mostrava 404 dopo aver reso repository privata
+
+**Root Cause:**
+- Rendere repo privato su GitHub ha cancellato i webhook Vercel
+- Configurazione errata Root Directory + Output Directory
+- Conflitti tra `vercel.json` e Dashboard settings
+
+**Soluzione Finale:**
+```
+Root Directory: apps/web
+Build Command: pnpm build
+Output Directory: .next
+Install Command: pnpm install
+Framework: Next.js
+```
+
+**Chiave:** Con pnpm workspace, anche partendo da `apps/web`, pnpm risale automaticamente alla root e risolve dipendenze. NON serve `cd ../..`!
+
+**File eliminati:**
+- `vercel.json` (causava conflitti con Dashboard)
+
+**Variabili d'Ambiente Vercel aggiunte:**
+```env
+NEXT_PUBLIC_API_URL=https://baleno-website-production.up.railway.app/api
+```
+
+### 📊 Database Schema Aggiornato
+
+**Nuova Tabella:**
+```sql
+CREATE TABLE "booking_resources" (
+    "id" TEXT PRIMARY KEY,
+    "bookingId" TEXT NOT NULL,
+    "resourceId" TEXT NOT NULL,
+    "quantity" INTEGER DEFAULT 1,
+    "createdAt" TIMESTAMP DEFAULT NOW(),
+
+    UNIQUE("bookingId", "resourceId"),
+    FOREIGN KEY ("bookingId") REFERENCES "bookings"("id") ON DELETE CASCADE,
+    FOREIGN KEY ("resourceId") REFERENCES "resources"("id") ON DELETE RESTRICT
+);
+```
+
+**Relazioni:**
+- `Booking` ↔ `BookingResource` ↔ `Resource` (many-to-many)
+- Un booking può avere N risorse aggiuntive
+- Una risorsa EQUIPMENT può essere usata in N prenotazioni
+- Quantità personalizzabile per risorsa
+
+### 🎯 Completato vs Da Fare
+
+#### ✅ Completato Oggi (7 Nov 2025)
+
+1. **Backend risorse aggiuntive**
+   - Database migration
+   - DTO e validazione
+   - Logica calcolo prezzi
+   - API endpoints aggiornati
+
+2. **Frontend wizard "Ti serve altro?"**
+   - Step 5 interattivo
+   - Selezione attrezzature
+   - Calcolo prezzo real-time
+   - UI card-based moderna
+
+3. **Admin - Elimina utente**
+   - Pulsante con conferma
+   - API client integrato
+   - Sicurezza e validazione
+
+4. **Deploy Vercel fix**
+   - Configurazione corretta monorepo
+   - Webhooks reconnessi
+   - Variabili ambiente settate
+   - Sito LIVE e funzionante
+
+#### 🚧 Feature Richieste Ma Non Implementate
+
+**1. Notifiche Email Automatiche**
+
+Richiede setup servizio email (non implementato):
+- Configurare SendGrid/AWS SES/SMTP
+- Aggiungere API keys come env variables
+- Creare template email HTML
+- Implementare email su eventi:
+  - Conferma prenotazione creata
+  - Prenotazione approvata
+  - Prenotazione rifiutata
+  - Pagamento riuscito/fallito
+
+**File da modificare:**
+```
+apps/api/src/notifications/notifications.service.ts  # Già esiste ma non configurato
+apps/api/.env # Aggiungere SMTP_* variables
+```
+
+**2. Promemoria 24h Prima Prenotazione**
+
+Richiede cron job scheduler (non implementato):
+- Installare `@nestjs/schedule`
+- Creare job che gira ogni ora
+- Query prenotazioni con `startTime` tra 23-24h
+- Inviare email promemoria
+- Salvare stato "reminder_sent" in Booking
+
+**File da creare:**
+```
+apps/api/src/scheduler/reminder.scheduler.ts  # Nuovo file
+apps/api/src/bookings/bookings.service.ts     # Aggiungere sendReminder()
+```
+
+### 📝 Come Continuare il Lavoro
+
+Quando rientri nel progetto:
+
+**1. Verifica Deployment Attuale**
+```bash
+# Frontend (dovrebbe funzionare)
+open https://baleno-booking-system.vercel.app
+
+# Backend API
+curl https://baleno-website-production.up.railway.app/api/resources
+```
+
+**2. Applica Migration Database su Railway**
+```bash
+# Dalla Railway CLI o Dashboard
+npx prisma migrate deploy
+
+# Oppure via SSH Railway
+railway run npx prisma migrate deploy
+```
+
+**3. Test Feature "Ti serve altro?"**
+
+a) Crea risorse EQUIPMENT via admin:
+   - Tipo: EQUIPMENT
+   - Categoria: EQUIPMENT
+   - Esempi: "Videoproiettore", "Lavagna", "Microfono", "Catering"
+   - Prezzo: es. €10/h per proiettore
+
+b) Crea nuova prenotazione come USER:
+   - Step 1: Scegli sala
+   - Step 2: Data/ora
+   - Step 3: Dettagli
+   - Step 4: **Dovresti vedere le attrezzature**
+   - Step 5: Conferma
+
+c) Verifica database che `booking_resources` sia popolato
+
+**4. Implementare Email (Se Richiesto)**
+
+Setup SendGrid (raccomandato):
+```bash
+npm install @sendgrid/mail
+
+# Railway env variables
+SENDGRID_API_KEY=SG.xxx
+EMAIL_FROM=noreply@balenosanzeno.it
+```
+
+Modificare:
+```typescript
+// apps/api/src/notifications/notifications.service.ts
+import * as sgMail from '@sendgrid/mail';
+
+@Injectable()
+export class NotificationsService {
+  constructor() {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  }
+
+  async sendBookingConfirmation(booking, user) {
+    const msg = {
+      to: user.email,
+      from: process.env.EMAIL_FROM,
+      subject: 'Prenotazione Confermata - Baleno',
+      html: `...template HTML...`,
+    };
+    await sgMail.send(msg);
+  }
+}
+```
+
+**5. Implementare Promemoria (Se Richiesto)**
+
+```bash
+npm install @nestjs/schedule
+
+# apps/api/src/app.module.ts
+import { ScheduleModule } from '@nestjs/schedule';
+
+@Module({
+  imports: [ScheduleModule.forRoot(), ...]
+})
+```
+
+Creare:
+```typescript
+// apps/api/src/scheduler/reminder.scheduler.ts
+import { Injectable } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
+
+@Injectable()
+export class ReminderScheduler {
+  @Cron(CronExpression.EVERY_HOUR)
+  async checkUpcomingBookings() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const bookings = await this.prisma.booking.findMany({
+      where: {
+        startTime: {
+          gte: tomorrow,
+          lt: new Date(tomorrow.getTime() + 60*60*1000)
+        },
+        status: 'APPROVED',
+        reminderSent: false // Aggiungi campo al schema
+      }
+    });
+
+    for (const booking of bookings) {
+      await this.notificationsService.sendReminder(booking);
+      await this.prisma.booking.update({
+        where: { id: booking.id },
+        data: { reminderSent: true }
+      });
+    }
+  }
+}
+```
+
+### 📦 Commit Effettuati Oggi
+
+```
+2a55e26 - Feat: Backend risorse aggiuntive per prenotazioni
+5635889 - Feat: Wizard prenotazione con step 'Ti serve altro?'
+05bdc08 - Feat: Pulsante elimina utente in admin panel
+```
+
+### 🔗 Link Utili
+
+- **Frontend LIVE**: https://baleno-booking-system.vercel.app
+- **Backend API**: https://baleno-website-production.up.railway.app/api
+- **GitHub Repo**: https://github.com/LinosCo/Baleno-Website
+- **Vercel Dashboard**: https://vercel.com/linoscos-projects/baleno-booking-system
+- **Railway Dashboard**: https://railway.app/project/[your-project-id]
+- **Reservio Reference**: https://www.reservio.com/it
+
+### ⚡ Quick Commands
+
+```bash
+# Local development
+pnpm install
+cd apps/api && pnpm dev     # Backend http://localhost:4000
+cd apps/web && pnpm dev     # Frontend http://localhost:3001
+
+# Database
+cd apps/api
+pnpm prisma:generate        # Genera Prisma client
+pnpm prisma:migrate dev     # Applica migrations
+pnpm prisma:studio          # GUI database
+
+# Deploy
+git push origin master      # Auto-deploy su Vercel + Railway (se webhooks OK)
+
+# Vercel manual redeploy
+cd apps/web && vercel --prod
+
+# Railway migration
+railway run npx prisma migrate deploy
+```
+
+---
