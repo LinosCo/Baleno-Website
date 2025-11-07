@@ -845,3 +845,4 @@ curl https://baleno-website-production.up.railway.app/api/resources
 
 # Dovrebbe restituire 9 risorse
 ```
+# Deploy trigger
