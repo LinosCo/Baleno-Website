@@ -165,6 +165,7 @@ model Resource {
 
   // Relations
   bookings    Booking[]
+  additionalBookings BookingResource[] @relation("BookingAdditionalResources")
 
   @@index([type])
   @@index([category])
@@ -215,12 +216,35 @@ model Booking {
 
   // Relations
   payments    Payment[]
+  additionalResources BookingResource[]
 
   @@index([userId])
   @@index([resourceId])
   @@index([status])
   @@index([startTime, endTime])
   @@map("bookings")
+}
+
+model BookingResource {
+  id          String   @id @default(cuid())
+
+  // Relations
+  bookingId   String
+  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  resourceId  String
+  resource    Resource @relation("BookingAdditionalResources", fields: [resourceId], references: [id], onDelete: Restrict)
+
+  // Quantity
+  quantity    Int      @default(1)
+
+  // Metadata
+  createdAt   DateTime @default(now())
+
+  @@unique([bookingId, resourceId])
+  @@index([bookingId])
+  @@index([resourceId])
+  @@map("booking_resources")
 }
 
 model Payment {

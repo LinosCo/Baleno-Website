@@ -16,7 +16,7 @@ export class BookingsService {
   ) {}
 
   async create(createDto: CreateBookingDto, user: any) {
-    const { resourceId, startTime, endTime, ...bookingData } = createDto;
+    const { resourceId, startTime, endTime, additionalResources, ...bookingData } = createDto;
 
     // Validate dates
     const start = new Date(startTime);
@@ -54,9 +54,43 @@ export class BookingsService {
       throw new ConflictException('Resource is not available for the selected time period');
     }
 
-    // Calculate price
+    // Calculate base price
     const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-    const amount = Number(resource.pricePerHour) * hours;
+    let amount = Number(resource.pricePerHour) * hours;
+
+    // Validate and calculate additional resources price
+    let validatedAdditionalResources: Array<{ resourceId: string; quantity: number; resource: any }> = [];
+
+    if (additionalResources && additionalResources.length > 0) {
+      const additionalResourceIds = additionalResources.map(r => r.resourceId);
+
+      // Fetch all additional resources
+      const foundResources = await this.prisma.resource.findMany({
+        where: {
+          id: { in: additionalResourceIds },
+          isActive: true,
+        },
+      });
+
+      // Validate all resources exist
+      for (const addRes of additionalResources) {
+        const res = foundResources.find(r => r.id === addRes.resourceId);
+
+        if (!res) {
+          throw new NotFoundException(`Additional resource ${addRes.resourceId} not found`);
+        }
+
+        const quantity = addRes.quantity || 1;
+        const resourcePrice = Number(res.pricePerHour) * hours * quantity;
+        amount += resourcePrice;
+
+        validatedAdditionalResources.push({
+          resourceId: addRes.resourceId,
+          quantity,
+          resource: res
+        });
+      }
+    }
 
     // Create booking
     const booking = await this.prisma.booking.create({
@@ -74,6 +108,17 @@ export class BookingsService {
       },
     });
 
+    // Create additional resources associations
+    if (validatedAdditionalResources.length > 0) {
+      await this.prisma.bookingResource.createMany({
+        data: validatedAdditionalResources.map(ar => ({
+          bookingId: booking.id,
+          resourceId: ar.resourceId,
+          quantity: ar.quantity,
+        })),
+      });
+    }
+
     // Create payment intent
     const payment = await this.paymentsService.createPaymentIntent(
       booking.id,
@@ -84,8 +129,22 @@ export class BookingsService {
     // Send confirmation email
     await this.notificationsService.sendBookingConfirmation(booking, user);
 
+    // Fetch complete booking with additional resources
+    const completeBooking = await this.prisma.booking.findUnique({
+      where: { id: booking.id },
+      include: {
+        resource: true,
+        user: true,
+        additionalResources: {
+          include: {
+            resource: true,
+          },
+        },
+      },
+    });
+
     return {
-      booking,
+      booking: completeBooking,
       payment,
     };
   }
@@ -123,6 +182,11 @@ export class BookingsService {
             email: true,
             firstName: true,
             lastName: true,
+          },
+        },
+        additionalResources: {
+          include: {
+            resource: true,
           },
         },
       },
@@ -181,6 +245,11 @@ export class BookingsService {
         resource: true,
         user: true,
         payments: true,
+        additionalResources: {
+          include: {
+            resource: true,
+          },
+        },
       },
     });
 

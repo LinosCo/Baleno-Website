@@ -1,4 +1,16 @@
-import { IsString, IsDateString, IsOptional, IsInt, Min, IsNotEmpty } from 'class-validator';
+import { IsString, IsDateString, IsOptional, IsInt, Min, IsNotEmpty, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class AdditionalResourceDto {
+  @IsString()
+  @IsNotEmpty()
+  resourceId!: string;
+
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  quantity?: number;
+}
 
 export class CreateBookingDto {
   @IsString()
@@ -27,4 +39,10 @@ export class CreateBookingDto {
   @IsString()
   @IsOptional()
   notes?: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => AdditionalResourceDto)
+  @IsOptional()
+  additionalResources?: AdditionalResourceDto[];
 }
