@@ -484,35 +484,14 @@ export class BookingsService {
         status: {
           in: [BookingStatus.PENDING, BookingStatus.APPROVED],
         },
-        OR: [
-          {
-            // New booking starts during existing booking
-            startTime: {
-              lte: startTime,
-            },
-            endTime: {
-              gt: startTime,
-            },
-          },
-          {
-            // New booking ends during existing booking
-            startTime: {
-              lt: endTime,
-            },
-            endTime: {
-              gte: endTime,
-            },
-          },
-          {
-            // New booking contains existing booking
-            startTime: {
-              gte: startTime,
-            },
-            endTime: {
-              lte: endTime,
-            },
-          },
-        ],
+        // Two intervals [A_start, A_end] and [B_start, B_end] overlap if:
+        // A_start < B_end AND B_start < A_end
+        startTime: {
+          lt: endTime, // existing.startTime < new.endTime
+        },
+        endTime: {
+          gt: startTime, // existing.endTime > new.startTime
+        },
         ...(excludeBookingId && { id: { not: excludeBookingId } }),
       },
     });
