@@ -1,0 +1,2 @@
+# Ignora pnpm lockfile - usiamo npm per Vercel
+pnpm-lock.yaml
