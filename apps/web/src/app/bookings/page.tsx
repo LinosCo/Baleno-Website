@@ -43,7 +43,7 @@ export default function BookingsPage() {
       const response = await bookingsAPIExtended.getAll();
       setBookings(response.data);
       setLoading(false);
-    } catch (err) {
+    } catch {
       setError('Errore nel caricamento delle prenotazioni');
       setLoading(false);
     }
