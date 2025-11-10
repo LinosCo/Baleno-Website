@@ -711,7 +711,13 @@ export default function NewBookingWizardPage() {
                                     checked={isSelected}
                                     readOnly
                                     className="form-check-input mt-1 me-2"
-                                    style={{ cursor: 'pointer' }}
+                                    style={{
+                                      cursor: 'pointer',
+                                      width: '1.25rem',
+                                      height: '1.25rem',
+                                      borderRadius: '0.25rem',
+                                      flexShrink: 0
+                                    }}
                                   />
                                   <div className="flex-grow-1">
                                     <h5 className="card-title mb-1">{resource.name}</h5>
