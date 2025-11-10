@@ -398,7 +398,7 @@ export default function ResourcesPage() {
                       )}
                     </div>
 
-                    <div className="card-body">
+                    <div className="card-body d-flex flex-column">
                       <div className="d-flex justify-content-between align-items-start mb-2">
                         <h3 className="h5 fw-bold mb-0 text-baleno-primary">{resource.name}</h3>
                       </div>
