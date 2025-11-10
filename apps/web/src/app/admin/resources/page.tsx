@@ -170,6 +170,29 @@ export default function AdminResourcesPage() {
     }
   };
 
+  const handleToggleActive = async (resource: Resource) => {
+    const token = localStorage.getItem('accessToken');
+    const newStatus = !resource.isActive;
+
+    try {
+      await fetch(`${API_ENDPOINTS.resources}/${resource.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...resource,
+          isActive: newStatus,
+        }),
+      });
+      fetchResources();
+    } catch (err) {
+      console.error(err);
+      alert('Errore nell\'aggiornamento dello stato');
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -310,19 +333,31 @@ export default function AdminResourcesPage() {
                     </div>
                   )}
 
-                  <div className="d-flex gap-2 mt-auto">
+                  <div className="d-flex flex-column gap-2 mt-auto">
                     <button
-                      onClick={() => handleEdit(resource)}
-                      className="btn btn-sm btn-outline-primary flex-fill fw-semibold"
+                      onClick={() => handleToggleActive(resource)}
+                      className={`btn btn-sm fw-semibold ${
+                        resource.isActive
+                          ? 'btn-warning text-dark'
+                          : 'btn-success'
+                      }`}
                     >
-                      Modifica
+                      {resource.isActive ? '⏸ Disabilita' : '▶ Abilita'}
                     </button>
-                    <button
-                      onClick={() => handleDelete(resource.id)}
-                      className="btn btn-sm btn-outline-danger flex-fill fw-semibold"
-                    >
-                      Elimina
-                    </button>
+                    <div className="d-flex gap-2">
+                      <button
+                        onClick={() => handleEdit(resource)}
+                        className="btn btn-sm btn-outline-primary flex-fill fw-semibold"
+                      >
+                        Modifica
+                      </button>
+                      <button
+                        onClick={() => handleDelete(resource.id)}
+                        className="btn btn-sm btn-outline-danger flex-fill fw-semibold"
+                      >
+                        Elimina
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
