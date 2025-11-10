@@ -5,8 +5,9 @@
   "description": "Sistema completo di gestione prenotazioni per balenosanzeno.it",
   "engines": {
     "node": "20.x",
-    "pnpm": "8.15.9"
+    "pnpm": "7.33.0"
   },
+  "packageManager": "pnpm@7.33.0",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
@@ -25,7 +26,6 @@
     "turbo": "^1.12.4",
     "typescript": "^5.3.3"
   },
-  "packageManager": "pnpm@8.15.9",
   "workspaces": [
     "apps/*",
     "packages/*"
