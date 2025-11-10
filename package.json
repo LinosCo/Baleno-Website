@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "description": "Sistema completo di gestione prenotazioni per balenosanzeno.it",
-  "engines": {
-    "node": "20.x",
-    "pnpm": "7.33.0"
-  },
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
