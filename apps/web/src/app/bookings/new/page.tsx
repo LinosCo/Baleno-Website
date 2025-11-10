@@ -258,7 +258,7 @@ export default function NewBookingWizardPage() {
           <div className="card border-0 shadow-sm mb-4">
             <div className="card-body p-3">
               <div className="d-flex justify-content-between align-items-center">
-                {[1, 2, 3, 4].map((step) => (
+                {[1, 2, 3, 4, 5].map((step) => (
                   <div key={step} className="d-flex align-items-center flex-fill">
                     <div className="d-flex flex-column align-items-center" style={{ minWidth: '80px' }}>
                       <div
@@ -277,10 +277,11 @@ export default function NewBookingWizardPage() {
                         {step === 1 && 'Risorsa'}
                         {step === 2 && 'Data/Ora'}
                         {step === 3 && 'Dettagli'}
-                        {step === 4 && 'Conferma'}
+                        {step === 4 && 'Ti serve altro?'}
+                        {step === 5 && 'Conferma'}
                       </div>
                     </div>
-                    {step < 4 && (
+                    {step < 5 && (
                       <div
                         className={`flex-fill mx-2 ${
                           currentStep > step ? 'bg-success' : 'bg-light'
