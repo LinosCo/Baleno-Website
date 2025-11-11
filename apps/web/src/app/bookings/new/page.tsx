@@ -526,6 +526,11 @@ export default function NewBookingWizardPage() {
                               setBookingData({ ...bookingData, startTime: `${date}T${time}` });
                             }}
                             required
+                            min={
+                              bookingData.startTime?.split('T')[0] === new Date().toISOString().split('T')[0]
+                                ? new Date().toTimeString().slice(0, 5)
+                                : undefined
+                            }
                             className="form-control form-control-lg"
                           />
                         </div>
@@ -578,6 +583,15 @@ export default function NewBookingWizardPage() {
                               setBookingData({ ...bookingData, endTime: `${date}T${time}` });
                             }}
                             required
+                            min={
+                              // Se data fine = data inizio, ora deve essere > ora inizio
+                              bookingData.endTime?.split('T')[0] === bookingData.startTime?.split('T')[0] && bookingData.startTime?.split('T')[1]
+                                ? bookingData.startTime.split('T')[1].slice(0, 5)
+                                : // Se data fine = oggi, ora deve essere >= ora corrente
+                                bookingData.endTime?.split('T')[0] === new Date().toISOString().split('T')[0]
+                                ? new Date().toTimeString().slice(0, 5)
+                                : undefined
+                            }
                             className="form-control form-control-lg"
                           />
                         </div>
