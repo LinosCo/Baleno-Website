@@ -583,15 +583,23 @@ export default function NewBookingWizardPage() {
                               setBookingData({ ...bookingData, endTime: `${date}T${time}` });
                             }}
                             required
-                            min={
+                            min={(() => {
+                              const endDate = bookingData.endTime?.split('T')[0];
+                              const startDate = bookingData.startTime?.split('T')[0];
+                              const startTime = bookingData.startTime?.split('T')[1];
+                              const today = new Date().toISOString().split('T')[0];
+                              const currentTime = new Date().toTimeString().slice(0, 5);
+
                               // Se data fine = data inizio, ora deve essere > ora inizio
-                              bookingData.endTime?.split('T')[0] === bookingData.startTime?.split('T')[0] && bookingData.startTime?.split('T')[1]
-                                ? bookingData.startTime.split('T')[1].slice(0, 5)
-                                : // Se data fine = oggi, ora deve essere >= ora corrente
-                                bookingData.endTime?.split('T')[0] === new Date().toISOString().split('T')[0]
-                                ? new Date().toTimeString().slice(0, 5)
-                                : undefined
-                            }
+                              if (endDate === startDate && startTime) {
+                                return startTime.slice(0, 5);
+                              }
+                              // Se data fine = oggi, ora deve essere >= ora corrente
+                              if (endDate === today) {
+                                return currentTime;
+                              }
+                              return undefined;
+                            })()}
                             className="form-control form-control-lg"
                           />
                         </div>
