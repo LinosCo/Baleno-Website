@@ -504,7 +504,13 @@ export default function NewBookingWizardPage() {
                             value={bookingData.startTime?.split('T')[0] || ''}
                             onChange={(e) => {
                               const date = e.target.value;
-                              const time = bookingData.startTime?.split('T')[1] || '09:00';
+                              const today = new Date().toISOString().split('T')[0];
+
+                              // Se seleziono oggi, imposta l'ora corrente
+                              const time = date === today
+                                ? new Date().toTimeString().slice(0, 5)
+                                : bookingData.startTime?.split('T')[1] || '09:00';
+
                               setBookingData({ ...bookingData, startTime: `${date}T${time}` });
                             }}
                             required
