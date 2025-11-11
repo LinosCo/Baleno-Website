@@ -171,10 +171,10 @@ export default function NewBookingWizardPage() {
         throw new Error(responseData.message || 'Errore nella creazione della prenotazione');
       }
 
-      setSuccess('Prenotazione creata con successo! Reindirizzamento...');
+      setSuccess('Prenotazione creata con successo! Reindirizzamento al pagamento...');
       setTimeout(() => {
-        router.push('/bookings');
-      }, 2000);
+        router.push(`/bookings/${responseData.id}/payment`);
+      }, 1500);
     } catch (err: any) {
       setError(err.message || 'Errore nella creazione della prenotazione');
     } finally {

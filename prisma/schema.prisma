@@ -34,6 +34,13 @@ enum PaymentStatus {
   PARTIALLY_REFUNDED // Rimborsato parzialmente
 }
 
+enum PaymentMethod {
+  CREDIT_CARD    // Carta di credito (Stripe)
+  BANK_TRANSFER  // Bonifico bancario
+  CASH           // Contanti
+  OTHER          // Altro
+}
+
 enum ResourceType {
   ROOM           // Sala
   SPACE          // Spazio generico
@@ -263,9 +270,10 @@ model Payment {
   user        User          @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   // Payment details
-  amount      Decimal       @db.Decimal(10, 2)
-  currency    String        @default("EUR")
-  status      PaymentStatus @default(PENDING)
+  amount        Decimal       @db.Decimal(10, 2)
+  currency      String        @default("EUR")
+  status        PaymentStatus @default(PENDING)
+  paymentMethod PaymentMethod @default(CREDIT_CARD)
 
   // Stripe integration
   stripePaymentIntentId String? @unique

@@ -1,6 +1,7 @@
 import { Controller, Post, Get, Body, Param, Headers, UseGuards, Res, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import { PaymentsService } from './payments.service';
+import { CreatePaymentDto } from './dto/create-payment.dto';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Public } from '../common/decorators/public.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -11,6 +12,11 @@ import { UserRole } from '@prisma/client';
 @UseGuards(RolesGuard)
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
+
+  @Post()
+  async createPayment(@Body() createPaymentDto: CreatePaymentDto, @CurrentUser() user: any) {
+    return this.paymentsService.createPayment(createPaymentDto, user);
+  }
 
   @Get('history')
   async getPaymentHistory(@CurrentUser() user: any) {

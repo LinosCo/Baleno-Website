@@ -3,7 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { PrismaService } from '../prisma/prisma.service';
 import { PdfService } from './pdf.service';
-import { PaymentStatus, UserRole } from '@prisma/client';
+import { CreatePaymentDto } from './dto/create-payment.dto';
+import { PaymentStatus, UserRole, PaymentMethod } from '@prisma/client';
 
 @Injectable()
 export class PaymentsService {
@@ -17,6 +18,47 @@ export class PaymentsService {
     this.stripe = new Stripe(this.configService.get('STRIPE_SECRET_KEY')!, {
       apiVersion: '2023-10-16',
     });
+  }
+
+  async createPayment(createPaymentDto: CreatePaymentDto, user: any) {
+    const { bookingId, paymentMethod } = createPaymentDto;
+
+    // Verifica che la prenotazione esista e appartenga all'utente
+    const booking = await this.prisma.booking.findUnique({
+      where: { id: bookingId },
+      include: { resource: true },
+    });
+
+    if (!booking) {
+      throw new NotFoundException('Prenotazione non trovata');
+    }
+
+    if (booking.userId !== user.sub) {
+      throw new ForbiddenException('Non hai i permessi per questa prenotazione');
+    }
+
+    // Verifica che non esista già un pagamento per questa prenotazione
+    const existingPayment = await this.prisma.payment.findFirst({
+      where: { bookingId },
+    });
+
+    if (existingPayment) {
+      throw new BadRequestException('Esiste già un pagamento per questa prenotazione');
+    }
+
+    // Crea il pagamento
+    const payment = await this.prisma.payment.create({
+      data: {
+        bookingId,
+        userId: user.sub,
+        amount: booking.totalPrice,
+        currency: 'EUR',
+        paymentMethod,
+        status: paymentMethod === PaymentMethod.BANK_TRANSFER ? PaymentStatus.PENDING : PaymentStatus.PROCESSING,
+      },
+    });
+
+    return payment;
   }
 
   async createPaymentIntent(bookingId: string, userId: string, amount: number) {
