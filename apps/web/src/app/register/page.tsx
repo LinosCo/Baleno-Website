@@ -3,9 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { authAPI } from '../../lib/api-client';
 
 export default function RegisterPage() {
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -28,9 +31,13 @@ export default function RegisterPage() {
       const response = await authAPI.register(formData);
       const data = response.data;
 
-      // Salva il token e reindirizza in base al ruolo
+      // Salva il token e reindirizza
       localStorage.setItem('accessToken', data.accessToken);
-      if (data.user.role === 'ADMIN' || data.user.role === 'COMMUNITY_MANAGER') {
+
+      // Se c'è un redirect URL, vai lì, altrimenti vai alla dashboard/admin
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else if (data.user.role === 'ADMIN' || data.user.role === 'COMMUNITY_MANAGER') {
         window.location.href = '/admin';
       } else {
         window.location.href = '/dashboard';

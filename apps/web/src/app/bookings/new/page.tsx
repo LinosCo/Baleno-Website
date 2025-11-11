@@ -191,8 +191,8 @@ export default function NewBookingWizardPage() {
     if (!token) {
       // Salva i dati della prenotazione in sessionStorage
       sessionStorage.setItem('pendingBooking', JSON.stringify(bookingData));
-      // Redirect al login con parametro di ritorno
-      router.push('/login?redirect=/bookings/new');
+      // Redirect alla registrazione con parametro di ritorno
+      router.push('/register?redirect=/bookings/new');
       return;
     }
 
