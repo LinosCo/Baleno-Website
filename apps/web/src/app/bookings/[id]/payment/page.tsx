@@ -24,7 +24,7 @@ export default function PaymentPage() {
       const token = localStorage.getItem('accessToken');
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
-      const response = await fetch(`${apiUrl}/bookings/${bookingId}`, {
+      const response = await fetch(`${apiUrl}/bookings/${bookingId}?includeResources=true`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -109,7 +109,27 @@ export default function PaymentPage() {
     );
   }
 
-  const totalAmount = booking?.totalPrice || 0;
+  // Calcola il totale
+  const calculateTotal = () => {
+    if (!booking) return 0;
+
+    const startTime = new Date(booking.startTime);
+    const endTime = new Date(booking.endTime);
+    const hours = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+
+    let total = booking.resource.pricePerHour * hours;
+
+    // Aggiungi risorse aggiuntive se presenti
+    if (booking.additionalResources) {
+      for (const additionalResource of booking.additionalResources) {
+        total += additionalResource.resource.pricePerHour * additionalResource.quantity * hours;
+      }
+    }
+
+    return total;
+  };
+
+  const totalAmount = calculateTotal();
 
   return (
     <div className="min-vh-100 bg-light py-5">

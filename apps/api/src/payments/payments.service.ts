@@ -26,7 +26,12 @@ export class PaymentsService {
     // Verifica che la prenotazione esista e appartenga all'utente
     const booking = await this.prisma.booking.findUnique({
       where: { id: bookingId },
-      include: { resource: true },
+      include: {
+        resource: true,
+        additionalResources: {
+          include: { resource: true }
+        }
+      },
     });
 
     if (!booking) {
@@ -46,12 +51,24 @@ export class PaymentsService {
       throw new BadRequestException('Esiste già un pagamento per questa prenotazione');
     }
 
+    // Calcola il totale
+    const startTime = new Date(booking.startTime);
+    const endTime = new Date(booking.endTime);
+    const hours = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+
+    let totalAmount = Number(booking.resource.pricePerHour) * hours;
+
+    // Aggiungi costo risorse aggiuntive
+    for (const additionalResource of booking.additionalResources) {
+      totalAmount += Number(additionalResource.resource.pricePerHour) * additionalResource.quantity * hours;
+    }
+
     // Crea il pagamento
     const payment = await this.prisma.payment.create({
       data: {
         bookingId,
         userId: user.sub,
-        amount: booking.totalPrice,
+        amount: totalAmount,
         currency: 'EUR',
         paymentMethod,
         status: paymentMethod === PaymentMethod.BANK_TRANSFER ? PaymentStatus.PENDING : PaymentStatus.PROCESSING,
