@@ -45,7 +45,7 @@ export class AuthService {
         vatNumber,
         companyName,
         fiscalCode,
-        role: UserRole.ADMIN,
+        role: UserRole.USER,
       },
     });
 
