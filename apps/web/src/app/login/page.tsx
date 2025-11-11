@@ -140,7 +140,7 @@ function LoginForm() {
             <p className="text-muted mb-0">
               Non hai un account?{' '}
               <Link
-                href="/register"
+                href={redirectUrl ? `/register?redirect=${encodeURIComponent(redirectUrl)}` : '/register'}
                 className="fw-semibold text-decoration-none"
                 style={{ color: 'var(--baleno-primary)' }}
               >

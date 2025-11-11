@@ -119,13 +119,6 @@ export class BookingsService {
       });
     }
 
-    // Create payment intent
-    const payment = await this.paymentsService.createPaymentIntent(
-      booking.id,
-      user.id,
-      amount,
-    );
-
     // Send confirmation email
     await this.notificationsService.sendBookingConfirmation(booking, user);
 
@@ -143,10 +136,7 @@ export class BookingsService {
       },
     });
 
-    return {
-      booking: completeBooking,
-      payment,
-    };
+    return completeBooking;
   }
 
   async findAll(query: any, user: any) {
