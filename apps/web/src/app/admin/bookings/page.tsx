@@ -137,11 +137,17 @@ export default function AdminBookingsPage() {
       });
 
       if (response.ok) {
+        alert('Prenotazione approvata con successo!');
         fetchBookings();
         setShowModal(false);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`Errore nell'approvazione: ${errorData.message || response.statusText}`);
+        console.error('Approve error:', response.status, errorData);
       }
     } catch (err) {
-      console.error(err);
+      alert('Errore di rete durante l\'approvazione');
+      console.error('Approve error:', err);
     }
   };
 
@@ -164,12 +170,18 @@ export default function AdminBookingsPage() {
       });
 
       if (response.ok) {
+        alert('Prenotazione rifiutata con successo!');
         fetchBookings();
         setShowModal(false);
         setRejectionReason('');
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`Errore nel rifiuto: ${errorData.message || response.statusText}`);
+        console.error('Reject error:', response.status, errorData);
       }
     } catch (err) {
-      console.error(err);
+      alert('Errore di rete durante il rifiuto');
+      console.error('Reject error:', err);
     }
   };
 

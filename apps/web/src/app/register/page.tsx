@@ -31,10 +31,12 @@ function RegisterForm() {
       const response = await authAPI.register(formData);
       const data = response.data;
 
-      // Salva il token e reindirizza
+      // Salva tokens e user info
       localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+      localStorage.setItem('user', JSON.stringify(data.user));
 
-      // Se c'è un redirect URL, vai lì, altrimenti vai alla dashboard/admin
+      // Priorità al redirect URL se presente, altrimenti vai alla dashboard/admin
       if (redirectUrl) {
         window.location.href = redirectUrl;
       } else if (data.user.role === 'ADMIN' || data.user.role === 'COMMUNITY_MANAGER') {

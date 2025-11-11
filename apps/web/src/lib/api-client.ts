@@ -25,10 +25,22 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Solo rimuovi token e redirect al login se è un errore di autenticazione su endpoint protetti
+    // Non farlo su errori di validazione o altri errori
     if (error.response?.status === 401 && typeof window !== 'undefined') {
-      localStorage.removeItem('accessToken');
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login';
+      const isAuthEndpoint = error.config?.url?.includes('/auth/');
+
+      // Rimuovi token solo se è un errore auth reale (non su login/register)
+      if (!isAuthEndpoint || error.config?.url?.includes('/auth/me')) {
+        console.error('Auth error - clearing token and redirecting to login', error);
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+
+        // Evita loop infiniti
+        if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+          window.location.href = '/login';
+        }
       }
     }
     return Promise.reject(error);
