@@ -20,7 +20,7 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, password, firstName, lastName, phone } = registerDto;
+    const { email, password, firstName, lastName, phone, vatNumber, companyName, fiscalCode } = registerDto;
 
     // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
@@ -42,6 +42,9 @@ export class AuthService {
         firstName,
         lastName,
         phone,
+        vatNumber,
+        companyName,
+        fiscalCode,
         role: UserRole.ADMIN,
       },
     });

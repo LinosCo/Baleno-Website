@@ -789,19 +789,21 @@ export default function NewBookingWizardPage() {
                   )}
 
                   {selectedAdditionalResources.length > 0 && (
-                    <div className="alert alert-success mt-4">
-                      <strong>Riepilogo risorse aggiuntive:</strong>
-                      <ul className="mb-0 mt-2">
-                        {selectedAdditionalResources.map(selected => {
-                          const resource = additionalResources.find(r => r.id === selected.resourceId);
-                          if (!resource) return null;
-                          return (
-                            <li key={selected.resourceId}>
-                              {resource.name} × {selected.quantity}
-                            </li>
-                          );
-                        })}
-                      </ul>
+                    <div className="card border-success mt-4">
+                      <div className="card-body">
+                        <h6 className="fw-bold text-success mb-2">Riepilogo risorse aggiuntive:</h6>
+                        <ul className="mb-0">
+                          {selectedAdditionalResources.map(selected => {
+                            const resource = additionalResources.find(r => r.id === selected.resourceId);
+                            if (!resource) return null;
+                            return (
+                              <li key={selected.resourceId}>
+                                {resource.name} × {selected.quantity}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
                     </div>
                   )}
                 </div>

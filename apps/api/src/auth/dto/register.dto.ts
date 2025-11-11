@@ -22,4 +22,19 @@ export class RegisterDto {
   @IsString()
   @IsOptional()
   phone?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(50)
+  vatNumber?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(100)
+  companyName?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(16)
+  fiscalCode?: string;
 }

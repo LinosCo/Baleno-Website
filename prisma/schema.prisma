@@ -88,6 +88,11 @@ model User {
   googleId      String?  @unique
   avatar        String?
 
+  // Billing fields per fatturazione
+  vatNumber     String?  // Partita IVA
+  companyName   String?  // Nome Azienda
+  fiscalCode    String?  // Codice Fiscale
+
   // Metadata
   emailVerified Boolean  @default(false)
   isActive      Boolean  @default(true)

@@ -12,6 +12,9 @@ export default function RegisterPage() {
     firstName: '',
     lastName: '',
     phone: '',
+    vatNumber: '',
+    companyName: '',
+    fiscalCode: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -128,6 +131,57 @@ export default function RegisterPage() {
                 className="form-control"
                 placeholder="+39 123 456 7890"
               />
+            </div>
+
+            {/* Sezione Fatturazione */}
+            <div className="mb-3">
+              <h6 className="fw-bold text-baleno-primary mb-3">Dati per Fatturazione</h6>
+
+              <div className="mb-3">
+                <label htmlFor="companyName" className="form-label fw-semibold">
+                  Nome Azienda <span className="text-muted fw-normal">(opzionale)</span>
+                </label>
+                <input
+                  id="companyName"
+                  type="text"
+                  value={formData.companyName}
+                  onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                  className="form-control"
+                  placeholder="Es: Acme S.r.l."
+                />
+              </div>
+
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <label htmlFor="vatNumber" className="form-label fw-semibold">
+                    Partita IVA <span className="text-muted fw-normal">(opzionale)</span>
+                  </label>
+                  <input
+                    id="vatNumber"
+                    type="text"
+                    value={formData.vatNumber}
+                    onChange={(e) => setFormData({ ...formData, vatNumber: e.target.value })}
+                    className="form-control"
+                    placeholder="IT12345678901"
+                    maxLength={16}
+                  />
+                </div>
+
+                <div className="col-md-6">
+                  <label htmlFor="fiscalCode" className="form-label fw-semibold">
+                    Codice Fiscale <span className="text-muted fw-normal">(opzionale)</span>
+                  </label>
+                  <input
+                    id="fiscalCode"
+                    type="text"
+                    value={formData.fiscalCode}
+                    onChange={(e) => setFormData({ ...formData, fiscalCode: e.target.value.toUpperCase() })}
+                    className="form-control"
+                    placeholder="RSSMRA80A01H501X"
+                    maxLength={16}
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="mb-3">
