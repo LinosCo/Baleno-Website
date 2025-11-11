@@ -585,8 +585,8 @@ export default function NewBookingWizardPage() {
                             required
                             min={
                               // Se data fine = data inizio, ora deve essere > ora inizio
-                              bookingData.endTime?.split('T')[0] === bookingData.startTime?.split('T')[0] && bookingData.startTime
-                                ? bookingData.startTime.split('T')[1]?.slice(0, 5)
+                              bookingData.endTime?.split('T')[0] === bookingData.startTime?.split('T')[0] && bookingData.startTime?.split('T')[1]
+                                ? bookingData.startTime.split('T')[1].slice(0, 5)
                                 : // Se data fine = oggi, ora deve essere >= ora corrente
                                 bookingData.endTime?.split('T')[0] === new Date().toISOString().split('T')[0]
                                 ? new Date().toTimeString().slice(0, 5)
