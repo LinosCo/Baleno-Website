@@ -41,7 +41,8 @@ export default function ProfilePage() {
       return;
     }
 
-    fetch('http://localhost:4000/api/auth/me', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+    fetch(`${apiUrl}/auth/me`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -69,7 +70,8 @@ export default function ProfilePage() {
 
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await fetch(`http://localhost:4000/api/users/${user?.id}`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+      const response = await fetch(`${apiUrl}/users/${user?.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +110,8 @@ export default function ProfilePage() {
 
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await fetch(`http://localhost:4000/api/users/${user?.id}/password`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+      const response = await fetch(`${apiUrl}/users/${user?.id}/password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
