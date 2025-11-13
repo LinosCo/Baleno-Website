@@ -348,11 +348,12 @@ export default function AdminResourcesPage() {
                   <div className="d-flex flex-column gap-2 mt-auto">
                     <button
                       onClick={() => handleToggleActive(resource)}
-                      className={`btn btn-sm fw-semibold ${
+                      className={`btn btn-link btn-sm text-decoration-none fw-semibold p-0 ${
                         resource.isActive
-                          ? 'btn-outline-danger'
-                          : 'btn-outline-success'
+                          ? 'text-muted'
+                          : 'text-success'
                       }`}
+                      style={{ textAlign: 'left' }}
                       title={resource.isActive ? 'Disattiva risorsa' : 'Attiva risorsa'}
                     >
                       {resource.isActive ? '⏸ Disattiva' : '✓ Attiva'}
