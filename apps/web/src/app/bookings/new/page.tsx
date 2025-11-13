@@ -156,6 +156,8 @@ export default function NewBookingWizardPage() {
         additionalResources: selectedAdditionalResources.length > 0 ? selectedAdditionalResources : undefined,
       };
 
+      console.log('Creating booking with payload:', payload);
+
       const response = await fetch(API_ENDPOINTS.bookings, {
         method: 'POST',
         headers: {
@@ -165,7 +167,10 @@ export default function NewBookingWizardPage() {
         body: JSON.stringify(payload),
       });
 
+      console.log('Response status:', response.status);
+
       const responseData = await response.json();
+      console.log('Response data:', responseData);
 
       if (!response.ok) {
         throw new Error(responseData.message || 'Errore nella creazione della prenotazione');
@@ -176,6 +181,7 @@ export default function NewBookingWizardPage() {
         router.push(`/bookings/${responseData.id}/payment`);
       }, 1500);
     } catch (err: any) {
+      console.error('Booking creation error:', err);
       setError(err.message || 'Errore nella creazione della prenotazione');
     } finally {
       setSubmitting(false);
@@ -894,25 +900,6 @@ export default function NewBookingWizardPage() {
                         </div>
                         <div className="display-5 fw-bold text-primary">
                           €{calculatePrice().toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="card border-0 mt-4" style={{ backgroundColor: '#fff3cd', borderLeft: '4px solid #ffc107 !important' }}>
-                    <div className="card-body">
-                      <div className="d-flex align-items-start">
-                        <div className="flex-shrink-0 me-3">
-                          <svg width="24" height="24" fill="#856404" viewBox="0 0 16 16">
-                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
-                          </svg>
-                        </div>
-                        <div className="flex-grow-1">
-                          <h6 className="fw-bold mb-2" style={{ color: '#856404' }}>Importante - Approvazione Richiesta</h6>
-                          <p className="mb-0 small" style={{ color: '#856404', lineHeight: '1.6' }}>
-                            La tua prenotazione sarà in stato <strong>PENDING</strong> fino all'approvazione da parte di un amministratore.
-                            Riceverai una notifica via email quando verrà approvata o rifiutata.
-                          </p>
                         </div>
                       </div>
                     </div>
