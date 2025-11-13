@@ -36,12 +36,19 @@ function RegisterForm() {
       localStorage.setItem('refreshToken', data.refreshToken);
       localStorage.setItem('user', JSON.stringify(data.user));
 
+      // Debug: Log redirect URL
+      console.log('[Register] Redirect URL from params:', redirectUrl);
+      console.log('[Register] User role:', data.user.role);
+
       // Priorità al redirect URL se presente, altrimenti vai alla dashboard/admin
       if (redirectUrl) {
+        console.log('[Register] Redirecting to:', redirectUrl);
         window.location.href = redirectUrl;
       } else if (data.user.role === 'ADMIN' || data.user.role === 'COMMUNITY_MANAGER') {
+        console.log('[Register] Redirecting to admin');
         window.location.href = '/admin';
       } else {
+        console.log('[Register] Redirecting to dashboard');
         window.location.href = '/dashboard';
       }
     } catch (err: any) {
@@ -241,7 +248,7 @@ function RegisterForm() {
             <p className="text-muted mb-0">
               Hai già un account?{' '}
               <Link
-                href="/login"
+                href={redirectUrl ? `/login?redirect=${encodeURIComponent(redirectUrl)}` : '/login'}
                 className="fw-semibold text-decoration-none"
                 style={{ color: 'var(--baleno-primary)' }}
               >

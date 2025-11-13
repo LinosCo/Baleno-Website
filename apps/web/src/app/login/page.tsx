@@ -28,12 +28,19 @@ function LoginForm() {
       localStorage.setItem('refreshToken', data.refreshToken);
       localStorage.setItem('user', JSON.stringify(data.user));
 
+      // Debug: Log redirect URL
+      console.log('[Login] Redirect URL from params:', redirectUrl);
+      console.log('[Login] User role:', data.user.role);
+
       // Se c'è un redirect URL, usalo (per flusso prenotazione)
       if (redirectUrl) {
+        console.log('[Login] Redirecting to:', redirectUrl);
         window.location.href = redirectUrl;
       } else if (data.user.role === 'ADMIN' || data.user.role === 'COMMUNITY_MANAGER') {
+        console.log('[Login] Redirecting to admin');
         window.location.href = '/admin';
       } else {
+        console.log('[Login] Redirecting to dashboard');
         window.location.href = '/dashboard';
       }
     } catch (err: any) {
