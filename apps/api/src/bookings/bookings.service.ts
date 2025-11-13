@@ -356,6 +356,41 @@ export class BookingsService {
     return { message: 'Booking cancelled successfully' };
   }
 
+  async delete(id: string) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id },
+      include: {
+        payments: true,
+        additionalResources: true,
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+
+    // Delete payments first (has Restrict constraint)
+    if (booking.payments.length > 0) {
+      await this.prisma.payment.deleteMany({
+        where: { bookingId: id },
+      });
+    }
+
+    // Delete additional resources
+    if (booking.additionalResources.length > 0) {
+      await this.prisma.bookingResource.deleteMany({
+        where: { bookingId: id },
+      });
+    }
+
+    // Delete the booking
+    await this.prisma.booking.delete({
+      where: { id },
+    });
+
+    return { message: 'Booking deleted successfully' };
+  }
+
   async approve(id: string, user: any) {
     const booking = await this.prisma.booking.findUnique({
       where: { id },

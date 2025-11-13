@@ -43,6 +43,12 @@ export class BookingsController {
     return this.bookingsService.cancel(id, cancelDto, user);
   }
 
+  @Delete(':id/force')
+  @Roles(UserRole.ADMIN)
+  async delete(@Param('id') id: string) {
+    return this.bookingsService.delete(id);
+  }
+
   @Put(':id/approve')
   @Roles(UserRole.ADMIN, UserRole.COMMUNITY_MANAGER)
   async approve(@Param('id') id: string, @CurrentUser() user: any) {

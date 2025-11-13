@@ -129,6 +129,38 @@ export default function AdminBookingsPage() {
     setShowModal(true);
   };
 
+  const handleDeleteBooking = async (bookingId: string, bookingTitle: string) => {
+    if (!confirm(`⚠️ ATTENZIONE!\n\nStai per eliminare la prenotazione "${bookingTitle}".\n\nSaranno eliminati anche:\n- Tutti i pagamenti associati\n- Tutte le risorse aggiuntive\n\nQuesta azione NON può essere annullata.\n\nSei sicuro di voler procedere?`)) {
+      return;
+    }
+
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const response = await fetch(`${API_ENDPOINTS.bookings}/${bookingId}/force`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        alert(`✓ Prenotazione "${bookingTitle}" eliminata con successo!`);
+        fetchBookings();
+        if (showModal && selectedBooking?.id === bookingId) {
+          setShowModal(false);
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`❌ Errore nell'eliminazione: ${errorData.message || response.statusText}`);
+        console.error('Delete booking error:', response.status, errorData);
+      }
+    } catch (err) {
+      alert('❌ Errore di rete durante l\'eliminazione');
+      console.error('Delete booking error:', err);
+    }
+  };
+
   const handleExportCsv = async () => {
     setExporting(true);
     const token = localStorage.getItem('accessToken');
@@ -375,12 +407,22 @@ export default function AdminBookingsPage() {
                           </span>
                         </td>
                         <td>
-                          <button
-                            onClick={() => openModal(booking)}
-                            className="btn btn-sm btn-link text-decoration-none fw-semibold"
-                          >
-                            Dettagli →
-                          </button>
+                          <div className="d-flex gap-2">
+                            <button
+                              onClick={() => openModal(booking)}
+                              className="btn btn-sm btn-outline-primary"
+                              title="Visualizza dettagli"
+                            >
+                              Dettagli
+                            </button>
+                            <button
+                              onClick={() => handleDeleteBooking(booking.id, booking.title)}
+                              className="btn btn-sm btn-outline-danger"
+                              title="Elimina prenotazione"
+                            >
+                              Elimina
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -480,6 +522,13 @@ export default function AdminBookingsPage() {
                 </div>
 
                 <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={() => handleDeleteBooking(selectedBooking.id, selectedBooking.title)}
+                  >
+                    Elimina Prenotazione
+                  </button>
                   <button
                     type="button"
                     className="btn btn-secondary"
