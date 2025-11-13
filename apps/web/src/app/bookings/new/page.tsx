@@ -210,13 +210,8 @@ export default function NewBookingWizardPage() {
     if (!token) {
       // Salva i dati della prenotazione in sessionStorage
       sessionStorage.setItem('pendingBooking', JSON.stringify(bookingData));
-      // Chiedi all'utente se ha già un account
-      const hasAccount = confirm('Hai già un account?\n\nClicca OK per fare login\nClicca Annulla per registrarti');
-      if (hasAccount) {
-        router.push('/login?redirect=/bookings/new');
-      } else {
-        router.push('/register?redirect=/bookings/new');
-      }
+      // Vai direttamente alla registrazione (dalla pagina di registrazione c'è il link al login)
+      router.push('/register?redirect=/bookings/new');
       return;
     }
 
