@@ -172,19 +172,45 @@ export class UsersService {
   async remove(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
+      include: {
+        bookings: true,
+        payments: true,
+      },
     });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    // Soft delete - deactivate user
-    await this.prisma.user.update({
+    // Delete user's payments first (has Restrict constraint)
+    if (user.payments.length > 0) {
+      await this.prisma.payment.deleteMany({
+        where: { userId: id },
+      });
+    }
+
+    // Delete user's bookings and associated resources
+    if (user.bookings.length > 0) {
+      // Delete booking resources (additional resources)
+      for (const booking of user.bookings) {
+        await this.prisma.bookingResource.deleteMany({
+          where: { bookingId: booking.id },
+        });
+      }
+
+      // Delete bookings
+      await this.prisma.booking.deleteMany({
+        where: { userId: id },
+      });
+    }
+
+    // RefreshTokens and Notifications will be deleted automatically (Cascade)
+    // Now delete the user
+    await this.prisma.user.delete({
       where: { id },
-      data: { isActive: false },
     });
 
-    return { message: 'User deactivated successfully' };
+    return { message: 'User deleted successfully' };
   }
 
   async updateRole(id: string, roleDto: { role: UserRole }) {

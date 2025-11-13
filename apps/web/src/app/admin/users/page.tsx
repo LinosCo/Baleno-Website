@@ -44,15 +44,18 @@ export default function AdminUsersPage() {
   };
 
   const handleDeleteUser = async (userId: string, userName: string) => {
-    if (!confirm(`Sei sicuro di voler eliminare l'utente ${userName}? Questa azione non può essere annullata.`)) {
+    if (!confirm(`⚠️ ATTENZIONE!\n\nStai per eliminare l'utente ${userName}.\n\nSaranno eliminati anche:\n- Tutte le prenotazioni\n- Tutti i pagamenti\n- Tutti i dati associati\n\nQuesta azione NON può essere annullata.\n\nSei sicuro di voler procedere?`)) {
       return;
     }
 
     try {
       await usersAPI.delete(userId);
+      alert(`✓ Utente ${userName} eliminato con successo!`);
       fetchUsers();
     } catch (err: any) {
-      alert(err.message || 'Errore nell\'eliminazione dell\'utente');
+      const errorMessage = err.response?.data?.message || err.message || 'Errore nell\'eliminazione dell\'utente';
+      alert(`❌ Errore: ${errorMessage}`);
+      console.error('Delete user error:', err);
     }
   };
 
