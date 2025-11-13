@@ -14,6 +14,11 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
 
+  // Debug: Log on component mount
+  console.log('[Login] Component mounted');
+  console.log('[Login] Search params:', searchParams.toString());
+  console.log('[Login] Redirect URL:', redirectUrl);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');

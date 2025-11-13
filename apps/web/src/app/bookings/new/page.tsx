@@ -210,6 +210,8 @@ export default function NewBookingWizardPage() {
     if (!token) {
       // Salva i dati della prenotazione in sessionStorage
       sessionStorage.setItem('pendingBooking', JSON.stringify(bookingData));
+      console.log('[Booking] No token found, redirecting to register with redirect parameter');
+      console.log('[Booking] Pending booking data saved to sessionStorage');
       // Vai direttamente alla registrazione (dalla pagina di registrazione c'è il link al login)
       router.push('/register?redirect=/bookings/new');
       return;

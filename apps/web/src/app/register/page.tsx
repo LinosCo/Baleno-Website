@@ -9,6 +9,12 @@ import { authAPI } from '../../lib/api-client';
 function RegisterForm() {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
+
+  // Debug: Log on component mount
+  console.log('[Register] Component mounted');
+  console.log('[Register] Search params:', searchParams.toString());
+  console.log('[Register] Redirect URL:', redirectUrl);
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
