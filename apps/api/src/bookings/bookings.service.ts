@@ -119,8 +119,13 @@ export class BookingsService {
       });
     }
 
-    // Send confirmation email
-    await this.notificationsService.sendBookingConfirmation(booking, user);
+    // Send confirmation email (non-blocking)
+    try {
+      await this.notificationsService.sendBookingConfirmation(booking, user);
+    } catch (emailError) {
+      // Log error but don't block booking creation
+      console.error('Failed to send booking confirmation email:', emailError);
+    }
 
     // Fetch complete booking with additional resources
     const completeBooking = await this.prisma.booking.findUnique({
@@ -340,8 +345,12 @@ export class BookingsService {
       await this.paymentsService.refundPayment(payment.id);
     }
 
-    // Send cancellation email
-    await this.notificationsService.sendBookingCancellation(booking, user);
+    // Send cancellation email (non-blocking)
+    try {
+      await this.notificationsService.sendBookingCancellation(booking, user);
+    } catch (emailError) {
+      console.error('Failed to send booking cancellation email:', emailError);
+    }
 
     return { message: 'Booking cancelled successfully' };
   }
@@ -377,8 +386,12 @@ export class BookingsService {
       },
     });
 
-    // Send approval email
-    await this.notificationsService.sendBookingApproval(updatedBooking, booking.user);
+    // Send approval email (non-blocking)
+    try {
+      await this.notificationsService.sendBookingApproval(updatedBooking, booking.user);
+    } catch (emailError) {
+      console.error('Failed to send booking approval email:', emailError);
+    }
 
     // Log audit
     await this.auditLogsService.log({
@@ -433,12 +446,16 @@ export class BookingsService {
       await this.paymentsService.refundPayment(payment.id);
     }
 
-    // Send rejection email
-    await this.notificationsService.sendBookingRejection(
-      booking,
-      booking.user,
-      rejectDto.rejectionReason,
-    );
+    // Send rejection email (non-blocking)
+    try {
+      await this.notificationsService.sendBookingRejection(
+        booking,
+        booking.user,
+        rejectDto.rejectionReason,
+      );
+    } catch (emailError) {
+      console.error('Failed to send booking rejection email:', emailError);
+    }
 
     // Log audit
     await this.auditLogsService.log({
