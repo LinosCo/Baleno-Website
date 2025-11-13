@@ -120,13 +120,14 @@ export class BookingsService {
       });
     }
 
-    // Send confirmation email (non-blocking)
-    try {
-      await this.notificationsService.sendBookingConfirmation(booking, user);
-    } catch (emailError) {
-      // Log error but don't block booking creation
-      console.error('Failed to send booking confirmation email:', emailError);
-    }
+    // Send confirmation email (non-blocking) - DISABLED TEMPORARILY
+    // try {
+    //   await this.notificationsService.sendBookingConfirmation(booking, user);
+    // } catch (emailError) {
+    //   // Log error but don't block booking creation
+    //   console.error('Failed to send booking confirmation email:', emailError);
+    // }
+    console.log('Email notifications disabled - booking created successfully');
 
     // Fetch complete booking with additional resources
     const completeBooking = await this.prisma.booking.findUnique({
