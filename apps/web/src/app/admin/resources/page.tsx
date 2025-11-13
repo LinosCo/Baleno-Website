@@ -173,23 +173,35 @@ export default function AdminResourcesPage() {
   const handleToggleActive = async (resource: Resource) => {
     const token = localStorage.getItem('accessToken');
     const newStatus = !resource.isActive;
+    const action = newStatus ? 'attivare' : 'disattivare';
+
+    if (!confirm(`Sei sicuro di voler ${action} la risorsa "${resource.name}"?`)) {
+      return;
+    }
 
     try {
-      await fetch(`${API_ENDPOINTS.resources}/${resource.id}`, {
+      const response = await fetch(`${API_ENDPOINTS.resources}/${resource.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          ...resource,
           isActive: newStatus,
         }),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || response.statusText);
+      }
+
+      alert(`✓ Risorsa "${resource.name}" ${newStatus ? 'attivata' : 'disattivata'} con successo!`);
       fetchResources();
-    } catch (err) {
-      console.error(err);
-      alert('Errore nell\'aggiornamento dello stato');
+    } catch (err: any) {
+      const errorMessage = err.message || 'Errore nell\'aggiornamento dello stato';
+      alert(`❌ ${errorMessage}`);
+      console.error('Toggle active error:', err);
     }
   };
 
@@ -338,11 +350,12 @@ export default function AdminResourcesPage() {
                       onClick={() => handleToggleActive(resource)}
                       className={`btn btn-sm fw-semibold ${
                         resource.isActive
-                          ? 'btn-warning text-dark'
-                          : 'btn-success'
+                          ? 'btn-outline-danger'
+                          : 'btn-outline-success'
                       }`}
+                      title={resource.isActive ? 'Disattiva risorsa' : 'Attiva risorsa'}
                     >
-                      {resource.isActive ? '⏸ Disabilita' : '▶ Abilita'}
+                      {resource.isActive ? '⏸ Disattiva' : '✓ Attiva'}
                     </button>
                     <div className="d-flex gap-2">
                       <button
