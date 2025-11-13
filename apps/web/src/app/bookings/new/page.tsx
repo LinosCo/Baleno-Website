@@ -176,6 +176,9 @@ export default function NewBookingWizardPage() {
         throw new Error(responseData.message || 'Errore nella creazione della prenotazione');
       }
 
+      // Pulisci sessionStorage
+      sessionStorage.removeItem('pendingBooking');
+
       setSuccess('Prenotazione creata con successo! Reindirizzamento al pagamento...');
       setTimeout(() => {
         router.push(`/bookings/${responseData.id}/payment`);
@@ -197,8 +200,13 @@ export default function NewBookingWizardPage() {
     if (!token) {
       // Salva i dati della prenotazione in sessionStorage
       sessionStorage.setItem('pendingBooking', JSON.stringify(bookingData));
-      // Redirect alla registrazione con parametro di ritorno
-      router.push('/register?redirect=/bookings/new');
+      // Chiedi all'utente se ha già un account
+      const hasAccount = confirm('Hai già un account?\n\nClicca OK per fare login\nClicca Annulla per registrarti');
+      if (hasAccount) {
+        router.push('/login?redirect=/bookings/new');
+      } else {
+        router.push('/register?redirect=/bookings/new');
+      }
       return;
     }
 
@@ -303,7 +311,7 @@ export default function NewBookingWizardPage() {
 
           {/* Error/Success Messages */}
           {error && (
-            <div className="alert alert-danger mb-4 border-0" role="alert">
+            <div className="mb-4 p-3 bg-danger bg-opacity-10 text-danger rounded" role="alert">
               {error}
             </div>
           )}
