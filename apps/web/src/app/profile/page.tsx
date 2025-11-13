@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import UserNavbar from '../../components/UserNavbar';
 
 interface User {
   id: string;
@@ -146,17 +147,10 @@ export default function ProfilePage() {
 
   return (
     <div className="min-vh-100 bg-light">
-      {/* Navbar */}
-      <nav className="navbar bg-white shadow-sm">
-        <div className="container-fluid">
-          <h1 className="h4 mb-0 text-baleno-primary fw-bold">Impostazioni Profilo</h1>
-          <Link href="/dashboard" className="text-decoration-none fw-medium" style={{ color: 'var(--baleno-primary)' }}>
-            ← Torna alla dashboard
-          </Link>
-        </div>
-      </nav>
+      <UserNavbar />
 
       <div className="container py-4">
+        <h1 className="h3 fw-bold text-baleno-primary mb-4">Impostazioni Profilo</h1>
         <div style={{ maxWidth: '900px', margin: '0 auto' }} className="d-flex flex-column gap-4">
           {error && (
             <div className="alert alert-danger d-flex align-items-center" role="alert">

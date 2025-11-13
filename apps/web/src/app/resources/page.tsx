@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import UserNavbar from '../../components/UserNavbar';
 
 interface Resource {
   id: string;
@@ -154,25 +155,10 @@ export default function ResourcesPage() {
 
   return (
     <div className="min-vh-100 bg-light">
-      {/* Navbar */}
-      <nav className="navbar bg-white shadow-sm py-3">
-        <div className="container">
-          <h1 className="h4 mb-0 text-baleno-primary fw-bold">Risorse Disponibili</h1>
-          <div className="d-flex gap-3 align-items-center">
-            <Link href="/calendar" className="btn btn-outline-primary">
-              Calendario
-            </Link>
-            <Link href="/" className="text-decoration-none fw-medium d-flex align-items-center gap-1" style={{ color: 'var(--baleno-primary)' }}>
-              <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path fillRule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
-              </svg>
-              Home
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <UserNavbar />
 
-      <div className="container py-5">
+      <div className="container py-4">
+        <h1 className="h3 fw-bold text-baleno-primary mb-4">Risorse Disponibili</h1>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           {error && (
             <div className="alert alert-warning d-flex align-items-start mb-4" role="alert">
