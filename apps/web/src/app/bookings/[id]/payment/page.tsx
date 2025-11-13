@@ -218,8 +218,9 @@ export default function PaymentPage() {
             </div>
 
             {paymentMethod === 'BANK_TRANSFER' && (
-              <div className="alert alert-info">
-                <h6 className="fw-bold mb-2">Coordinate Bancarie</h6>
+              <div className="card border-primary bg-light">
+                <div className="card-body">
+                  <h6 className="fw-bold mb-3">Coordinate Bancarie</h6>
                 <table className="table table-sm table-borderless mb-0">
                   <tbody>
                     <tr>
@@ -245,33 +246,12 @@ export default function PaymentPage() {
                   </tbody>
                 </table>
                 <hr />
-                <p className="small mb-0">
+                <p className="small mb-0 text-muted">
                   <strong>Nota:</strong> La tua prenotazione sarà confermata dopo la verifica del bonifico da parte del nostro staff.
-                  Riceverai una notifica via email una volta completata la verifica.
                 </p>
+                </div>
               </div>
             )}
-
-            {/* Carta di Credito - Disabilitata per ora */}
-            <div className="card border" style={{ opacity: 0.6 }}>
-              <div className="card-body d-flex align-items-center">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  disabled
-                  className="form-check-input me-3"
-                  style={{ width: '20px', height: '20px' }}
-                />
-                <div className="flex-grow-1">
-                  <h6 className="mb-1 fw-bold">Carta di Credito</h6>
-                  <p className="text-muted small mb-0">Pagamento con carta (presto disponibile)</p>
-                </div>
-                <svg width="32" height="32" fill="currentColor" className="text-muted" viewBox="0 0 16 16">
-                  <path d="M11 5.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1z"/>
-                  <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2zm13 2v5H1V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm-1 9H2a1 1 0 0 1-1-1v-1h14v1a1 1 0 0 1-1 1z"/>
-                </svg>
-              </div>
-            </div>
           </div>
         </div>
 
