@@ -92,7 +92,7 @@ export class BookingsService {
       }
     }
 
-    // Create booking
+    // Create booking with APPROVED status (auto-approval if slot is available)
     const booking = await this.prisma.booking.create({
       data: {
         ...bookingData,
@@ -100,7 +100,8 @@ export class BookingsService {
         userId: user.id,
         startTime: start,
         endTime: end,
-        status: BookingStatus.PENDING,
+        status: BookingStatus.APPROVED,
+        approvedAt: new Date(),
       },
       include: {
         resource: true,

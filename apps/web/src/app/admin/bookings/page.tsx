@@ -30,7 +30,6 @@ export default function AdminBookingsPage() {
   const [filter, setFilter] = useState('ALL');
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [rejectionReason, setRejectionReason] = useState('');
   const [exporting, setExporting] = useState(false);
 
   // Filtri di ricerca
@@ -125,66 +124,6 @@ export default function AdminBookingsPage() {
     setFilteredBookings(filtered);
   }, [searchTerm, startDate, endDate, bookings]);
 
-  const handleApprove = async (bookingId: string) => {
-    const token = localStorage.getItem('accessToken');
-
-    try {
-      const response = await fetch(`${API_ENDPOINTS.bookings}/${bookingId}/approve`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        alert('Prenotazione approvata con successo!');
-        fetchBookings();
-        setShowModal(false);
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        alert(`Errore nell'approvazione: ${errorData.message || response.statusText}`);
-        console.error('Approve error:', response.status, errorData);
-      }
-    } catch (err) {
-      alert('Errore di rete durante l\'approvazione');
-      console.error('Approve error:', err);
-    }
-  };
-
-  const handleReject = async (bookingId: string) => {
-    if (!rejectionReason.trim()) {
-      alert('Inserisci un motivo per il rifiuto');
-      return;
-    }
-
-    const token = localStorage.getItem('accessToken');
-
-    try {
-      const response = await fetch(`${API_ENDPOINTS.bookings}/${bookingId}/reject`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ rejectionReason }),
-      });
-
-      if (response.ok) {
-        alert('Prenotazione rifiutata con successo!');
-        fetchBookings();
-        setShowModal(false);
-        setRejectionReason('');
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        alert(`Errore nel rifiuto: ${errorData.message || response.statusText}`);
-        console.error('Reject error:', response.status, errorData);
-      }
-    } catch (err) {
-      alert('Errore di rete durante il rifiuto');
-      console.error('Reject error:', err);
-    }
-  };
-
   const openModal = (booking: Booking) => {
     setSelectedBooking(booking);
     setShowModal(true);
@@ -249,95 +188,9 @@ export default function AdminBookingsPage() {
     'CANCELLED': 'Cancellate'
   };
 
-  // Count pending bookings
-  const pendingCount = bookings.filter(b => b.status === 'PENDING').length;
-  const pendingBookings = bookings.filter(b => b.status === 'PENDING');
-
   return (
     <AdminLayout>
       <div>
-        {/* Banner for pending approvals */}
-        {pendingCount > 0 && filter !== 'PENDING' && (
-          <div className="alert alert-warning d-flex align-items-center justify-content-between mb-4" role="alert">
-            <div className="d-flex align-items-center">
-              <svg width="24" height="24" fill="currentColor" className="me-3" viewBox="0 0 16 16">
-                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
-              </svg>
-              <div>
-                <strong>Hai {pendingCount} {pendingCount === 1 ? 'richiesta' : 'richieste'} in attesa di approvazione</strong>
-              </div>
-            </div>
-            <div className="d-flex gap-2">
-              <button
-                onClick={() => setFilter('PENDING')}
-                className="btn btn-sm btn-warning"
-              >
-                Visualizza Richieste
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Quick approval banner for first pending booking */}
-        {(() => {
-          const firstPending = pendingBookings[0];
-          if (pendingCount > 0 && filter === 'PENDING' && firstPending) {
-            return (
-              <div className="card border-warning mb-4 shadow-sm">
-                <div className="card-header bg-warning text-dark">
-                  <h6 className="mb-0 fw-bold">⚡ Approvazione Rapida</h6>
-                </div>
-                <div className="card-body">
-                  <div className="row align-items-center">
-                    <div className="col-md-8">
-                      <h5 className="fw-bold mb-2">{firstPending.title}</h5>
-                      <div className="small mb-2">
-                        <span className="text-muted">Utente:</span> <strong>{firstPending.user.firstName} {firstPending.user.lastName}</strong>
-                        <span className="mx-2">•</span>
-                        <span className="text-muted">Risorsa:</span> <strong>{firstPending.resource.name}</strong>
-                        <span className="mx-2">•</span>
-                        <span className="text-muted">Data:</span> <strong>{new Date(firstPending.startTime).toLocaleDateString('it-IT', {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}</strong>
-                      </div>
-                      {firstPending.description && (
-                        <p className="text-muted small mb-0">{firstPending.description.substring(0, 100)}{firstPending.description.length > 100 ? '...' : ''}</p>
-                      )}
-                    </div>
-                    <div className="col-md-4 text-md-end mt-3 mt-md-0">
-                      <div className="d-flex gap-2 justify-content-md-end">
-                        <button
-                          onClick={() => handleApprove(firstPending.id)}
-                          className="btn btn-success"
-                        >
-                          ✓ Approva
-                        </button>
-                        <button
-                          onClick={() => openModal(firstPending)}
-                          className="btn btn-danger"
-                        >
-                          ✕ Rifiuta
-                        </button>
-                        <button
-                          onClick={() => openModal(firstPending)}
-                          className="btn btn-outline-secondary"
-                        >
-                          Dettagli
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          }
-          return null;
-        })()}
-
         {/* Header */}
         <div className="mb-4">
           <h1 className="h3 fw-bold text-baleno-primary">Gestione Prenotazioni</h1>
@@ -624,38 +477,6 @@ export default function AdminBookingsPage() {
                       </span>
                     </div>
                   </div>
-
-                  {selectedBooking.status === 'PENDING' && (
-                    <>
-                      <div className="mb-4">
-                        <label className="form-label fw-semibold">
-                          Motivo Rifiuto (opzionale)
-                        </label>
-                        <textarea
-                          value={rejectionReason}
-                          onChange={(e) => setRejectionReason(e.target.value)}
-                          className="form-control"
-                          rows={3}
-                          placeholder="Inserisci il motivo del rifiuto..."
-                        />
-                      </div>
-
-                      <div className="d-flex gap-2">
-                        <button
-                          onClick={() => handleApprove(selectedBooking.id)}
-                          className="btn btn-success flex-fill fw-semibold"
-                        >
-                          ✓ Approva
-                        </button>
-                        <button
-                          onClick={() => handleReject(selectedBooking.id)}
-                          className="btn btn-danger flex-fill fw-semibold"
-                        >
-                          ✕ Rifiuta
-                        </button>
-                      </div>
-                    </>
-                  )}
                 </div>
 
                 <div className="modal-footer">

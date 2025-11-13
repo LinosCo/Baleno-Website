@@ -19,18 +19,19 @@ export class NotificationsService {
   }
 
   async sendBookingConfirmation(booking: any, user: any) {
-    const subject = 'Booking Confirmation - Baleno San Zeno';
+    const subject = 'Prenotazione Confermata - Baleno San Zeno';
     const html = `
-      <h2>Booking Confirmed</h2>
-      <p>Dear ${user.firstName},</p>
-      <p>Your booking has been confirmed:</p>
+      <h2>Prenotazione Confermata</h2>
+      <p>Ciao ${user.firstName},</p>
+      <p>La tua prenotazione è stata confermata automaticamente:</p>
       <ul>
-        <li><strong>Resource:</strong> ${booking.resource.name}</li>
-        <li><strong>Date:</strong> ${new Date(booking.startTime).toLocaleDateString()}</li>
-        <li><strong>Time:</strong> ${new Date(booking.startTime).toLocaleTimeString()} - ${new Date(booking.endTime).toLocaleTimeString()}</li>
-        <li><strong>Status:</strong> Pending Approval</li>
+        <li><strong>Risorsa:</strong> ${booking.resource.name}</li>
+        <li><strong>Data:</strong> ${new Date(booking.startTime).toLocaleDateString('it-IT')}</li>
+        <li><strong>Orario:</strong> ${new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} - ${new Date(booking.endTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</li>
+        <li><strong>Stato:</strong> Confermata</li>
       </ul>
-      <p>You will receive another email once your booking is approved by our team.</p>
+      <p>Ricordati di completare il pagamento tramite bonifico bancario per finalizzare la prenotazione.</p>
+      <p>A presto!</p>
     `;
 
     return this.sendEmail(user.email, subject, html);
