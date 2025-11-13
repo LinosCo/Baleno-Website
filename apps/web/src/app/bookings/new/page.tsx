@@ -58,17 +58,10 @@ export default function NewBookingWizardPage() {
       try {
         const parsed = JSON.parse(savedData);
         setBookingData(parsed);
-        setCurrentStep(5); // Vai direttamente alla conferma
+        setCurrentStep(5); // Vai allo step di conferma per rivedere i dati
+        // Rimuovi i dati dal sessionStorage dopo averli caricati
         sessionStorage.removeItem('pendingBooking');
-
-        // Auto-submit dopo il caricamento dei dati se l'utente è loggato
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-          // Aspetta che React aggiorni lo stato, poi esegui il submit
-          setTimeout(() => {
-            handleSubmitWithData(parsed, token);
-          }, 100);
-        }
+        console.log('[Booking] Dati prenotazione caricati da sessionStorage, pronto per conferma');
       } catch (err) {
         console.error('Error parsing saved booking data:', err);
       }
