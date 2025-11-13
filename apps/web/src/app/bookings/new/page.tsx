@@ -158,6 +158,10 @@ export default function NewBookingWizardPage() {
 
       console.log('Creating booking with payload:', payload);
 
+      // Crea AbortController per timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 secondi timeout
+
       const response = await fetch(API_ENDPOINTS.bookings, {
         method: 'POST',
         headers: {
@@ -165,8 +169,10 @@ export default function NewBookingWizardPage() {
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
       console.log('Response status:', response.status);
 
       const responseData = await response.json();
@@ -185,7 +191,11 @@ export default function NewBookingWizardPage() {
       }, 1500);
     } catch (err: any) {
       console.error('Booking creation error:', err);
-      setError(err.message || 'Errore nella creazione della prenotazione');
+      if (err.name === 'AbortError') {
+        setError('La richiesta ha impiegato troppo tempo. Verifica la connessione e riprova.');
+      } else {
+        setError(err.message || 'Errore nella creazione della prenotazione');
+      }
     } finally {
       setSubmitting(false);
     }
