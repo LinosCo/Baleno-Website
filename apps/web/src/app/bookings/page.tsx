@@ -232,14 +232,6 @@ export default function BookingsPage() {
                             Cancella
                           </button>
                         )}
-
-                        {booking.status === 'APPROVED' && !booking.payment && (
-                          <button
-                            className="btn btn-warning btn-sm fw-semibold"
-                          >
-                            Paga Ora
-                          </button>
-                        )}
                       </div>
                     </div>
                   </div>
