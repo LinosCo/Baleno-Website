@@ -43,6 +43,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: 'Risorse', href: '/admin/resources', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
     { name: 'Utenti', href: '/admin/users', allowedRoles: ['ADMIN'] },
     { name: 'Pagamenti', href: '/admin/payments', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
+    { name: 'Impostazioni Pagamento', href: '/admin/payment-settings', allowedRoles: ['ADMIN'] },
+    { name: 'Bonifici Bancari', href: '/admin/bank-transfers', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
     { name: 'Calendario', href: '/admin/calendar', allowedRoles: ['ADMIN', 'COMMUNITY_MANAGER'] },
     { name: 'Report', href: '/admin/reports', allowedRoles: ['ADMIN'] },
     { name: 'Audit Logs', href: '/admin/audit-logs', allowedRoles: ['ADMIN'] },
