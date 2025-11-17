@@ -205,10 +205,10 @@ export default function NewBookingWizardPage() {
       // Pulisci sessionStorage
       sessionStorage.removeItem('pendingBooking');
 
-      setSuccess('Prenotazione creata con successo! Reindirizzamento al pagamento...');
+      setSuccess('Prenotazione inviata con successo! Riceverai una email quando l\'amministratore approverà la richiesta con le istruzioni per il pagamento.');
       setTimeout(() => {
-        router.push(`/bookings/${responseData.id}/payment`);
-      }, 1500);
+        router.push('/dashboard');
+      }, 3000);
     } catch (err: any) {
       console.error('Booking creation error:', err);
       if (err.name === 'AbortError') {
