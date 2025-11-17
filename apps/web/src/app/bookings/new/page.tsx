@@ -24,6 +24,18 @@ interface Resource {
   tags: string[];
 }
 
+interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string | null;
+  taxCode: string | null;
+  vatNumber: string | null;
+  companyName: string | null;
+  address: string | null;
+}
+
 export default function NewBookingWizardPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
@@ -32,6 +44,7 @@ export default function NewBookingWizardPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [user, setUser] = useState<User | null>(null);
 
   // Search and filters for Step 1
   const [searchTerm, setSearchTerm] = useState('');
@@ -66,6 +79,19 @@ export default function NewBookingWizardPage() {
       } catch (err) {
         console.error('Error parsing saved booking data:', err);
       }
+    }
+
+    // Carica dati utente se autenticato
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+        .then(res => res.json())
+        .then(data => setUser(data))
+        .catch(err => console.error('Error fetching user data:', err));
     }
 
     // Endpoint pubblico - nessuna autenticazione richiesta per visualizzare risorse
@@ -880,6 +906,56 @@ export default function NewBookingWizardPage() {
                     </div>
                   </div>
 
+                  {user && (
+                    <div className="mb-4">
+                      <h5 className="fw-bold mb-3">Dati Fatturazione</h5>
+                      <div className="card border-0 bg-light">
+                        <div className="card-body">
+                          <div className="row g-3">
+                            <div className="col-md-6">
+                              <div className="small text-muted">Nome Completo</div>
+                              <div className="fw-semibold">{user.firstName} {user.lastName}</div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="small text-muted">Email</div>
+                              <div className="fw-semibold">{user.email}</div>
+                            </div>
+                            {user.phone && (
+                              <div className="col-md-6">
+                                <div className="small text-muted">Telefono</div>
+                                <div className="fw-semibold">{user.phone}</div>
+                              </div>
+                            )}
+                            {user.companyName && (
+                              <div className="col-md-6">
+                                <div className="small text-muted">Azienda</div>
+                                <div className="fw-semibold">{user.companyName}</div>
+                              </div>
+                            )}
+                            {user.vatNumber && (
+                              <div className="col-md-6">
+                                <div className="small text-muted">Partita IVA</div>
+                                <div className="fw-semibold">{user.vatNumber}</div>
+                              </div>
+                            )}
+                            {user.taxCode && (
+                              <div className="col-md-6">
+                                <div className="small text-muted">Codice Fiscale</div>
+                                <div className="fw-semibold">{user.taxCode}</div>
+                              </div>
+                            )}
+                            {user.address && (
+                              <div className="col-12">
+                                <div className="small text-muted">Indirizzo</div>
+                                <div className="fw-semibold">{user.address}</div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="card border-primary border-2 bg-light">
                     <div className="card-body">
                       <div className="d-flex justify-content-between align-items-center">
@@ -933,7 +1009,7 @@ export default function NewBookingWizardPage() {
                         Creazione in corso...
                       </>
                     ) : (
-                      '✓ Conferma Prenotazione'
+                      'Vai al Pagamento'
                     )}
                   </button>
                 )}
