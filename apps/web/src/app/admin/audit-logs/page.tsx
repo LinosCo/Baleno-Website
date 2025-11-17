@@ -303,15 +303,17 @@ export default function AuditLogsPage() {
         </div>
 
         {/* Info Footer */}
-        <div className="alert alert-info mt-3 mb-0 d-flex align-items-start" role="alert">
-          <svg width="18" height="18" fill="currentColor" className="me-2 flex-shrink-0 mt-1" viewBox="0 0 16 16">
-            <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
-            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
-          </svg>
-          <small>
-            <strong>Nota:</strong> Gli audit logs registrano tutte le azioni importanti eseguite nel sistema.
-            I log vengono mantenuti per 90 giorni e poi eliminati automaticamente.
-          </small>
+        <div className="mt-3 mb-0 p-3 bg-light border-start border-4 border-primary rounded">
+          <div className="d-flex align-items-start gap-2">
+            <svg width="20" height="20" fill="currentColor" className="text-primary flex-shrink-0" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+              <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+            </svg>
+            <div className="small text-muted">
+              <strong className="text-dark">Nota:</strong> Gli audit logs registrano tutte le azioni importanti eseguite nel sistema.
+              I log vengono mantenuti per 90 giorni e poi eliminati automaticamente.
+            </div>
+          </div>
         </div>
       </div>
     </AdminLayout>
