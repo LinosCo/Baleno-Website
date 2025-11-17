@@ -66,13 +66,17 @@ export default function PaymentSettingsPage() {
     setSaving(true);
     try {
       const token = localStorage.getItem('accessToken');
+
+      // Filter out fields that shouldn't be sent (id, createdAt, updatedAt)
+      const { id, createdAt, updatedAt, ...settingsToSave } = settings as any;
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/payment-settings`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(settings),
+        body: JSON.stringify(settingsToSave),
       });
 
       if (!response.ok) {
