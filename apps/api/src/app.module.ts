@@ -15,6 +15,8 @@ import { ReportsModule } from './reports/reports.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { UploadModule } from './upload/upload.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { CommonModule } from './common/common.module';
+import { AdminModule } from './admin/admin.module';
 import { AppController } from './app.controller';
 import { SeedController } from './seed-endpoint.controller';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -41,6 +43,9 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     // Database
     PrismaModule,
 
+    // Common services
+    CommonModule,
+
     // Feature modules
     AuthModule,
     UsersModule,
@@ -51,6 +56,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     ReportsModule,
     AuditLogsModule,
     UploadModule,
+    AdminModule,
   ],
   controllers: [AppController, SeedController],
   providers: [

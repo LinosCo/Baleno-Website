@@ -1,18 +1,25 @@
-import { Injectable, ForbiddenException, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException, BadRequestException, ConflictException, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaymentsService } from '../payments/payments.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { AuditLogsService } from '../audit-logs/audit-logs.service';
-import { CreateBookingDto, UpdateBookingDto, RejectBookingDto, CancelBookingDto } from './dto';
-import { BookingStatus, UserRole, AuditAction } from '@prisma/client';
+import { ResendService } from '../common/services/resend.service';
+import { CreateBookingDto, UpdateBookingDto, CancelBookingDto } from './dto';
+import { ApproveBookingDto } from './dto/approve-booking.dto';
+import { RejectBookingDto, REJECTION_REASON_MESSAGES } from './dto/reject-booking.dto';
+import { BookingStatus, UserRole, AuditAction, PaymentStatus } from '@prisma/client';
 
 @Injectable()
 export class BookingsService {
+  private readonly logger = new Logger(BookingsService.name);
+
   constructor(
     private prisma: PrismaService,
     private paymentsService: PaymentsService,
     private notificationsService: NotificationsService,
     private auditLogsService: AuditLogsService,
+    private resendService: ResendService,
   ) {}
 
   async create(createDto: CreateBookingDto, user: any) {
@@ -392,12 +399,15 @@ export class BookingsService {
     return { message: 'Booking deleted successfully' };
   }
 
-  async approve(id: string, user: any) {
+  async approve(id: string, approveDto: ApproveBookingDto, user: any) {
     const booking = await this.prisma.booking.findUnique({
       where: { id },
       include: {
         resource: true,
         user: true,
+        additionalResources: {
+          include: { resource: true },
+        },
       },
     });
 
@@ -409,6 +419,17 @@ export class BookingsService {
       throw new BadRequestException('Can only approve pending bookings');
     }
 
+    // Calculate total amount
+    const duration = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60);
+    let totalAmount = Number(booking.resource.pricePerHour) * duration;
+
+    // Add additional resources
+    for (const additionalResource of booking.additionalResources) {
+      totalAmount += Number(additionalResource.resource.pricePerHour) * additionalResource.quantity * duration;
+    }
+
+    const amountInCents = Math.round(totalAmount * 100);
+
     // Update booking status
     const updatedBooking = await this.prisma.booking.update({
       where: { id },
@@ -416,18 +437,61 @@ export class BookingsService {
         status: BookingStatus.APPROVED,
         approvedBy: user.id,
         approvedAt: new Date(),
+        notes: approveDto.notes,
       },
       include: {
         resource: true,
         user: true,
+        additionalResources: {
+          include: { resource: true },
+        },
       },
     });
 
-    // Send approval email (non-blocking)
+    // Get payment settings
+    const settings = await this.prisma.paymentSettings.findFirst();
+
+    // Prepare email data
+    const emailDetails: any = {
+      id: booking.id,
+      resourceName: booking.resource.name,
+      startDate: booking.startTime,
+      endDate: booking.endTime,
+      totalAmount: amountInCents,
+    };
+
+    const paymentDetails: any = {};
+
+    // Create Stripe checkout session if enabled
+    if (settings?.stripeEnabled) {
+      try {
+        const stripeSession = await this.paymentsService.createCheckoutSession(booking.id);
+        paymentDetails.stripePaymentUrl = stripeSession.url;
+      } catch (error) {
+        this.logger.error('Failed to create Stripe checkout session', error);
+      }
+    }
+
+    // Create bank transfer payment if enabled
+    if (settings?.bankTransferEnabled) {
+      try {
+        const bankTransfer = await this.paymentsService.createBankTransferPayment(booking.id);
+        paymentDetails.bankTransferDetails = bankTransfer.bankDetails;
+      } catch (error) {
+        this.logger.error('Failed to create bank transfer payment', error);
+      }
+    }
+
+    // Send approval email with payment options
     try {
-      await this.notificationsService.sendBookingApproval(updatedBooking, booking.user);
+      await this.resendService.sendBookingApprovedEmail(
+        booking.user.email,
+        emailDetails,
+        paymentDetails,
+      );
+      this.logger.log(`Approval email sent to ${booking.user.email} for booking ${id}`);
     } catch (emailError) {
-      console.error('Failed to send booking approval email:', emailError);
+      this.logger.error('Failed to send booking approval email:', emailError);
     }
 
     // Log audit
@@ -443,6 +507,8 @@ export class BookingsService {
         bookingTitle: booking.title,
         resourceName: booking.resource.name,
         userName: `${booking.user.firstName} ${booking.user.lastName}`,
+        totalAmount: amountInCents,
+        notes: approveDto.notes,
       },
     });
 
@@ -466,32 +532,55 @@ export class BookingsService {
       throw new BadRequestException('Can only reject pending bookings');
     }
 
+    // Get user-friendly reason message
+    const reasonMessage = REJECTION_REASON_MESSAGES[rejectDto.reason] || 'Motivo non specificato';
+
     // Update booking status
-    await this.prisma.booking.update({
+    const updatedBooking = await this.prisma.booking.update({
       where: { id },
       data: {
         status: BookingStatus.REJECTED,
         rejectedBy: user.id,
         rejectedAt: new Date(),
-        rejectionReason: rejectDto.rejectionReason,
+        rejectionReason: `${reasonMessage}${rejectDto.additionalNotes ? ` - ${rejectDto.additionalNotes}` : ''}`,
+      },
+      include: {
+        resource: true,
+        user: true,
       },
     });
 
     // Process refund if payment exists
     const payment = await this.paymentsService.findByBookingId(id);
-    if (payment && payment.status === 'SUCCEEDED') {
-      await this.paymentsService.refundPayment(payment.id);
+    if (payment && payment.status === PaymentStatus.SUCCEEDED) {
+      try {
+        await this.paymentsService.refundPayment(payment.id);
+        this.logger.log(`Payment ${payment.id} refunded for rejected booking ${id}`);
+      } catch (error) {
+        this.logger.error('Failed to refund payment:', error);
+      }
     }
 
-    // Send rejection email (non-blocking)
+    // Send rejection email with ResendService
     try {
-      await this.notificationsService.sendBookingRejection(
-        booking,
-        booking.user,
-        rejectDto.rejectionReason,
+      await this.resendService.sendBookingRejectedEmail(
+        booking.user.email,
+        {
+          id: booking.id,
+          resourceName: booking.resource.name,
+          startDate: booking.startTime,
+          endDate: booking.endTime,
+          requestDate: booking.createdAt,
+        },
+        {
+          reason: rejectDto.reason.toString(),
+          reasonMessage,
+          additionalNotes: rejectDto.additionalNotes,
+        },
       );
+      this.logger.log(`Rejection email sent to ${booking.user.email} for booking ${id}`);
     } catch (emailError) {
-      console.error('Failed to send booking rejection email:', emailError);
+      this.logger.error('Failed to send booking rejection email:', emailError);
     }
 
     // Log audit
@@ -502,16 +591,18 @@ export class BookingsService {
       action: AuditAction.REJECT,
       entity: 'booking',
       entityId: id,
-      description: `Prenotazione "${booking.title}" rifiutata`,
+      description: `Prenotazione "${booking.title}" rifiutata - ${reasonMessage}`,
       metadata: {
         bookingTitle: booking.title,
         resourceName: booking.resource.name,
         userName: `${booking.user.firstName} ${booking.user.lastName}`,
-        reason: rejectDto.rejectionReason,
+        reason: rejectDto.reason,
+        reasonMessage,
+        additionalNotes: rejectDto.additionalNotes,
       },
     });
 
-    return { message: 'Booking rejected successfully' };
+    return { message: 'Booking rejected successfully', booking: updatedBooking };
   }
 
   async checkAvailability(query: {
@@ -595,5 +686,176 @@ export class BookingsService {
       return `"${field.replace(/"/g, '""')}"`;
     }
     return field;
+  }
+
+  /**
+   * Cron job: Send payment reminders every 6 hours
+   * Checks for approved bookings with pending payments that are 24 hours old
+   */
+  @Cron('0 */6 * * *')
+  async sendPaymentReminders() {
+    this.logger.log('Running payment reminder cron job');
+
+    try {
+      const settings = await this.prisma.paymentSettings.findFirst();
+      if (!settings?.sendReminders) {
+        this.logger.log('Payment reminders disabled in settings');
+        return;
+      }
+
+      const reminderHours = settings.paymentReminderHours || 24;
+      const cutoffDate = new Date(Date.now() - reminderHours * 60 * 60 * 1000);
+
+      const bookings = await this.prisma.booking.findMany({
+        where: {
+          status: BookingStatus.APPROVED,
+          paymentStatus: PaymentStatus.PENDING,
+          approvedAt: { lte: cutoffDate },
+          reminderSent: false,
+        },
+        include: {
+          user: true,
+          resource: true,
+          payments: true,
+        },
+      });
+
+      this.logger.log(`Found ${bookings.length} bookings requiring payment reminders`);
+
+      for (const booking of bookings) {
+        const payment = booking.payments[0];
+        if (!payment || !payment.expiresAt) continue;
+
+        const hoursRemaining = Math.max(
+          0,
+          Math.floor((payment.expiresAt.getTime() - Date.now()) / (1000 * 60 * 60)),
+        );
+
+        if (hoursRemaining > 0) {
+          // Determine payment URL
+          let paymentUrl = `${process.env.FRONTEND_URL}/bookings/${booking.id}/payment`;
+
+          if (payment.stripeCheckoutSessionId && settings?.stripeEnabled) {
+            try {
+              const session = await this.paymentsService['stripe'].checkout.sessions.retrieve(
+                payment.stripeCheckoutSessionId,
+              );
+              if (session.url) {
+                paymentUrl = session.url;
+              }
+            } catch (error) {
+              this.logger.error(`Failed to retrieve Stripe session for booking ${booking.id}`, error);
+            }
+          }
+
+          // Calculate total amount
+          const duration = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60);
+          const totalAmount = Math.round(Number(booking.resource.pricePerHour) * duration * 100);
+
+          // Send reminder email
+          await this.resendService.sendPaymentReminderEmail(
+            booking.user.email,
+            {
+              id: booking.id,
+              resourceName: booking.resource.name,
+              startDate: booking.startTime,
+              endDate: booking.endTime,
+              totalAmount,
+            },
+            paymentUrl,
+            hoursRemaining,
+          );
+
+          // Mark reminder as sent
+          await this.prisma.booking.update({
+            where: { id: booking.id },
+            data: { reminderSent: true },
+          });
+
+          this.logger.log(`Payment reminder sent for booking ${booking.id}`);
+        }
+      }
+
+      this.logger.log('Payment reminder cron job completed');
+    } catch (error) {
+      this.logger.error('Error in payment reminder cron job', error);
+    }
+  }
+
+  /**
+   * Cron job: Cancel unpaid bookings every hour
+   * Cancels approved bookings with pending payments that have expired (48 hours)
+   */
+  @Cron('0 * * * *')
+  async cancelUnpaidBookings() {
+    this.logger.log('Running unpaid booking cancellation cron job');
+
+    try {
+      const settings = await this.prisma.paymentSettings.findFirst();
+      const deadlineDays = settings?.paymentDeadlineDays || 2;
+      const cutoffDate = new Date(Date.now() - deadlineDays * 24 * 60 * 60 * 1000);
+
+      const bookings = await this.prisma.booking.findMany({
+        where: {
+          status: BookingStatus.APPROVED,
+          paymentStatus: PaymentStatus.PENDING,
+          approvedAt: { lte: cutoffDate },
+        },
+        include: {
+          user: true,
+          resource: true,
+          payments: true,
+        },
+      });
+
+      this.logger.log(`Found ${bookings.length} bookings to cancel due to non-payment`);
+
+      for (const booking of bookings) {
+        // Update booking status
+        await this.prisma.booking.update({
+          where: { id: booking.id },
+          data: {
+            status: BookingStatus.CANCELLED,
+            paymentStatus: PaymentStatus.FAILED,
+            cancellationReason: `Pagamento non completato entro ${deadlineDays} giorni dall'approvazione`,
+          },
+        });
+
+        // Send cancellation email
+        await this.resendService.sendBookingCancelledEmail(
+          booking.user.email,
+          {
+            id: booking.id,
+            resourceName: booking.resource.name,
+            startDate: booking.startTime,
+            endDate: booking.endTime,
+          },
+          `Pagamento non completato entro ${deadlineDays} giorni`,
+        );
+
+        // Log audit
+        await this.auditLogsService.log({
+          userId: 'system',
+          userEmail: 'system',
+          userRole: 'SYSTEM',
+          action: AuditAction.CANCEL,
+          entity: 'booking',
+          entityId: booking.id,
+          description: `Prenotazione "${booking.title}" cancellata automaticamente per mancato pagamento`,
+          metadata: {
+            bookingTitle: booking.title,
+            resourceName: booking.resource.name,
+            userName: `${booking.user.firstName} ${booking.user.lastName}`,
+            reason: 'Payment deadline exceeded',
+          },
+        });
+
+        this.logger.log(`Booking ${booking.id} cancelled due to non-payment`);
+      }
+
+      this.logger.log('Unpaid booking cancellation cron job completed');
+    } catch (error) {
+      this.logger.error('Error in unpaid booking cancellation cron job', error);
+    }
   }
 }

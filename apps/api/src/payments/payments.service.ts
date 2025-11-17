@@ -1,19 +1,22 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { PrismaService } from '../prisma/prisma.service';
 import { PdfService } from './pdf.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { PaymentStatus, UserRole, PaymentMethod } from '@prisma/client';
+import { EncryptionService } from '../common/services/encryption.service';
 
 @Injectable()
 export class PaymentsService {
+  private readonly logger = new Logger(PaymentsService.name);
   private stripe: Stripe;
 
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
     private pdfService: PdfService,
+    private encryptionService: EncryptionService,
   ) {
     this.stripe = new Stripe(this.configService.get('STRIPE_SECRET_KEY')!, {
       apiVersion: '2023-10-16',
@@ -299,5 +302,275 @@ export class PaymentsService {
 
     // Generate PDF using PDF service
     return this.pdfService.generateInvoice(payment, payment.booking, payment.user);
+  }
+
+  /**
+   * Create Stripe checkout session for booking payment
+   */
+  async createCheckoutSession(bookingId: string) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id: bookingId },
+      include: {
+        resource: true,
+        user: true,
+        additionalResources: {
+          include: { resource: true },
+        },
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+
+    if (booking.status !== 'APPROVED') {
+      throw new BadRequestException('Booking must be approved before payment');
+    }
+
+    // Calculate total amount
+    const duration = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60);
+    let totalAmount = Number(booking.resource.pricePerHour) * duration;
+
+    // Add additional resources
+    for (const additionalResource of booking.additionalResources) {
+      totalAmount += Number(additionalResource.resource.pricePerHour) * additionalResource.quantity * duration;
+    }
+
+    const amountInCents = Math.round(totalAmount * 100);
+
+    // Get payment settings for custom Stripe keys
+    const settings = await this.prisma.paymentSettings.findFirst();
+    let stripeInstance = this.stripe;
+
+    if (settings?.stripeSecretKey) {
+      const decryptedKey = this.encryptionService.decrypt(settings.stripeSecretKey);
+      stripeInstance = new Stripe(decryptedKey, { apiVersion: '2023-10-16' });
+    }
+
+    // Create checkout session
+    const session = await stripeInstance.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: `Prenotazione ${booking.resource.name}`,
+              description: `Dal ${booking.startTime.toLocaleDateString('it-IT')} al ${booking.endTime.toLocaleDateString('it-IT')}`,
+            },
+            unit_amount: amountInCents,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${this.configService.get('FRONTEND_URL')}/bookings/${bookingId}/success`,
+      cancel_url: `${this.configService.get('FRONTEND_URL')}/bookings/${bookingId}/payment`,
+      expires_at: Math.floor(Date.now() / 1000) + (48 * 60 * 60), // 48 hours
+      metadata: { bookingId },
+      customer_email: booking.user.email,
+    });
+
+    // Create or update payment record
+    const existingPayment = await this.prisma.payment.findFirst({
+      where: { bookingId },
+    });
+
+    if (existingPayment) {
+      await this.prisma.payment.update({
+        where: { id: existingPayment.id },
+        data: {
+          stripeCheckoutSessionId: session.id,
+          stripePaymentIntentId: session.payment_intent as string,
+          expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
+        },
+      });
+    } else {
+      await this.prisma.payment.create({
+        data: {
+          stripePaymentIntentId: session.payment_intent as string,
+          stripeCheckoutSessionId: session.id,
+          amount: totalAmount,
+          currency: 'EUR',
+          status: PaymentStatus.PENDING,
+          paymentMethod: PaymentMethod.CREDIT_CARD,
+          bookingId,
+          userId: booking.userId,
+          expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
+        },
+      });
+    }
+
+    return { sessionId: session.id, url: session.url };
+  }
+
+  /**
+   * Generate unique bank transfer code for booking
+   */
+  generateBankTransferCode(bookingId: string): string {
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const bookingPrefix = bookingId.substring(0, 4).toUpperCase();
+    return `BAL-${bookingPrefix}-${timestamp}-${random}`;
+  }
+
+  /**
+   * Create bank transfer payment for booking
+   */
+  async createBankTransferPayment(bookingId: string) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id: bookingId },
+      include: {
+        resource: true,
+        additionalResources: {
+          include: { resource: true },
+        },
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+
+    if (booking.status !== 'APPROVED') {
+      throw new BadRequestException('Booking must be approved before payment');
+    }
+
+    // Calculate total amount
+    const duration = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60);
+    let totalAmount = Number(booking.resource.pricePerHour) * duration;
+
+    // Add additional resources
+    for (const additionalResource of booking.additionalResources) {
+      totalAmount += Number(additionalResource.resource.pricePerHour) * additionalResource.quantity * duration;
+    }
+
+    // Get payment settings
+    const settings = await this.prisma.paymentSettings.findFirst();
+    if (!settings?.bankTransferEnabled) {
+      throw new BadRequestException('Bank transfer payment is not enabled');
+    }
+
+    const transferCode = this.generateBankTransferCode(bookingId);
+    const deadlineDays = settings.paymentDeadlineDays || 2;
+
+    // Create payment record
+    const payment = await this.prisma.payment.create({
+      data: {
+        bookingId,
+        userId: booking.userId,
+        amount: totalAmount,
+        currency: 'EUR',
+        status: PaymentStatus.PENDING,
+        paymentMethod: PaymentMethod.BANK_TRANSFER,
+        bankTransferCode: transferCode,
+        expiresAt: new Date(Date.now() + deadlineDays * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    return {
+      transferCode,
+      payment,
+      bankDetails: {
+        bankName: settings.bankName,
+        accountHolder: settings.bankAccountHolder,
+        iban: settings.bankIBAN,
+        bic: settings.bankBIC,
+        causale: this.generateCausale(transferCode, booking.resource.name, booking.startTime, settings.bankTransferNote || undefined),
+        deadlineDays,
+      },
+    };
+  }
+
+  /**
+   * Generate causale (payment reference) for bank transfer
+   */
+  private generateCausale(
+    transferCode: string,
+    resourceName: string,
+    date: Date,
+    template?: string,
+  ): string {
+    const defaultTemplate = 'Prenotazione {CODICE} - {RISORSA} - {DATA}';
+    const causaleTemplate = template || defaultTemplate;
+
+    return causaleTemplate
+      .replace('{CODICE}', transferCode)
+      .replace('{RISORSA}', resourceName)
+      .replace('{DATA}', date.toLocaleDateString('it-IT'))
+      .replace('{UTENTE}', '') || ''; // Can be filled if needed
+  }
+
+  /**
+   * Verify bank transfer payment (admin only)
+   */
+  async verifyBankTransfer(paymentId: string, userId: string) {
+    const payment = await this.prisma.payment.findUnique({
+      where: { id: paymentId },
+      include: { booking: true },
+    });
+
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+
+    if (payment.paymentMethod !== PaymentMethod.BANK_TRANSFER) {
+      throw new BadRequestException('Payment is not a bank transfer');
+    }
+
+    if (payment.bankTransferVerified) {
+      throw new BadRequestException('Bank transfer already verified');
+    }
+
+    // Update payment as verified
+    const updatedPayment = await this.prisma.payment.update({
+      where: { id: paymentId },
+      data: {
+        bankTransferVerified: true,
+        bankTransferDate: new Date(),
+        status: PaymentStatus.SUCCEEDED,
+      },
+    });
+
+    // Update booking payment status
+    await this.prisma.booking.update({
+      where: { id: payment.bookingId },
+      data: {
+        paymentStatus: PaymentStatus.SUCCEEDED,
+      },
+    });
+
+    this.logger.log(`Bank transfer verified for payment ${paymentId} by user ${userId}`);
+
+    return updatedPayment;
+  }
+
+  /**
+   * Get pending bank transfers (admin only)
+   */
+  async getPendingBankTransfers() {
+    return this.prisma.payment.findMany({
+      where: {
+        paymentMethod: PaymentMethod.BANK_TRANSFER,
+        bankTransferVerified: false,
+        status: PaymentStatus.PENDING,
+      },
+      include: {
+        booking: {
+          include: {
+            resource: true,
+            user: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 }

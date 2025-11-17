@@ -80,6 +80,16 @@ enum NotificationType {
   REMINDER
 }
 
+enum RejectionReason {
+  RESOURCE_UNAVAILABLE
+  MAINTENANCE_SCHEDULED
+  EVENT_ALREADY_BOOKED
+  INSUFFICIENT_DOCUMENTATION
+  CAPACITY_EXCEEDED
+  PAYMENT_ISSUES
+  OTHER
+}
+
 // ============ MODELS ============
 
 model User {
@@ -201,7 +211,9 @@ model Booking {
   endTime     DateTime
 
   // Status tracking
-  status      BookingStatus @default(PENDING)
+  status         BookingStatus  @default(PENDING)
+  paymentStatus  PaymentStatus  @default(PENDING)
+  reminderSent   Boolean        @default(false)
 
   // Approval/Rejection info
   approvedBy  String?
@@ -233,6 +245,7 @@ model Booking {
   @@index([userId])
   @@index([resourceId])
   @@index([status])
+  @@index([paymentStatus])
   @@index([startTime, endTime])
   @@map("bookings")
 }
@@ -276,9 +289,18 @@ model Payment {
   paymentMethod PaymentMethod @default(CREDIT_CARD)
 
   // Stripe integration
-  stripePaymentIntentId String? @unique
-  stripeChargeId        String? @unique
-  stripeRefundId        String?
+  stripePaymentIntentId   String? @unique
+  stripeCheckoutSessionId String? @unique
+  stripeChargeId          String? @unique
+  stripeRefundId          String?
+
+  // Bank transfer integration
+  bankTransferCode     String?   @unique
+  bankTransferVerified Boolean   @default(false)
+  bankTransferDate     DateTime?
+
+  // Payment expiry
+  expiresAt DateTime?
 
   // Receipt
   receiptUrl  String?
@@ -297,6 +319,8 @@ model Payment {
   @@index([userId])
   @@index([status])
   @@index([stripePaymentIntentId])
+  @@index([stripeCheckoutSessionId])
+  @@index([bankTransferCode])
   @@map("payments")
 }
 
@@ -361,6 +385,45 @@ model AuditLog {
   @@index([entity])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+model PaymentSettings {
+  id                    String   @id @default(cuid())
+
+  // Stripe configuration
+  stripeEnabled         Boolean  @default(true)
+  stripePublishableKey  String?
+  stripeSecretKey       String?  @db.Text // Encrypted
+  stripeWebhookSecret   String?  @db.Text // Encrypted
+
+  // Bank transfer configuration
+  bankTransferEnabled   Boolean  @default(false)
+  bankName              String?
+  bankAccountHolder     String?
+  bankIBAN              String?
+  bankBIC               String?
+  bankAddress           String?
+  bankTransferNote      String?  @db.Text
+
+  // Payment settings
+  paymentDeadlineDays   Int      @default(2)
+  currency              String   @default("EUR")
+  taxRate               Float    @default(22) // IVA 22%
+
+  // Invoice settings
+  invoicePrefix         String   @default("INV")
+  invoiceStartNumber    Int      @default(1)
+  currentInvoiceNumber  Int      @default(1)
+
+  // Reminder settings
+  paymentReminderHours  Int      @default(24)
+  sendReminders         Boolean  @default(true)
+
+  // Metadata
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("payment_settings")
 }
 
 // ============ VIEWS & ANALYTICS (opzionale, per future implementazioni) ============

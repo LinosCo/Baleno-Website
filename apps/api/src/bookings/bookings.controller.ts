@@ -4,7 +4,9 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Public } from '../common/decorators/public.decorator';
-import { CreateBookingDto, UpdateBookingDto, RejectBookingDto, CancelBookingDto } from './dto';
+import { CreateBookingDto, UpdateBookingDto, CancelBookingDto } from './dto';
+import { ApproveBookingDto } from './dto/approve-booking.dto';
+import { RejectBookingDto } from './dto/reject-booking.dto';
 import { UserRole } from '@prisma/client';
 
 @Controller('bookings')
@@ -51,8 +53,12 @@ export class BookingsController {
 
   @Put(':id/approve')
   @Roles(UserRole.ADMIN, UserRole.COMMUNITY_MANAGER)
-  async approve(@Param('id') id: string, @CurrentUser() user: any) {
-    return this.bookingsService.approve(id, user);
+  async approve(
+    @Param('id') id: string,
+    @Body() approveDto: ApproveBookingDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.bookingsService.approve(id, approveDto, user);
   }
 
   @Put(':id/reject')
