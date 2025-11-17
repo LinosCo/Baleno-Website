@@ -1,7 +1,6 @@
-import { IsBoolean, IsOptional, IsString, IsNumber, Min, Max } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsNumber, IsInt, Min, Max } from 'class-validator';
 
 export class UpdatePaymentSettingsDto {
-  // Stripe Settings
   @IsOptional()
   @IsBoolean()
   stripeEnabled?: boolean;
@@ -18,7 +17,6 @@ export class UpdatePaymentSettingsDto {
   @IsString()
   stripeWebhookSecret?: string;
 
-  // Bank Transfer Settings
   @IsOptional()
   @IsBoolean()
   bankTransferEnabled?: boolean;
@@ -48,12 +46,11 @@ export class UpdatePaymentSettingsDto {
   bankTransferNote?: string;
 
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   @Min(1)
-  @Max(30)
+  @Max(90)
   paymentDeadlineDays?: number;
 
-  // General Settings
   @IsOptional()
   @IsString()
   currency?: string;
@@ -69,13 +66,17 @@ export class UpdatePaymentSettingsDto {
   invoicePrefix?: string;
 
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   @Min(1)
   invoiceStartNumber?: number;
 
-  // Email Settings
   @IsOptional()
-  @IsNumber()
+  @IsInt()
+  @Min(1)
+  currentInvoiceNumber?: number;
+
+  @IsOptional()
+  @IsInt()
   @Min(1)
   @Max(168)
   paymentReminderHours?: number;
