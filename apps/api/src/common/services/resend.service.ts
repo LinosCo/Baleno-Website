@@ -46,7 +46,8 @@ export class ResendService {
     // Handle multiple URLs separated by comma, take only the first one
     const frontendUrlRaw = this.configService.get<string>('FRONTEND_URL');
     const defaultUrl = 'https://baleno-booking-system-q91iobv3l-linoscos-projects.vercel.app';
-    this.frontendUrl = (frontendUrlRaw ? frontendUrlRaw : defaultUrl).split(',')[0].trim();
+    const finalUrl: string = frontendUrlRaw ?? defaultUrl;
+    this.frontendUrl = finalUrl.split(',')[0].trim();
 
     if (apiKey) {
       this.resend = new Resend(apiKey);
