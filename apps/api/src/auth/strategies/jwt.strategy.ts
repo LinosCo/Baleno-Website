@@ -32,10 +32,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         isActive: true,
         avatar: true,
         phone: true,
-        taxCode: true,
+        fiscalCode: true,
         vatNumber: true,
         companyName: true,
-        address: true,
       },
     });
 

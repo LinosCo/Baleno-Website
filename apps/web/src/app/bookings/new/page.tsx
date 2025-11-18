@@ -30,10 +30,9 @@ interface User {
   firstName: string;
   lastName: string;
   phone: string | null;
-  taxCode: string | null;
+  fiscalCode: string | null;
   vatNumber: string | null;
   companyName: string | null;
-  address: string | null;
 }
 
 export default function NewBookingWizardPage() {
@@ -938,16 +937,10 @@ export default function NewBookingWizardPage() {
                                 <div className="fw-semibold">{user.vatNumber}</div>
                               </div>
                             )}
-                            {user.taxCode && (
+                            {user.fiscalCode && (
                               <div className="col-md-6">
                                 <div className="small text-muted">Codice Fiscale</div>
-                                <div className="fw-semibold">{user.taxCode}</div>
-                              </div>
-                            )}
-                            {user.address && (
-                              <div className="col-12">
-                                <div className="small text-muted">Indirizzo</div>
-                                <div className="fw-semibold">{user.address}</div>
+                                <div className="fw-semibold">{user.fiscalCode}</div>
                               </div>
                             )}
                           </div>
