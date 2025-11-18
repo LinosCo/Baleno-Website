@@ -163,17 +163,14 @@ export default function PaymentSettingsPage() {
 
               {settings.stripeEnabled && (
                 <div className="card-body">
-                  <div className="alert alert-info d-flex align-items-start mb-4">
-                    <i className="bi bi-info-circle me-2 mt-1"></i>
-                    <div>
-                      <strong>Configurazione Stripe</strong>
-                      <p className="mb-0 mt-1 small">
-                        Trova le tue chiavi API nel{' '}
-                        <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener noreferrer" className="alert-link">
-                          Dashboard Stripe <i className="bi bi-box-arrow-up-right"></i>
-                        </a>
-                      </p>
-                    </div>
+                  <div className="alert alert-info mb-4">
+                    <strong>Configurazione Stripe</strong>
+                    <p className="mb-0 mt-1 small">
+                      Trova le tue chiavi API nel{' '}
+                      <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener noreferrer" className="alert-link">
+                        Dashboard Stripe <i className="bi bi-box-arrow-up-right"></i>
+                      </a>
+                    </p>
                   </div>
 
                   <div className="row g-3">

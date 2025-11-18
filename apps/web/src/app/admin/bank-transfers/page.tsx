@@ -129,13 +129,8 @@ export default function BankTransfersPage() {
 
         {transfers.length === 0 ? (
           <div className="alert alert-info" role="alert">
-            <div className="d-flex align-items-center">
-              <i className="bi bi-info-circle me-3 fs-4"></i>
-              <div>
-                <h4 className="alert-heading">Nessun bonifico in attesa</h4>
-                <p className="mb-0">Al momento non ci sono bonifici bancari in attesa di verifica. I pagamenti apparirranno qui quando gli utenti scelgono il bonifico come metodo di pagamento.</p>
-              </div>
-            </div>
+            <h4 className="alert-heading">Nessun bonifico in attesa</h4>
+            <p className="mb-0">Al momento non ci sono bonifici bancari in attesa di verifica. I pagamenti apparirranno qui quando gli utenti scelgono il bonifico come metodo di pagamento.</p>
           </div>
         ) : (
           <div className="row g-4">
@@ -216,32 +211,24 @@ export default function BankTransfersPage() {
 
                         {/* Date Creazione e Scadenza */}
                         <div className="col-md-6">
-                          <div className="d-flex align-items-center">
-                            <div className="flex-shrink-0 me-3">
-                              <div className="bg-info bg-opacity-10 rounded-circle p-3">
-                                <i className="bi bi-calendar-plus text-info fs-5"></i>
-                              </div>
-                            </div>
-                            <div>
-                              <small className="text-muted d-block">Richiesto il</small>
-                              <strong>{format(new Date(transfer.createdAt), 'dd MMM yyyy HH:mm', { locale: it })}</strong>
-                            </div>
+                          <div>
+                            <small className="text-muted d-block">
+                              <i className="bi bi-calendar-plus me-1"></i>
+                              Richiesto il
+                            </small>
+                            <strong>{format(new Date(transfer.createdAt), 'dd MMM yyyy HH:mm', { locale: it })}</strong>
                           </div>
                         </div>
 
                         <div className="col-md-6">
-                          <div className="d-flex align-items-center">
-                            <div className="flex-shrink-0 me-3">
-                              <div className={`${expired ? 'bg-danger' : 'bg-warning'} bg-opacity-10 rounded-circle p-3`}>
-                                <i className={`bi bi-calendar-x ${expired ? 'text-danger' : 'text-warning'} fs-5`}></i>
-                              </div>
-                            </div>
-                            <div>
-                              <small className="text-muted d-block">Scade il</small>
-                              <strong className={expired ? 'text-danger' : ''}>
-                                {format(new Date(transfer.expiresAt), 'dd MMM yyyy HH:mm', { locale: it })}
-                              </strong>
-                            </div>
+                          <div>
+                            <small className="text-muted d-block">
+                              <i className={`bi bi-calendar-x me-1 ${expired ? 'text-danger' : ''}`}></i>
+                              Scade il
+                            </small>
+                            <strong className={expired ? 'text-danger' : ''}>
+                              {format(new Date(transfer.expiresAt), 'dd MMM yyyy HH:mm', { locale: it })}
+                            </strong>
                           </div>
                         </div>
 
