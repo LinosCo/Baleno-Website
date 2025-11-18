@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import AdminLayout from '../../../components/admin/AdminLayout';
 
@@ -29,7 +28,6 @@ interface PaymentSettings {
 }
 
 export default function PaymentSettingsPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<PaymentSettings | null>(null);
@@ -69,7 +67,7 @@ export default function PaymentSettingsPage() {
       const token = localStorage.getItem('accessToken');
 
       // Filter out fields that shouldn't be sent (id, createdAt, updatedAt)
-      const { id, createdAt, updatedAt, ...settingsToSave } = settings as any;
+      const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...settingsToSave } = settings as any;
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/payment-settings`, {
         method: 'PUT',
@@ -116,10 +114,6 @@ export default function PaymentSettingsPage() {
         <div className="alert alert-danger" role="alert">
           <h4 className="alert-heading">Errore di caricamento</h4>
           <p>Impossibile caricare le impostazioni di pagamento.</p>
-          <hr />
-          <button onClick={() => router.push('/admin')} className="btn btn-sm btn-outline-danger">
-            Torna alla Dashboard
-          </button>
         </div>
       </AdminLayout>
     );

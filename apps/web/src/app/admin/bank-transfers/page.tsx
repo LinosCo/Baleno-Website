@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
@@ -31,7 +30,6 @@ interface PendingBankTransfer {
 }
 
 export default function BankTransfersPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [transfers, setTransfers] = useState<PendingBankTransfer[]>([]);
   const [verifying, setVerifying] = useState<string | null>(null);
