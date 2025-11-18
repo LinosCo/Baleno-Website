@@ -276,45 +276,47 @@ export default function NewBookingWizardPage() {
         <h1 className="h3 fw-bold text-baleno-primary mb-4">Nuova Prenotazione</h1>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           {/* Progress Indicator */}
-          <div className="card border-0 shadow-sm mb-4">
-            <div className="card-body p-3">
-              <div className="d-flex justify-content-between align-items-center">
-                {[1, 2, 3, 4, 5].map((step) => (
-                  <div key={step} className="d-flex align-items-center flex-fill">
-                    <div className="d-flex flex-column align-items-center" style={{ minWidth: '80px' }}>
-                      <div
-                        className={`rounded-circle d-flex align-items-center justify-content-center fw-bold ${
-                          currentStep === step
-                            ? 'bg-primary text-white'
-                            : currentStep > step
-                            ? 'bg-success text-white'
-                            : 'bg-light text-muted'
-                        }`}
-                        style={{ width: '40px', height: '40px' }}
-                      >
-                        {currentStep > step ? '✓' : step}
+          {currentStep < 6 && (
+            <div className="card border-0 shadow-sm mb-4">
+              <div className="card-body p-3">
+                <div className="d-flex justify-content-between align-items-center">
+                  {[1, 2, 3, 4, 5].map((step) => (
+                    <div key={step} className="d-flex align-items-center flex-fill">
+                      <div className="d-flex flex-column align-items-center" style={{ minWidth: '80px' }}>
+                        <div
+                          className={`rounded-circle d-flex align-items-center justify-content-center fw-bold ${
+                            currentStep === step
+                              ? 'bg-primary text-white'
+                              : currentStep > step
+                              ? 'bg-success text-white'
+                              : 'bg-light text-muted'
+                          }`}
+                          style={{ width: '40px', height: '40px' }}
+                        >
+                          {currentStep > step ? '✓' : step}
+                        </div>
+                        <div className={`small mt-2 text-center ${currentStep === step ? 'fw-bold text-primary' : 'text-muted'}`}>
+                          {step === 1 && 'Risorsa'}
+                          {step === 2 && 'Data/Ora'}
+                          {step === 3 && 'Dettagli'}
+                          {step === 4 && 'Ti serve altro?'}
+                          {step === 5 && 'Conferma'}
+                        </div>
                       </div>
-                      <div className={`small mt-2 text-center ${currentStep === step ? 'fw-bold text-primary' : 'text-muted'}`}>
-                        {step === 1 && 'Risorsa'}
-                        {step === 2 && 'Data/Ora'}
-                        {step === 3 && 'Dettagli'}
-                        {step === 4 && 'Ti serve altro?'}
-                        {step === 5 && 'Conferma'}
-                      </div>
+                      {step < 5 && (
+                        <div
+                          className={`flex-fill mx-2 ${
+                            currentStep > step ? 'bg-success' : 'bg-light'
+                          }`}
+                          style={{ height: '3px' }}
+                        />
+                      )}
                     </div>
-                    {step < 5 && (
-                      <div
-                        className={`flex-fill mx-2 ${
-                          currentStep > step ? 'bg-success' : 'bg-light'
-                        }`}
-                        style={{ height: '3px' }}
-                      />
-                    )}
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Error/Success Messages */}
           {error && (
@@ -1064,6 +1066,7 @@ export default function NewBookingWizardPage() {
                   Annulla
                 </Link>
               </div>
+              )}
             </div>
           </div>
         </div>

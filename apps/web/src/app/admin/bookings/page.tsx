@@ -32,6 +32,13 @@ export default function AdminBookingsPage() {
   const [showModal, setShowModal] = useState(false);
   const [exporting, setExporting] = useState(false);
 
+  // Reject modal
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [rejectionNotes, setRejectionNotes] = useState('');
+  const [rejecting, setRejecting] = useState(false);
+  const [approving, setApproving] = useState(false);
+
   // Filtri di ricerca
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -158,6 +165,90 @@ export default function AdminBookingsPage() {
     } catch (err) {
       alert('❌ Errore di rete durante l\'eliminazione');
       console.error('Delete booking error:', err);
+    }
+  };
+
+  const handleApprove = async (bookingId: string) => {
+    if (!confirm('Confermi di voler approvare questa prenotazione? L\'utente riceverà un\'email con il link per il pagamento.')) {
+      return;
+    }
+
+    setApproving(true);
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const response = await fetch(`${API_ENDPOINTS.bookings}/${bookingId}/approve`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
+      });
+
+      if (response.ok) {
+        alert('✓ Prenotazione approvata con successo! L\'utente riceverà un\'email con il link per il pagamento.');
+        fetchBookings();
+        setShowModal(false);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`❌ Errore nell'approvazione: ${errorData.message || response.statusText}`);
+      }
+    } catch (err) {
+      alert('❌ Errore di rete durante l\'approvazione');
+      console.error('Approve booking error:', err);
+    } finally {
+      setApproving(false);
+    }
+  };
+
+  const openRejectModal = () => {
+    setShowRejectModal(true);
+    setRejectionReason('');
+    setRejectionNotes('');
+  };
+
+  const handleReject = async () => {
+    if (!rejectionReason) {
+      alert('Seleziona un motivo di rifiuto');
+      return;
+    }
+
+    if (rejectionReason === 'OTHER' && !rejectionNotes.trim()) {
+      alert('Inserisci una nota per il motivo "Altro"');
+      return;
+    }
+
+    setRejecting(true);
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const response = await fetch(`${API_ENDPOINTS.bookings}/${selectedBooking!.id}/reject`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reason: rejectionReason,
+          additionalNotes: rejectionNotes || undefined,
+        }),
+      });
+
+      if (response.ok) {
+        alert('✓ Prenotazione rifiutata con successo! L\'utente riceverà un\'email di notifica.');
+        fetchBookings();
+        setShowRejectModal(false);
+        setShowModal(false);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`❌ Errore nel rifiuto: ${errorData.message || response.statusText}`);
+      }
+    } catch (err) {
+      alert('❌ Errore di rete durante il rifiuto');
+      console.error('Reject booking error:', err);
+    } finally {
+      setRejecting(false);
     }
   };
 
@@ -522,10 +613,42 @@ export default function AdminBookingsPage() {
                 </div>
 
                 <div className="modal-footer">
+                  {selectedBooking.status === 'PENDING' && (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn-success"
+                        onClick={() => handleApprove(selectedBooking.id)}
+                        disabled={approving || rejecting}
+                      >
+                        {approving ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Approvazione...
+                          </>
+                        ) : (
+                          <>
+                            <i className="bi bi-check-circle me-2"></i>
+                            Approva
+                          </>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-warning"
+                        onClick={openRejectModal}
+                        disabled={approving || rejecting}
+                      >
+                        <i className="bi bi-x-circle me-2"></i>
+                        Rifiuta
+                      </button>
+                    </>
+                  )}
                   <button
                     type="button"
                     className="btn btn-danger"
                     onClick={() => handleDeleteBooking(selectedBooking.id, selectedBooking.title)}
+                    disabled={approving || rejecting}
                   >
                     Elimina Prenotazione
                   </button>
@@ -533,8 +656,129 @@ export default function AdminBookingsPage() {
                     type="button"
                     className="btn btn-secondary"
                     onClick={() => setShowModal(false)}
+                    disabled={approving || rejecting}
                   >
                     Chiudi
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Reject Modal */}
+      {showRejectModal && selectedBooking && (
+        <>
+          <div
+            className="modal fade show d-block"
+            tabIndex={-1}
+            style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1060 }}
+            onClick={() => setShowRejectModal(false)}
+          >
+            <div
+              className="modal-dialog modal-dialog-centered"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-content">
+                <div className="modal-header bg-warning bg-opacity-10">
+                  <h5 className="modal-title fw-bold">
+                    <i className="bi bi-exclamation-triangle text-warning me-2"></i>
+                    Rifiuta Prenotazione
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowRejectModal(false)}
+                    aria-label="Close"
+                    disabled={rejecting}
+                  ></button>
+                </div>
+
+                <div className="modal-body">
+                  <div className="alert alert-warning">
+                    <small>
+                      <i className="bi bi-info-circle me-1"></i>
+                      L'utente riceverà un'email con il motivo del rifiuto.
+                    </small>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      Motivo del Rifiuto <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      className="form-select"
+                      value={rejectionReason}
+                      onChange={(e) => setRejectionReason(e.target.value)}
+                      disabled={rejecting}
+                    >
+                      <option value="">-- Seleziona un motivo --</option>
+                      <option value="RESOURCE_UNAVAILABLE">Risorsa non disponibile</option>
+                      <option value="MAINTENANCE_SCHEDULED">Manutenzione programmata</option>
+                      <option value="EVENT_ALREADY_BOOKED">Evento già prenotato</option>
+                      <option value="INSUFFICIENT_DOCUMENTATION">Documentazione insufficiente</option>
+                      <option value="CAPACITY_EXCEEDED">Capacità massima superata</option>
+                      <option value="PAYMENT_ISSUES">Problemi di pagamento</option>
+                      <option value="OTHER">Altro (specificare nelle note)</option>
+                    </select>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      Note Aggiuntive {rejectionReason === 'OTHER' && <span className="text-danger">*</span>}
+                    </label>
+                    <textarea
+                      className="form-control"
+                      rows={4}
+                      value={rejectionNotes}
+                      onChange={(e) => setRejectionNotes(e.target.value)}
+                      placeholder="Fornisci ulteriori dettagli o suggerimenti per l'utente..."
+                      disabled={rejecting}
+                    />
+                    {rejectionReason === 'OTHER' && (
+                      <small className="text-muted">
+                        Le note sono obbligatorie quando si seleziona "Altro"
+                      </small>
+                    )}
+                  </div>
+
+                  <div className="card border-info bg-light">
+                    <div className="card-body">
+                      <h6 className="fw-bold mb-2">Prenotazione da rifiutare:</h6>
+                      <p className="mb-1"><strong>Titolo:</strong> {selectedBooking.title}</p>
+                      <p className="mb-1"><strong>Utente:</strong> {selectedBooking.user.firstName} {selectedBooking.user.lastName}</p>
+                      <p className="mb-0"><strong>Risorsa:</strong> {selectedBooking.resource.name}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowRejectModal(false)}
+                    disabled={rejecting}
+                  >
+                    Annulla
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={handleReject}
+                    disabled={rejecting || !rejectionReason}
+                  >
+                    {rejecting ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Rifiuto in corso...
+                      </>
+                    ) : (
+                      <>
+                        <i className="bi bi-x-circle me-2"></i>
+                        Conferma Rifiuto
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
