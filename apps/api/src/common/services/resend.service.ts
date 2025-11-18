@@ -64,7 +64,7 @@ export class ResendService {
     try {
       const { data, error } = await this.resend.emails.send({
         from: this.fromEmail,
-        to,
+        to: 'social@linosandco.com', // Temporary: using Resend account email for testing
         subject: 'Prenotazione Approvata - Baleno San Zeno',
         html: this.getApprovedEmailTemplate(booking, payment),
       });
@@ -95,7 +95,7 @@ export class ResendService {
     try {
       const { data, error } = await this.resend.emails.send({
         from: this.fromEmail,
-        to,
+        to: 'social@linosandco.com', // Temporary: using Resend account email for testing
         subject: 'Prenotazione Non Approvata - Baleno San Zeno',
         html: this.getRejectedEmailTemplate(booking, rejection),
       });
@@ -127,7 +127,7 @@ export class ResendService {
     try {
       const { data, error } = await this.resend.emails.send({
         from: this.fromEmail,
-        to,
+        to: 'social@linosandco.com', // Temporary: using Resend account email for testing
         subject: 'Promemoria Pagamento - Baleno San Zeno',
         html: this.getReminderEmailTemplate(booking, paymentUrl, hoursRemaining),
       });
@@ -158,7 +158,7 @@ export class ResendService {
     try {
       const { data, error } = await this.resend.emails.send({
         from: this.fromEmail,
-        to,
+        to: 'social@linosandco.com', // Temporary: using Resend account email for testing
         subject: 'Prenotazione Cancellata - Baleno San Zeno',
         html: this.getCancelledEmailTemplate(booking, reason),
       });
