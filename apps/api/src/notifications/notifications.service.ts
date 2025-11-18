@@ -5,9 +5,11 @@ import { Resend } from 'resend';
 @Injectable()
 export class NotificationsService {
   private resend: Resend;
+  private fromEmail: string;
 
   constructor(private configService: ConfigService) {
     this.resend = new Resend(this.configService.get('RESEND_API_KEY'));
+    this.fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'Baleno San Zeno <onboarding@resend.dev>');
   }
 
   async sendBookingConfirmation(booking: any, user: any) {
@@ -113,7 +115,7 @@ export class NotificationsService {
 
   private async sendEmail(to: string, subject: string, html: string) {
     return this.resend.emails.send({
-      from: 'Baleno San Zeno <noreply@balenosanzeno.it>',
+      from: this.fromEmail,
       to,
       subject,
       html,
