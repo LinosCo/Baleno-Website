@@ -60,6 +60,7 @@ async function bootstrap() {
 
   console.log(`🚀 Backend API running on: http://localhost:${port}/api`);
   console.log(`📝 Environment: ${configService.get('NODE_ENV')}`);
+  console.log(`🌐 Frontend URL: ${configService.get('FRONTEND_URL')}`);
 }
 
 bootstrap();
