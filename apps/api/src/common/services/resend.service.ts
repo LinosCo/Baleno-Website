@@ -1058,17 +1058,6 @@ export class ResendService {
               <p style="margin: 0;"><strong>⏱️ Importante:</strong> Avrai 48 ore dall'approvazione per completare il pagamento.</p>
             </div>
 
-            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 4px; margin: 20px 0;">
-              <p style="margin: 0; font-size: 14px; color: #666;">
-                Puoi controllare lo stato della tua prenotazione accedendo al tuo account sul nostro sito.
-              </p>
-              <div style="text-align: center; margin-top: 15px;">
-                <a href="${this.frontendUrl}/dashboard" class="button">
-                  Vai alla Dashboard
-                </a>
-              </div>
-            </div>
-
             <p style="margin-top: 30px;">Grazie per aver scelto Baleno San Zeno!</p>
             <p style="color: #666; font-size: 14px;">Il Team di Baleno San Zeno</p>
           </div>
