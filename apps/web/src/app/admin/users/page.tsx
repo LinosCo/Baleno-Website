@@ -43,7 +43,13 @@ export default function AdminUsersPage() {
     }
   };
 
-  const handleDeleteUser = async (userId: string, userName: string) => {
+  const handleDeleteUser = async (userId: string, userName: string, userEmail: string) => {
+    // Prevent deletion of main admin account
+    if (userEmail === 'admin@balenosanzeno.it') {
+      alert('❌ Impossibile eliminare l\'account amministratore principale.\n\nQuesto account è protetto e non può essere eliminato.');
+      return;
+    }
+
     if (!confirm(`⚠️ ATTENZIONE!\n\nStai per eliminare l'utente ${userName}.\n\nSaranno eliminati anche:\n- Tutte le prenotazioni\n- Tutti i pagamenti\n- Tutti i dati associati\n\nQuesta azione NON può essere annullata.\n\nSei sicuro di voler procedere?`)) {
       return;
     }
@@ -171,9 +177,10 @@ export default function AdminUsersPage() {
                       </td>
                       <td className="align-middle text-end">
                         <button
-                          onClick={() => handleDeleteUser(user.id, `${user.firstName} ${user.lastName}`)}
+                          onClick={() => handleDeleteUser(user.id, `${user.firstName} ${user.lastName}`, user.email)}
                           className="btn btn-sm btn-outline-danger"
-                          title="Elimina utente"
+                          title={user.email === 'admin@balenosanzeno.it' ? 'Account amministratore principale protetto' : 'Elimina utente'}
+                          disabled={user.email === 'admin@balenosanzeno.it'}
                         >
                           <i className="bi bi-trash"></i> Elimina
                         </button>
