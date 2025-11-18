@@ -1,21 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 @Injectable()
 export class NotificationsService {
-  private transporter: nodemailer.Transporter;
+  private resend: Resend;
 
   constructor(private configService: ConfigService) {
-    this.transporter = nodemailer.createTransport({
-      host: this.configService.get('SMTP_HOST'),
-      port: this.configService.get('SMTP_PORT'),
-      secure: false,
-      auth: {
-        user: this.configService.get('SMTP_USER'),
-        pass: this.configService.get('SMTP_PASSWORD'),
-      },
-    });
+    this.resend = new Resend(this.configService.get('RESEND_API_KEY'));
   }
 
   async sendBookingConfirmation(booking: any, user: any) {
@@ -120,11 +112,104 @@ export class NotificationsService {
   }
 
   private async sendEmail(to: string, subject: string, html: string) {
-    return this.transporter.sendMail({
-      from: this.configService.get('EMAIL_FROM'),
+    return this.resend.emails.send({
+      from: 'Baleno San Zeno <noreply@balenosanzeno.it>',
       to,
       subject,
       html,
     });
+  }
+
+  async sendNewBookingNotificationToAdmin(booking: any) {
+    const subject = 'Nuova Prenotazione in Attesa di Approvazione';
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #0066cc;">Nuova Prenotazione Ricevuta</h2>
+        <p>Ciao Admin,</p>
+        <p>È stata ricevuta una nuova richiesta di prenotazione che richiede la tua approvazione:</p>
+
+        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Dettagli Prenotazione</h3>
+          <ul style="list-style: none; padding: 0;">
+            <li style="margin-bottom: 10px;"><strong>Risorsa:</strong> ${booking.resource.name}</li>
+            <li style="margin-bottom: 10px;"><strong>Titolo:</strong> ${booking.title}</li>
+            <li style="margin-bottom: 10px;"><strong>Data:</strong> ${new Date(booking.startTime).toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</li>
+            <li style="margin-bottom: 10px;"><strong>Orario:</strong> ${new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} - ${new Date(booking.endTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</li>
+            <li style="margin-bottom: 10px;"><strong>Partecipanti:</strong> ${booking.numberOfPeople || 'N/A'}</li>
+          </ul>
+        </div>
+
+        <div style="background-color: #e8f4f8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Informazioni Cliente</h3>
+          <ul style="list-style: none; padding: 0;">
+            <li style="margin-bottom: 10px;"><strong>Nome:</strong> ${booking.user.firstName} ${booking.user.lastName}</li>
+            <li style="margin-bottom: 10px;"><strong>Email:</strong> ${booking.user.email}</li>
+            ${booking.user.phone ? `<li style="margin-bottom: 10px;"><strong>Telefono:</strong> ${booking.user.phone}</li>` : ''}
+            ${booking.user.companyName ? `<li style="margin-bottom: 10px;"><strong>Azienda:</strong> ${booking.user.companyName}</li>` : ''}
+            ${booking.user.vatNumber ? `<li style="margin-bottom: 10px;"><strong>Partita IVA:</strong> ${booking.user.vatNumber}</li>` : ''}
+            ${booking.user.fiscalCode ? `<li style="margin-bottom: 10px;"><strong>Codice Fiscale:</strong> ${booking.user.fiscalCode}</li>` : ''}
+          </ul>
+        </div>
+
+        ${booking.notes ? `
+        <div style="background-color: #fff9e6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Note</h3>
+          <p>${booking.notes}</p>
+        </div>
+        ` : ''}
+
+        <div style="margin-top: 30px; padding: 20px; background-color: #f0f0f0; border-radius: 8px;">
+          <p style="margin: 0;"><strong>Azione Richiesta:</strong> Accedi al pannello amministrativo per approvare o rifiutare questa prenotazione.</p>
+          <p style="margin: 10px 0 0 0; font-size: 14px; color: #666;">Una volta approvata, il cliente riceverà un'email con il link per il pagamento e avrà 48 ore per completarlo.</p>
+        </div>
+      </div>
+    `;
+
+    return this.sendEmail('alessandro@linos.co', subject, html);
+  }
+
+  async sendBookingSubmissionToUser(booking: any, user: any) {
+    const subject = 'Richiesta di Prenotazione Ricevuta - Baleno San Zeno';
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #0066cc;">Richiesta di Prenotazione Ricevuta</h2>
+        <p>Ciao ${user.firstName},</p>
+        <p>Abbiamo ricevuto la tua richiesta di prenotazione. Ecco i dettagli:</p>
+
+        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Dettagli Prenotazione</h3>
+          <ul style="list-style: none; padding: 0;">
+            <li style="margin-bottom: 10px;"><strong>Risorsa:</strong> ${booking.resource.name}</li>
+            <li style="margin-bottom: 10px;"><strong>Titolo:</strong> ${booking.title}</li>
+            <li style="margin-bottom: 10px;"><strong>Data:</strong> ${new Date(booking.startTime).toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</li>
+            <li style="margin-bottom: 10px;"><strong>Orario:</strong> ${new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} - ${new Date(booking.endTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</li>
+            ${booking.numberOfPeople ? `<li style="margin-bottom: 10px;"><strong>Partecipanti:</strong> ${booking.numberOfPeople}</li>` : ''}
+          </ul>
+        </div>
+
+        <div style="background-color: #e8f4f8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #0066cc;">Prossimi Passi</h3>
+          <ol style="padding-left: 20px;">
+            <li style="margin-bottom: 10px;">Riceverai un'email di conferma con i dettagli della tua richiesta (questa email)</li>
+            <li style="margin-bottom: 10px;">L'amministratore valuterà la tua richiesta</li>
+            <li style="margin-bottom: 10px;">Riceverai un'email con il link per il pagamento quando la prenotazione sarà approvata</li>
+            <li style="margin-bottom: 10px;">La prenotazione sarà confermata dopo il pagamento</li>
+          </ol>
+        </div>
+
+        <div style="background-color: #fff9e6; padding: 15px; border-left: 4px solid #ffb700; margin: 20px 0;">
+          <p style="margin: 0;"><strong>⏱️ Importante:</strong> Avrai 48 ore dall'approvazione per completare il pagamento.</p>
+        </div>
+
+        <div style="margin-top: 30px; padding: 20px; background-color: #f0f0f0; border-radius: 8px;">
+          <p style="margin: 0; font-size: 14px; color: #666;">Puoi controllare lo stato della tua prenotazione accedendo al tuo account sul nostro sito.</p>
+        </div>
+
+        <p style="margin-top: 30px;">Grazie per aver scelto Baleno San Zeno!</p>
+        <p style="color: #666; font-size: 14px;">Il Team di Baleno San Zeno</p>
+      </div>
+    `;
+
+    return this.sendEmail(user.email, subject, html);
   }
 }

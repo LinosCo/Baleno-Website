@@ -99,7 +99,7 @@ export class BookingsService {
       }
     }
 
-    // Create booking with APPROVED status (auto-approval if slot is available)
+    // Create booking with PENDING status (requires admin approval)
     const booking = await this.prisma.booking.create({
       data: {
         ...bookingData,
@@ -107,8 +107,7 @@ export class BookingsService {
         userId: user.id,
         startTime: start,
         endTime: end,
-        status: BookingStatus.APPROVED,
-        approvedAt: new Date(),
+        status: BookingStatus.PENDING,
       },
       include: {
         resource: true,
@@ -127,15 +126,6 @@ export class BookingsService {
       });
     }
 
-    // Send confirmation email (non-blocking) - DISABLED TEMPORARILY
-    // try {
-    //   await this.notificationsService.sendBookingConfirmation(booking, user);
-    // } catch (emailError) {
-    //   // Log error but don't block booking creation
-    //   console.error('Failed to send booking confirmation email:', emailError);
-    // }
-    console.log('Email notifications disabled - booking created successfully');
-
     // Fetch complete booking with additional resources
     const completeBooking = await this.prisma.booking.findUnique({
       where: { id: booking.id },
@@ -149,6 +139,23 @@ export class BookingsService {
         },
       },
     });
+
+    // Send email notifications (non-blocking)
+    try {
+      // Email to admin
+      await this.resendService.sendNewBookingNotificationToAdmin(completeBooking);
+      this.logger.log(`Admin notification sent for booking ${booking.id}`);
+    } catch (emailError) {
+      this.logger.error('Failed to send admin notification email:', emailError);
+    }
+
+    try {
+      // Email to user
+      await this.resendService.sendBookingSubmissionToUser(user.email, completeBooking);
+      this.logger.log(`User submission email sent to ${user.email} for booking ${booking.id}`);
+    } catch (emailError) {
+      this.logger.error('Failed to send user submission email:', emailError);
+    }
 
     return completeBooking;
   }

@@ -176,6 +176,65 @@ export class ResendService {
     }
   }
 
+  async sendNewBookingNotificationToAdmin(
+    booking: any,
+  ): Promise<{ success: boolean; error?: string }> {
+    if (!this.resend) {
+      this.logger.warn('Resend not configured. Skipping email.');
+      return { success: false, error: 'Resend not configured' };
+    }
+
+    try {
+      const { data, error } = await this.resend.emails.send({
+        from: this.fromEmail,
+        to: 'alessandro@linos.co',
+        subject: 'Nuova Prenotazione in Attesa di Approvazione - Baleno San Zeno',
+        html: this.getAdminNotificationTemplate(booking),
+      });
+
+      if (error) {
+        this.logger.error('Failed to send admin notification email', error);
+        return { success: false, error: String(error) };
+      }
+
+      this.logger.log(`Admin notification email sent for booking ${booking.id}`);
+      return { success: true };
+    } catch (error) {
+      this.logger.error('Error sending admin notification email', error);
+      return { success: false, error: String(error) };
+    }
+  }
+
+  async sendBookingSubmissionToUser(
+    to: string,
+    booking: any,
+  ): Promise<{ success: boolean; error?: string }> {
+    if (!this.resend) {
+      this.logger.warn('Resend not configured. Skipping email.');
+      return { success: false, error: 'Resend not configured' };
+    }
+
+    try {
+      const { data, error } = await this.resend.emails.send({
+        from: this.fromEmail,
+        to,
+        subject: 'Richiesta di Prenotazione Ricevuta - Baleno San Zeno',
+        html: this.getUserSubmissionTemplate(booking),
+      });
+
+      if (error) {
+        this.logger.error('Failed to send user submission email', error);
+        return { success: false, error: String(error) };
+      }
+
+      this.logger.log(`User submission email sent to ${to} for booking ${booking.id}`);
+      return { success: true };
+    } catch (error) {
+      this.logger.error('Error sending user submission email', error);
+      return { success: false, error: String(error) };
+    }
+  }
+
   private getApprovedEmailTemplate(booking: BookingDetails, payment?: PaymentDetails): string {
     const hasStripe = payment?.stripePaymentUrl;
     const hasBankTransfer = payment?.bankTransferDetails;
@@ -699,6 +758,319 @@ export class ResendService {
                 Cerca Nuova Disponibilità
               </a>
             </div>
+          </div>
+
+          <div class="footer">
+            <p>Baleno San Zeno<br>
+            Via Don Giuseppe Andreoli, 37 - San Zeno di Cassola (VI)<br>
+            info@balenosanzeno.it</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private getAdminNotificationTemplate(booking: any): string {
+    return `
+      <!DOCTYPE html>
+      <html lang="it">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background-color: #e5e5e5;
+            color: #333333;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+          }
+          .header {
+            background-color: #EDBB00;
+            color: #2B548E;
+            padding: 40px 30px;
+            text-align: center;
+          }
+          .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+          }
+          .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+          }
+          .content {
+            padding: 40px 30px;
+          }
+          .details-box {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+          }
+          .details-box h3 {
+            margin-top: 0;
+            color: #2B548E;
+          }
+          .info-box {
+            background-color: #e8f4f8;
+            border-left: 4px solid #2B548E;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+          }
+          .action-box {
+            background-color: #fff9e6;
+            border: 2px solid #EDBB00;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+          }
+          .button {
+            display: inline-block;
+            padding: 14px 40px;
+            background-color: #2B548E;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            border-radius: 4px;
+            margin: 10px 5px;
+          }
+          .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 14px;
+          }
+          ul {
+            list-style: none;
+            padding: 0;
+          }
+          ul li {
+            margin-bottom: 10px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="icon">🔔</div>
+            <h1>Nuova Prenotazione Ricevuta</h1>
+          </div>
+
+          <div class="content">
+            <p><strong>Ciao Admin,</strong></p>
+            <p>È stata ricevuta una nuova richiesta di prenotazione che richiede la tua approvazione.</p>
+
+            <div class="details-box">
+              <h3>📅 Dettagli Prenotazione</h3>
+              <ul>
+                <li><strong>Risorsa:</strong> ${booking.resource.name}</li>
+                <li><strong>Titolo:</strong> ${booking.title || 'N/A'}</li>
+                <li><strong>Data:</strong> ${new Date(booking.startTime).toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</li>
+                <li><strong>Orario:</strong> ${new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} - ${new Date(booking.endTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</li>
+                ${booking.numberOfPeople ? `<li><strong>Partecipanti:</strong> ${booking.numberOfPeople}</li>` : ''}
+              </ul>
+            </div>
+
+            <div class="info-box">
+              <h3>👤 Informazioni Cliente</h3>
+              <ul>
+                <li><strong>Nome:</strong> ${booking.user.firstName} ${booking.user.lastName}</li>
+                <li><strong>Email:</strong> ${booking.user.email}</li>
+                ${booking.user.phone ? `<li><strong>Telefono:</strong> ${booking.user.phone}</li>` : ''}
+                ${booking.user.companyName ? `<li><strong>Azienda:</strong> ${booking.user.companyName}</li>` : ''}
+                ${booking.user.vatNumber ? `<li><strong>Partita IVA:</strong> ${booking.user.vatNumber}</li>` : ''}
+                ${booking.user.fiscalCode ? `<li><strong>Codice Fiscale:</strong> ${booking.user.fiscalCode}</li>` : ''}
+              </ul>
+            </div>
+
+            ${booking.notes ? `
+            <div class="details-box">
+              <h3>📝 Note</h3>
+              <p>${booking.notes}</p>
+            </div>
+            ` : ''}
+
+            <div class="action-box">
+              <p style="margin-top: 0;"><strong>⏳ Azione Richiesta</strong></p>
+              <p>Accedi al pannello amministrativo per approvare o rifiutare questa prenotazione.</p>
+              <a href="${this.frontendUrl}/admin/bookings" class="button">
+                Vai al Pannello Admin
+              </a>
+              <p style="margin-bottom: 0; font-size: 14px; color: #666; margin-top: 15px;">
+                Una volta approvata, il cliente riceverà un'email con il link per il pagamento e avrà 48 ore per completarlo.
+              </p>
+            </div>
+          </div>
+
+          <div class="footer">
+            <p>Baleno San Zeno<br>
+            Via Don Giuseppe Andreoli, 37 - San Zeno di Cassola (VI)<br>
+            info@balenosanzeno.it</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private getUserSubmissionTemplate(booking: any): string {
+    return `
+      <!DOCTYPE html>
+      <html lang="it">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background-color: #e5e5e5;
+            color: #333333;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+          }
+          .header {
+            background-color: #2B548E;
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+          }
+          .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+          }
+          .checkmark {
+            font-size: 48px;
+            margin-bottom: 16px;
+          }
+          .content {
+            padding: 40px 30px;
+          }
+          .details-box {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+          }
+          .details-box h3 {
+            margin-top: 0;
+            color: #2B548E;
+          }
+          .steps-box {
+            background-color: #e8f4f8;
+            border-left: 4px solid #2B548E;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+          }
+          .steps-box h3 {
+            margin-top: 0;
+            color: #2B548E;
+          }
+          .steps-box ol {
+            padding-left: 20px;
+          }
+          .steps-box li {
+            margin-bottom: 10px;
+          }
+          .warning-box {
+            background-color: #fff9e6;
+            border-left: 4px solid #EDBB00;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+          }
+          .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #2B548E;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 4px;
+          }
+          .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 14px;
+          }
+          ul {
+            list-style: none;
+            padding: 0;
+          }
+          ul li {
+            margin-bottom: 10px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="checkmark">✓</div>
+            <h1>Richiesta di Prenotazione Ricevuta</h1>
+          </div>
+
+          <div class="content">
+            <p>Ciao <strong>${booking.user.firstName}</strong>,</p>
+            <p>Abbiamo ricevuto la tua richiesta di prenotazione. Ecco i dettagli:</p>
+
+            <div class="details-box">
+              <h3>📅 Dettagli Prenotazione</h3>
+              <ul>
+                <li><strong>Risorsa:</strong> ${booking.resource.name}</li>
+                <li><strong>Titolo:</strong> ${booking.title || 'N/A'}</li>
+                <li><strong>Data:</strong> ${new Date(booking.startTime).toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</li>
+                <li><strong>Orario:</strong> ${new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} - ${new Date(booking.endTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</li>
+                ${booking.numberOfPeople ? `<li><strong>Partecipanti:</strong> ${booking.numberOfPeople}</li>` : ''}
+              </ul>
+            </div>
+
+            <div class="steps-box">
+              <h3>🔄 Prossimi Passi</h3>
+              <ol>
+                <li>Riceverai un'email di conferma con i dettagli della tua richiesta (questa email)</li>
+                <li>L'amministratore valuterà la tua richiesta</li>
+                <li>Riceverai un'email con il link per il pagamento quando la prenotazione sarà approvata</li>
+                <li>La prenotazione sarà confermata dopo il pagamento</li>
+              </ol>
+            </div>
+
+            <div class="warning-box">
+              <p style="margin: 0;"><strong>⏱️ Importante:</strong> Avrai 48 ore dall'approvazione per completare il pagamento.</p>
+            </div>
+
+            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 4px; margin: 20px 0;">
+              <p style="margin: 0; font-size: 14px; color: #666;">
+                Puoi controllare lo stato della tua prenotazione accedendo al tuo account sul nostro sito.
+              </p>
+              <div style="text-align: center; margin-top: 15px;">
+                <a href="${this.frontendUrl}/dashboard" class="button">
+                  Vai alla Dashboard
+                </a>
+              </div>
+            </div>
+
+            <p style="margin-top: 30px;">Grazie per aver scelto Baleno San Zeno!</p>
+            <p style="color: #666; font-size: 14px;">Il Team di Baleno San Zeno</p>
           </div>
 
           <div class="footer">

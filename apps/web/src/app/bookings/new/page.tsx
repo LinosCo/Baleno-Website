@@ -204,10 +204,9 @@ export default function NewBookingWizardPage() {
       // Pulisci sessionStorage
       sessionStorage.removeItem('pendingBooking');
 
-      setSuccess('Prenotazione inviata con successo! Riceverai una email quando l\'amministratore approverà la richiesta con le istruzioni per il pagamento.');
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 3000);
+      // Vai allo step di successo (6)
+      setCurrentStep(6);
+      setSuccess('Prenotazione inviata con successo!');
     } catch (err: any) {
       console.error('Booking creation error:', err);
       if (err.name === 'AbortError') {
@@ -829,6 +828,56 @@ export default function NewBookingWizardPage() {
               )}
 
               {/* STEP 5: Review & Confirm */}
+              {currentStep === 6 && (
+                <div className="text-center py-5">
+                  <div className="mb-4">
+                    <div className="display-1 text-success mb-3">✓</div>
+                    <h2 className="fw-bold text-baleno-primary mb-3">Prenotazione Inviata con Successo!</h2>
+                    <p className="lead text-muted">
+                      La tua richiesta di prenotazione è stata inviata correttamente.
+                    </p>
+                  </div>
+
+                  <div className="card border-primary shadow-sm mx-auto" style={{maxWidth: '600px'}}>
+                    <div className="card-body p-4">
+                      <div className="alert alert-info mb-4">
+                        <i className="bi bi-info-circle me-2"></i>
+                        <strong>Cosa succederà ora:</strong>
+                      </div>
+                      <ol className="text-start mb-4">
+                        <li className="mb-3">
+                          <strong>Riceverai un'email di conferma</strong> con i dettagli della tua richiesta
+                        </li>
+                        <li className="mb-3">
+                          <strong>L'amministratore valuterà</strong> la tua richiesta di prenotazione
+                        </li>
+                        <li className="mb-3">
+                          <strong>Riceverai un'email con il link</strong> per completare il pagamento quando la prenotazione sarà approvata
+                        </li>
+                        <li className="mb-0">
+                          <strong>La prenotazione sarà confermata</strong> dopo il pagamento
+                        </li>
+                      </ol>
+
+                      <div className="alert alert-warning mb-0">
+                        <i className="bi bi-clock me-2"></i>
+                        <small><strong>Tempo per il pagamento:</strong> Avrai 48 ore dal momento dell'approvazione per completare il pagamento</small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-5">
+                    <button
+                      onClick={() => router.push('/dashboard')}
+                      className="btn btn-primary btn-lg px-5 fw-semibold"
+                    >
+                      <i className="bi bi-house-door me-2"></i>
+                      Vai alla Dashboard
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {currentStep === 5 && (
                 <div>
                   <h2 className="h4 fw-bold text-baleno-primary mb-4">Riepilogo e Conferma</h2>
@@ -968,19 +1017,20 @@ export default function NewBookingWizardPage() {
               )}
 
               {/* Navigation Buttons */}
-              <div className="d-flex gap-3 mt-5">
-                {currentStep > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(currentStep - 1)}
-                    className="btn btn-outline-secondary btn-lg"
-                    disabled={submitting}
-                  >
-                    ← Indietro
-                  </button>
-                )}
+              {currentStep !== 6 && (
+                <div className="d-flex gap-3 mt-5">
+                  {currentStep > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setCurrentStep(currentStep - 1)}
+                      className="btn btn-outline-secondary btn-lg"
+                      disabled={submitting}
+                    >
+                      ← Indietro
+                    </button>
+                  )}
 
-                {currentStep < 5 ? (
+                  {currentStep < 5 ? (
                   <button
                     type="button"
                     onClick={() => setCurrentStep(currentStep + 1)}
