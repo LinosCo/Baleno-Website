@@ -64,3 +64,4 @@ async function bootstrap() {
 }
 
 bootstrap();
+// Force rebuild - Tue Nov 18 16:06:25 CET 2025
