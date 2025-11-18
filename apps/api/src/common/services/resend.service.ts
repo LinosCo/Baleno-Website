@@ -47,7 +47,8 @@ export class ResendService {
     const frontendUrlRaw = this.configService.get<string>('FRONTEND_URL');
     const defaultUrl = 'https://baleno-booking-system-q91iobv3l-linoscos-projects.vercel.app';
     const finalUrl: string = frontendUrlRaw ?? defaultUrl;
-    this.frontendUrl = finalUrl.split(',')[0].trim();
+    const urlParts = finalUrl.split(',');
+    this.frontendUrl = (urlParts[0] ?? defaultUrl).trim();
 
     if (apiKey) {
       this.resend = new Resend(apiKey);
