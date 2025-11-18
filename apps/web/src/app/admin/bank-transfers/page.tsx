@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
+import AdminLayout from '../../../components/admin/AdminLayout';
 
 interface PendingBankTransfer {
   id: string;
@@ -102,112 +103,184 @@ export default function BankTransfersPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
+      <AdminLayout>
+        <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '400px' }}>
+          <div className="text-center">
+            <div className="spinner-border text-primary mb-3" role="status">
+              <span className="visually-hidden">Caricamento...</span>
+            </div>
+            <p className="text-muted">Caricamento bonifici...</p>
+          </div>
+        </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Bonifici in Attesa</h1>
-          <p className="text-gray-600 mt-2">
-            {transfers.length} {transfers.length === 1 ? 'bonifico in attesa' : 'bonifici in attesa'}
+    <AdminLayout>
+      <div className="container-fluid px-0">
+        {/* Header */}
+        <div className="mb-4">
+          <h1 className="h3 fw-bold text-baleno-primary mb-1">Bonifici Bancari in Attesa</h1>
+          <p className="text-muted mb-0">
+            {transfers.length === 0 && 'Nessun bonifico in attesa di verifica'}
+            {transfers.length === 1 && '1 bonifico in attesa di verifica'}
+            {transfers.length > 1 && `${transfers.length} bonifici in attesa di verifica`}
           </p>
         </div>
-        <button
-          onClick={() => router.push('/dashboard/admin')}
-          className="text-gray-600 hover:text-gray-900"
-        >
-          Torna indietro
-        </button>
-      </div>
 
-      {transfers.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-8 text-center">
-          <p className="text-gray-500 text-lg">Nessun bonifico in attesa di verifica</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {transfers.map((transfer) => (
-            <div
-              key={transfer.id}
-              className={`bg-white rounded-lg shadow p-6 border-l-4 ${
-                isExpired(transfer.expiresAt) ? 'border-red-500' : 'border-yellow-500'
-              }`}
-            >
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-xl font-semibold">{transfer.booking.resource.name}</h3>
-                    {isExpired(transfer.expiresAt) && (
-                      <span className="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded">
-                        SCADUTO
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-600">Codice Bonifico:</p>
-                      <p className="font-mono font-semibold text-lg">{transfer.bankTransferCode}</p>
-                    </div>
-
-                    <div>
-                      <p className="text-gray-600">Importo:</p>
-                      <p className="font-semibold text-lg">
-                        €{transfer.amount.toFixed(2)}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="text-gray-600">Cliente:</p>
-                      <p className="font-medium">
-                        {transfer.booking.user.firstName} {transfer.booking.user.lastName}
-                      </p>
-                      <p className="text-xs text-gray-500">{transfer.booking.user.email}</p>
-                    </div>
-
-                    <div>
-                      <p className="text-gray-600">Prenotazione:</p>
-                      <p className="font-medium">{transfer.booking.title}</p>
-                      <p className="text-xs text-gray-500">
-                        {format(new Date(transfer.booking.startTime), 'dd MMM yyyy HH:mm', { locale: it })}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="text-gray-600">Richiesto il:</p>
-                      <p className="text-sm">
-                        {format(new Date(transfer.createdAt), 'dd MMM yyyy HH:mm', { locale: it })}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="text-gray-600">Scade il:</p>
-                      <p className={`text-sm ${isExpired(transfer.expiresAt) ? 'text-red-600 font-semibold' : ''}`}>
-                        {format(new Date(transfer.expiresAt), 'dd MMM yyyy HH:mm', { locale: it })}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="ml-6">
-                  <button
-                    onClick={() => handleVerify(transfer.id)}
-                    disabled={verifying === transfer.id}
-                    className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 whitespace-nowrap"
-                  >
-                    {verifying === transfer.id ? 'Verifica...' : 'Verifica Ricevuto'}
-                  </button>
-                </div>
+        {transfers.length === 0 ? (
+          <div className="alert alert-info" role="alert">
+            <div className="d-flex align-items-center">
+              <i className="bi bi-info-circle me-3 fs-4"></i>
+              <div>
+                <h4 className="alert-heading">Nessun bonifico in attesa</h4>
+                <p className="mb-0">Al momento non ci sono bonifici bancari in attesa di verifica. I pagamenti apparirranno qui quando gli utenti scelgono il bonifico come metodo di pagamento.</p>
               </div>
             </div>
-          ))}
-        </div>
-      )}
-    </div>
+          </div>
+        ) : (
+          <div className="row g-4">
+            {transfers.map((transfer) => {
+              const expired = isExpired(transfer.expiresAt);
+
+              return (
+                <div key={transfer.id} className="col-12">
+                  <div className={`card shadow-sm ${expired ? 'border-danger border-2' : 'border-warning border-2 border-start'}`}>
+                    <div className={`card-header ${expired ? 'bg-danger bg-opacity-10' : 'bg-warning bg-opacity-10'}`}>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div className="d-flex align-items-center">
+                          <i className="bi bi-bank me-2 fs-5"></i>
+                          <h5 className="mb-0 fw-bold">{transfer.booking.resource.name}</h5>
+                        </div>
+                        {expired && (
+                          <span className="badge bg-danger">
+                            <i className="bi bi-exclamation-triangle me-1"></i>
+                            SCADUTO
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="card-body">
+                      <div className="row g-4">
+                        {/* Codice Bonifico - Highlight */}
+                        <div className="col-12">
+                          <div className="alert alert-primary mb-0 d-flex align-items-center">
+                            <i className="bi bi-hash fs-4 me-3"></i>
+                            <div className="flex-grow-1">
+                              <small className="text-muted d-block">Codice Bonifico da Verificare</small>
+                              <h3 className="mb-0 font-monospace fw-bold">{transfer.bankTransferCode}</h3>
+                            </div>
+                            <div className="text-end">
+                              <small className="text-muted d-block">Importo</small>
+                              <h3 className="mb-0 text-success fw-bold">€{transfer.amount.toFixed(2)}</h3>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Dettagli Cliente e Prenotazione */}
+                        <div className="col-md-6">
+                          <div className="border rounded p-3 h-100">
+                            <h6 className="text-muted mb-3">
+                              <i className="bi bi-person-circle me-2"></i>
+                              Informazioni Cliente
+                            </h6>
+                            <p className="mb-1">
+                              <strong>Nome:</strong> {transfer.booking.user.firstName} {transfer.booking.user.lastName}
+                            </p>
+                            <p className="mb-0">
+                              <small className="text-muted">
+                                <i className="bi bi-envelope me-1"></i>
+                                {transfer.booking.user.email}
+                              </small>
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="border rounded p-3 h-100">
+                            <h6 className="text-muted mb-3">
+                              <i className="bi bi-calendar-check me-2"></i>
+                              Dettagli Prenotazione
+                            </h6>
+                            <p className="mb-1">
+                              <strong>Titolo:</strong> {transfer.booking.title}
+                            </p>
+                            <p className="mb-0">
+                              <small className="text-muted">
+                                <i className="bi bi-clock me-1"></i>
+                                {format(new Date(transfer.booking.startTime), 'dd MMM yyyy HH:mm', { locale: it })}
+                              </small>
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Date Creazione e Scadenza */}
+                        <div className="col-md-6">
+                          <div className="d-flex align-items-center">
+                            <div className="flex-shrink-0 me-3">
+                              <div className="bg-info bg-opacity-10 rounded-circle p-3">
+                                <i className="bi bi-calendar-plus text-info fs-5"></i>
+                              </div>
+                            </div>
+                            <div>
+                              <small className="text-muted d-block">Richiesto il</small>
+                              <strong>{format(new Date(transfer.createdAt), 'dd MMM yyyy HH:mm', { locale: it })}</strong>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="d-flex align-items-center">
+                            <div className="flex-shrink-0 me-3">
+                              <div className={`${expired ? 'bg-danger' : 'bg-warning'} bg-opacity-10 rounded-circle p-3`}>
+                                <i className={`bi bi-calendar-x ${expired ? 'text-danger' : 'text-warning'} fs-5`}></i>
+                              </div>
+                            </div>
+                            <div>
+                              <small className="text-muted d-block">Scade il</small>
+                              <strong className={expired ? 'text-danger' : ''}>
+                                {format(new Date(transfer.expiresAt), 'dd MMM yyyy HH:mm', { locale: it })}
+                              </strong>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Pulsante Verifica */}
+                        <div className="col-12">
+                          <div className="d-grid">
+                            <button
+                              onClick={() => handleVerify(transfer.id)}
+                              disabled={verifying === transfer.id}
+                              className="btn btn-success btn-lg fw-semibold"
+                            >
+                              {verifying === transfer.id ? (
+                                <>
+                                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                  Verifica in corso...
+                                </>
+                              ) : (
+                                <>
+                                  <i className="bi bi-check-circle me-2"></i>
+                                  Verifica Bonifico Ricevuto
+                                </>
+                              )}
+                            </button>
+                          </div>
+                          <small className="text-muted d-block mt-2 text-center">
+                            Clicca solo dopo aver verificato la ricezione del bonifico sul conto bancario
+                          </small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </AdminLayout>
   );
 }
