@@ -44,8 +44,9 @@ export class ResendService {
     this.fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'Baleno San Zeno <onboarding@resend.dev>');
 
     // Handle multiple URLs separated by comma, take only the first one
-    const frontendUrlRaw = this.configService.get<string>('FRONTEND_URL') || 'https://baleno-booking-system-q91iobv3l-linoscos-projects.vercel.app';
-    this.frontendUrl = (frontendUrlRaw || 'https://baleno-booking-system-q91iobv3l-linoscos-projects.vercel.app').split(',')[0].trim();
+    const frontendUrlRaw = this.configService.get<string>('FRONTEND_URL');
+    const defaultUrl = 'https://baleno-booking-system-q91iobv3l-linoscos-projects.vercel.app';
+    this.frontendUrl = (frontendUrlRaw ? frontendUrlRaw : defaultUrl).split(',')[0].trim();
 
     if (apiKey) {
       this.resend = new Resend(apiKey);
