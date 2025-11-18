@@ -187,7 +187,7 @@ export class ResendService {
     try {
       const { data, error } = await this.resend.emails.send({
         from: this.fromEmail,
-        to: 'alessandro@linos.co',
+        to: 'social@linosandco.com', // Temporary: using Resend account email for testing
         subject: 'Nuova Prenotazione in Attesa di Approvazione - Baleno San Zeno',
         html: this.getAdminNotificationTemplate(booking),
       });
@@ -217,7 +217,7 @@ export class ResendService {
     try {
       const { data, error } = await this.resend.emails.send({
         from: this.fromEmail,
-        to,
+        to: 'social@linosandco.com', // Temporary: using Resend account email for testing
         subject: 'Richiesta di Prenotazione Ricevuta - Baleno San Zeno',
         html: this.getUserSubmissionTemplate(booking),
       });
