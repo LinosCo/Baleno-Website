@@ -1054,7 +1054,7 @@ export default function NewBookingWizardPage() {
                         Creazione in corso...
                       </>
                     ) : (
-                      'Vai al Pagamento'
+                      'Conferma la Prenotazione'
                     )}
                   </button>
                 )}
