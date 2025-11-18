@@ -41,7 +41,7 @@ export class ResendService {
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('RESEND_API_KEY');
-    this.fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'Baleno San Zeno <noreply@balenosanzeno.it>');
+    this.fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'Baleno San Zeno <onboarding@resend.dev>');
     this.frontendUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
 
     if (apiKey) {

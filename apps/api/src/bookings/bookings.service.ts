@@ -143,16 +143,24 @@ export class BookingsService {
     // Send email notifications (non-blocking)
     try {
       // Email to admin
-      await this.resendService.sendNewBookingNotificationToAdmin(completeBooking);
-      this.logger.log(`Admin notification sent for booking ${booking.id}`);
+      const adminResult = await this.resendService.sendNewBookingNotificationToAdmin(completeBooking);
+      if (adminResult.success) {
+        this.logger.log(`Admin notification sent for booking ${booking.id}`);
+      } else {
+        this.logger.error(`Failed to send admin notification email: ${adminResult.error}`);
+      }
     } catch (emailError) {
       this.logger.error('Failed to send admin notification email:', emailError);
     }
 
     try {
       // Email to user
-      await this.resendService.sendBookingSubmissionToUser(user.email, completeBooking);
-      this.logger.log(`User submission email sent to ${user.email} for booking ${booking.id}`);
+      const userResult = await this.resendService.sendBookingSubmissionToUser(user.email, completeBooking);
+      if (userResult.success) {
+        this.logger.log(`User submission email sent to ${user.email} for booking ${booking.id}`);
+      } else {
+        this.logger.error(`Failed to send user submission email: ${userResult.error}`);
+      }
     } catch (emailError) {
       this.logger.error('Failed to send user submission email:', emailError);
     }
