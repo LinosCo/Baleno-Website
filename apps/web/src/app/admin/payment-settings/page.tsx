@@ -67,7 +67,8 @@ export default function PaymentSettingsPage() {
       const token = localStorage.getItem('accessToken');
 
       // Filter out fields that shouldn't be sent (id, createdAt, updatedAt)
-      const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...settingsToSave } = settings as any;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, createdAt, updatedAt, ...settingsToSave } = settings as any;
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/payment-settings`, {
         method: 'PUT',
