@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar, Users, Shield, CreditCard } from 'lucide-react';
+import { Calendar, Users, Shield, CreditCard, MapPin, Mail, Phone, ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function HomePage() {
@@ -14,8 +14,8 @@ export default function HomePage() {
 
   return (
     <div className="min-vh-100">
-      {/* Enhanced Navbar */}
-      <nav className="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-lg" style={{ padding: '1rem 0' }}>
+      {/* Navbar */}
+      <nav className="navbar navbar-expand-lg navbar-dark sticky-top" style={{ backgroundColor: '#2B548E' }}>
         <div className="container">
           <Link href="/" className="navbar-brand d-flex align-items-center">
             <Image
@@ -34,20 +34,19 @@ export default function HomePage() {
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#mainNavbar"
-            aria-controls="mainNavbar"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
           >
             <span className="navbar-toggler-icon"></span>
           </button>
 
           <div className="collapse navbar-collapse" id="mainNavbar">
-            <div className="navbar-nav ms-auto d-flex align-items-lg-center gap-3">
+            <div className="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+              <Link href="/resources" className="nav-link text-white">Spazi</Link>
+              <Link href="/calendar" className="nav-link text-white">Calendario</Link>
               <div className="d-flex gap-2 mt-3 mt-lg-0">
-                <Link href="/login" className="btn btn-outline-light px-4">
+                <Link href="/login" className="btn btn-outline-light btn-sm px-3">
                   Accedi
                 </Link>
-                <Link href="/register" className="btn btn-light text-primary fw-semibold px-4">
+                <Link href="/register" className="btn btn-warning text-dark btn-sm px-3 fw-semibold" style={{ backgroundColor: '#EDBB00' }}>
                   Registrati
                 </Link>
               </div>
@@ -56,28 +55,133 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="hero-section position-relative overflow-hidden" style={{ paddingTop: '120px', paddingBottom: '80px' }}>
-        <div className="hero-gradient"></div>
-        <div className="container position-relative" style={{ zIndex: 1 }}>
-          <div className="row justify-content-center">
-            <div className="col-lg-10 text-center">
-              <h1 className={`display-3 fw-bold mb-4 text-baleno-primary ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.1s' }}>
-                Baleno San Zeno
+      {/* Hero Section with Visual Background */}
+      <section className={`hero-visual position-relative ${mounted ? 'fade-in' : 'opacity-0'}`}>
+        <div className="hero-overlay"></div>
+        <div className="hero-pattern"></div>
+        <div className="container position-relative" style={{ zIndex: 2 }}>
+          <div className="row align-items-center min-vh-75">
+            <div className="col-lg-8 text-white">
+              <h1 className={`display-2 fw-bold mb-4 ${mounted ? 'slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
+                Casa di Quartiere<br />
+                <span style={{ color: '#EDBB00' }}>Baleno San Zeno</span>
               </h1>
-              <p className={`lead fs-3 text-secondary mb-5 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
-                Sistema completo di gestione e prenotazione spazi per la Casa di Quartiere
+              <p className={`lead fs-4 mb-4 ${mounted ? 'slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.4s', maxWidth: '600px' }}>
+                Uno spazio condiviso di 330mq nel cuore di San Zeno di Cassola, dedicato alla community, alla cultura e all'aggregazione sociale.
               </p>
-              <div className={`d-flex gap-3 justify-content-center flex-wrap ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.5s' }}>
-                <Link href="/resources" className="btn btn-primary btn-lg cta-button">
-                  Esplora Spazi
+              <div className={`d-flex gap-3 flex-wrap ${mounted ? 'slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.6s' }}>
+                <Link href="/bookings/new" className="btn btn-lg px-4 fw-semibold cta-primary">
+                  Prenota lo Spazio
+                  <ArrowRight className="ms-2" size={20} />
                 </Link>
-                <Link href="/calendar" className="btn btn-outline-primary btn-lg cta-button">
-                  Vedi Calendario
+                <Link href="/resources" className="btn btn-outline-light btn-lg px-4">
+                  Scopri gli Spazi
                 </Link>
-                <Link href="/bookings/new" className="btn btn-success btn-lg cta-button">
-                  Prenota Ora
-                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-5 bg-white">
+        <div className="container">
+          <div className="row g-4 text-center">
+            <div className={`col-6 col-lg-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
+              <div className="stat-item">
+                <h3 className="display-4 fw-bold mb-2" style={{ color: '#2B548E' }}>330</h3>
+                <p className="text-muted mb-0">Metri Quadrati</p>
+              </div>
+            </div>
+            <div className={`col-6 col-lg-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
+              <div className="stat-item">
+                <h3 className="display-4 fw-bold mb-2" style={{ color: '#EDBB00' }}>24/7</h3>
+                <p className="text-muted mb-0">Disponibilità</p>
+              </div>
+            </div>
+            <div className={`col-6 col-lg-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.4s' }}>
+              <div className="stat-item">
+                <h3 className="display-4 fw-bold mb-2" style={{ color: '#2B548E' }}>100+</h3>
+                <p className="text-muted mb-0">Eventi all'Anno</p>
+              </div>
+            </div>
+            <div className={`col-6 col-lg-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.5s' }}>
+              <div className="stat-item">
+                <h3 className="display-4 fw-bold mb-2" style={{ color: '#EDBB00' }}>1000+</h3>
+                <p className="text-muted mb-0">Partecipanti</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Spaces Section */}
+      <section className="py-5 bg-light">
+        <div className="container">
+          <div className="text-center mb-5">
+            <h2 className={`display-4 fw-bold mb-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ color: '#2B548E', animationDelay: '0.1s' }}>
+              I Nostri Spazi
+            </h2>
+            <p className={`lead text-muted ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
+              Ambienti versatili per ogni tipo di attività
+            </p>
+          </div>
+
+          <div className="row g-4">
+            <div className={`col-lg-4 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
+              <div className="space-card">
+                <div className="space-card-image">
+                  <div className="placeholder-image d-flex align-items-center justify-content-center">
+                    <Calendar size={48} style={{ color: '#2B548E' }} />
+                  </div>
+                </div>
+                <div className="space-card-body">
+                  <h3 className="h4 fw-bold mb-3" style={{ color: '#2B548E' }}>Sala Principale</h3>
+                  <p className="text-muted mb-3">
+                    Spazio polivalente di 200mq ideale per eventi, workshop, conferenze e attività di gruppo.
+                  </p>
+                  <Link href="/resources" className="btn btn-sm btn-outline-primary">
+                    Vedi Dettagli →
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className={`col-lg-4 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.4s' }}>
+              <div className="space-card">
+                <div className="space-card-image">
+                  <div className="placeholder-image d-flex align-items-center justify-content-center">
+                    <Users size={48} style={{ color: '#2B548E' }} />
+                  </div>
+                </div>
+                <div className="space-card-body">
+                  <h3 className="h4 fw-bold mb-3" style={{ color: '#2B548E' }}>Sala Riunioni</h3>
+                  <p className="text-muted mb-3">
+                    Ambiente raccolto per meeting, corsi e attività che richiedono maggiore concentrazione.
+                  </p>
+                  <Link href="/resources" className="btn btn-sm btn-outline-primary">
+                    Vedi Dettagli →
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className={`col-lg-4 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.5s' }}>
+              <div className="space-card">
+                <div className="space-card-image">
+                  <div className="placeholder-image d-flex align-items-center justify-content-center">
+                    <Shield size={48} style={{ color: '#2B548E' }} />
+                  </div>
+                </div>
+                <div className="space-card-body">
+                  <h3 className="h4 fw-bold mb-3" style={{ color: '#2B548E' }}>Spazio Completo</h3>
+                  <p className="text-muted mb-3">
+                    Intera struttura di 330mq per eventi di grande portata e manifestazioni speciali.
+                  </p>
+                  <Link href="/resources" className="btn btn-sm btn-outline-primary">
+                    Vedi Dettagli →
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -87,44 +191,151 @@ export default function HomePage() {
       {/* Features Section */}
       <section className="py-5 bg-white">
         <div className="container">
-          <h2 className={`text-center display-5 fw-bold mb-5 text-baleno-primary ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
-            Funzionalità Principali
-          </h2>
+          <div className="text-center mb-5">
+            <h2 className={`display-4 fw-bold mb-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ color: '#2B548E', animationDelay: '0.1s' }}>
+              Perché Scegliere Baleno
+            </h2>
+          </div>
+
           <div className="row g-4">
+            <div className={`col-md-6 col-lg-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
+              <FeatureCard
+                icon={<Calendar style={{ color: '#2B548E' }} size={40} />}
+                title="Prenotazione Semplice"
+                description="Sistema intuitivo per prenotare gli spazi in pochi click"
+              />
+            </div>
             <div className={`col-md-6 col-lg-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
               <FeatureCard
-                icon={<Calendar className="text-primary" size={48} />}
-                title="Prenotazioni Facili"
-                description="Sistema di prenotazione intuitivo con calendario in tempo reale"
+                icon={<CreditCard style={{ color: '#2B548E' }} size={40} />}
+                title="Pagamenti Sicuri"
+                description="Bonifico bancario o carta di credito, scegli tu"
               />
             </div>
             <div className={`col-md-6 col-lg-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.4s' }}>
               <FeatureCard
-                icon={<CreditCard className="text-primary" size={48} />}
-                title="Pagamenti Sicuri"
-                description="Integrazione Stripe per pagamenti sicuri e ricevute automatiche"
+                icon={<Shield style={{ color: '#2B548E' }} size={40} />}
+                title="Gestione Trasparente"
+                description="Calendario pubblico e comunicazioni sempre chiare"
               />
             </div>
             <div className={`col-md-6 col-lg-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.5s' }}>
               <FeatureCard
-                icon={<Shield className="text-primary" size={48} />}
-                title="Gestione Avanzata"
-                description="Dashboard completa per admin e community manager"
-              />
-            </div>
-            <div className={`col-md-6 col-lg-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.6s' }}>
-              <FeatureCard
-                icon={<Users className="text-primary" size={48} />}
-                title="Calendario Pubblico"
-                description="Visualizza tutte le prenotazioni approvate in tempo reale"
+                icon={<Users style={{ color: '#2B548E' }} size={40} />}
+                title="Community Attiva"
+                description="Entra a far parte di una rete di associazioni e cittadini"
               />
             </div>
           </div>
         </div>
       </section>
 
+      {/* CTA Section */}
+      <section className="py-5 position-relative overflow-hidden" style={{ backgroundColor: '#2B548E' }}>
+        <div className="cta-pattern"></div>
+        <div className="container position-relative" style={{ zIndex: 1 }}>
+          <div className="row align-items-center">
+            <div className="col-lg-8 text-white mb-4 mb-lg-0">
+              <h2 className="display-5 fw-bold mb-3">Pronto a Prenotare?</h2>
+              <p className="lead mb-0">
+                Prenota ora il tuo spazio e inizia a realizzare i tuoi progetti nella nostra Casa di Quartiere.
+              </p>
+            </div>
+            <div className="col-lg-4 text-lg-end">
+              <Link href="/bookings/new" className="btn btn-lg px-5 fw-semibold" style={{ backgroundColor: '#EDBB00', color: '#2B548E' }}>
+                Prenota Ora
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-dark text-white py-5">
+        <div className="container">
+          <div className="row g-4">
+            <div className="col-lg-4 mb-4 mb-lg-0">
+              <Image
+                src="/BALENO-LOGO-BIANCO.png"
+                alt="Baleno San Zeno"
+                width={180}
+                height={60}
+                className="mb-3"
+                style={{ height: '60px', width: 'auto' }}
+              />
+              <p className="text-muted mb-0">
+                Casa di Quartiere dedicata alla community e alla cultura
+              </p>
+            </div>
+
+            <div className="col-lg-4 mb-4 mb-lg-0">
+              <h5 className="fw-bold mb-3">Link Utili</h5>
+              <ul className="list-unstyled">
+                <li className="mb-2">
+                  <Link href="/resources" className="text-muted text-decoration-none hover-link">
+                    Esplora Spazi
+                  </Link>
+                </li>
+                <li className="mb-2">
+                  <Link href="/calendar" className="text-muted text-decoration-none hover-link">
+                    Calendario Pubblico
+                  </Link>
+                </li>
+                <li className="mb-2">
+                  <Link href="/bookings/new" className="text-muted text-decoration-none hover-link">
+                    Prenota Ora
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div className="col-lg-4">
+              <h5 className="fw-bold mb-3">Contatti</h5>
+              <div className="d-flex align-items-start mb-2">
+                <MapPin size={18} className="me-2 mt-1" style={{ color: '#EDBB00' }} />
+                <span className="text-muted">Via Don Giuseppe Andreoli, 37<br />San Zeno di Cassola (VI)</span>
+              </div>
+              <div className="d-flex align-items-center mb-2">
+                <Mail size={18} className="me-2" style={{ color: '#EDBB00' }} />
+                <a href="mailto:info@balenosanzeno.it" className="text-muted text-decoration-none hover-link">
+                  info@balenosanzeno.it
+                </a>
+              </div>
+              <div className="d-flex align-items-center">
+                <Phone size={18} className="me-2" style={{ color: '#EDBB00' }} />
+                <span className="text-muted">+39 XXX XXX XXXX</span>
+              </div>
+            </div>
+          </div>
+
+          <hr className="my-4 border-secondary" />
+
+          <div className="row">
+            <div className="col-12 text-center text-muted small">
+              <p className="mb-0">© 2025 Baleno San Zeno - Casa di Quartiere. Tutti i diritti riservati.</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+
       <style jsx global>{`
-        /* Animazioni */
+        /* Animations */
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
         @keyframes fadeInUp {
           from {
             opacity: 0;
@@ -136,13 +347,12 @@ export default function HomePage() {
           }
         }
 
-        @keyframes gradientShift {
-          0%, 100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
+        .fade-in {
+          animation: fadeIn 1s ease-out forwards;
+        }
+
+        .slide-up {
+          animation: slideUp 0.8s ease-out forwards;
         }
 
         .fade-in-up {
@@ -153,75 +363,152 @@ export default function HomePage() {
           opacity: 0;
         }
 
-        /* Hero Gradient Animato */
-        .hero-section {
-          background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #f0f4f8 100%);
+        /* Hero Visual */
+        .hero-visual {
+          min-height: 85vh;
+          background: linear-gradient(135deg, #1a3d6b 0%, #2B548E 50%, #1e4976 100%);
           position: relative;
+          display: flex;
+          align-items: center;
         }
 
-        .hero-gradient {
+        .hero-overlay {
           position: absolute;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: linear-gradient(
-            45deg,
-            rgba(43, 84, 142, 0.03) 0%,
-            rgba(237, 187, 0, 0.03) 50%,
-            rgba(43, 84, 142, 0.03) 100%
-          );
-          background-size: 400% 400%;
-          animation: gradientShift 15s ease infinite;
-          z-index: 0;
+          background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(43,84,142,0.3) 100%);
+          z-index: 1;
         }
 
-        /* Bottoni CTA con hover effect */
-        .cta-button {
-          position: relative;
-          overflow: hidden;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          transform: translateY(0);
+        .hero-pattern {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-image:
+            radial-gradient(circle at 20% 50%, rgba(237, 187, 0, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(237, 187, 0, 0.08) 0%, transparent 50%);
+          z-index: 1;
         }
 
-        .cta-button:hover {
+        .min-vh-75 {
+          min-height: 75vh;
+        }
+
+        /* CTA Buttons */
+        .cta-primary {
+          background: linear-gradient(135deg, #EDBB00 0%, #f5c91a 100%);
+          border: none;
+          color: #2B548E;
+          transition: all 0.3s ease;
+          display: inline-flex;
+          align-items: center;
+        }
+
+        .cta-primary:hover {
           transform: translateY(-3px);
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 10px 30px rgba(237, 187, 0, 0.4);
+          background: linear-gradient(135deg, #f5c91a 0%, #EDBB00 100%);
+          color: #2B548E;
         }
 
-        .cta-button:active {
-          transform: translateY(-1px);
-        }
-
-        /* Feature Cards con hover effect migliorato */
-        .feature-card {
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          transform: translateY(0);
-          border: 1px solid rgba(0, 0, 0, 0.08);
-        }
-
-        .feature-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 15px 35px rgba(43, 84, 142, 0.15);
-          border-color: rgba(43, 84, 142, 0.2);
-        }
-
-        .feature-card .icon-wrapper {
+        /* Stats */
+        .stat-item {
+          padding: 2rem 1rem;
           transition: transform 0.3s ease;
         }
 
-        .feature-card:hover .icon-wrapper {
-          transform: scale(1.1) rotate(5deg);
+        .stat-item:hover {
+          transform: translateY(-5px);
         }
 
-        /* Navbar con effetto blur */
-        .navbar {
-          backdrop-filter: blur(10px);
-          background-color: rgba(43, 84, 142, 0.95) !important;
+        /* Space Cards */
+        .space-card {
+          background: white;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .space-card:hover {
+          transform: translateY(-10px);
+          box-shadow: 0 15px 40px rgba(43, 84, 142, 0.2);
+        }
+
+        .space-card-image {
+          height: 220px;
+          overflow: hidden;
+          background: linear-gradient(135deg, #e8ecf1 0%, #f5f7fa 100%);
+        }
+
+        .placeholder-image {
+          height: 100%;
+          background: linear-gradient(135deg, #f0f4f8 0%, #e8ecf1 100%);
+        }
+
+        .space-card-body {
+          padding: 1.5rem;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .space-card-body p {
+          flex: 1;
+        }
+
+        /* Feature Cards */
+        .feature-card {
+          background: white;
+          border-radius: 8px;
+          padding: 2rem 1.5rem;
+          text-align: center;
           transition: all 0.3s ease;
+          height: 100%;
+          border: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .feature-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 30px rgba(43, 84, 142, 0.15);
+          border-color: rgba(43, 84, 142, 0.2);
+        }
+
+        /* CTA Pattern */
+        .cta-pattern {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-image:
+            radial-gradient(circle at 10% 20%, rgba(237, 187, 0, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 90% 80%, rgba(237, 187, 0, 0.08) 0%, transparent 50%);
+          z-index: 0;
+        }
+
+        /* Footer Links */
+        .hover-link {
+          transition: color 0.2s ease;
+        }
+
+        .hover-link:hover {
+          color: #EDBB00 !important;
+        }
+
+        /* Navbar */
+        .navbar {
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
       `}</style>
-
     </div>
   );
 }
@@ -236,12 +523,10 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="card h-100 shadow-sm feature-card">
-      <div className="card-body text-center d-flex flex-column p-4">
-        <div className="icon-wrapper mb-4">{icon}</div>
-        <h3 className="card-title h5 fw-semibold mb-3 text-baleno-primary">{title}</h3>
-        <p className="card-text text-muted mb-0">{description}</p>
-      </div>
+    <div className="feature-card">
+      <div className="mb-3">{icon}</div>
+      <h3 className="h5 fw-semibold mb-3" style={{ color: '#2B548E' }}>{title}</h3>
+      <p className="text-muted mb-0 small">{description}</p>
     </div>
   );
 }
