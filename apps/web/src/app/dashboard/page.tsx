@@ -49,7 +49,8 @@ export default function DashboardPage() {
       });
 
     // Fetch user bookings
-    fetch('/api/bookings', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+    fetch(`${apiUrl}/bookings`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
