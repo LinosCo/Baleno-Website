@@ -179,7 +179,7 @@ export default function ResourcesPage() {
           {/* Barra di ricerca e filtri */}
           <div className="card shadow-lg mb-4" style={{
             border: '1px solid rgba(43, 84, 142, 0.1)',
-            borderRadius: '16px'
+            borderRadius: '24px'
           }}>
             <div className="card-body" style={{ background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)' }}>
               {/* Ricerca */}
@@ -354,7 +354,7 @@ export default function ResourcesPage() {
                 <div key={resource.id} className="col-md-6 col-lg-4">
                   <div className="card h-100" style={{
                     border: 'none',
-                    borderRadius: '16px',
+                    borderRadius: '24px',
                     overflow: 'hidden',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                     transition: 'all 0.3s ease'
@@ -458,7 +458,7 @@ export default function ResourcesPage() {
                             background: 'transparent',
                             border: '2px solid #2B548E',
                             color: '#2B548E',
-                            borderRadius: '8px',
+                            borderRadius: '12px',
                             padding: '0.625rem',
                             transition: 'all 0.2s ease'
                           }}

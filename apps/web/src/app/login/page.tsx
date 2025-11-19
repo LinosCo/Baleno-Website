@@ -190,7 +190,7 @@ function LoginForm() {
 
         .auth-card {
           background: white;
-          border-radius: 16px;
+          border-radius: 24px;
           box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
           max-width: 480px;
           width: 100%;
@@ -211,7 +211,7 @@ function LoginForm() {
 
         .form-control {
           border: 2px solid #e9ecef;
-          border-radius: 8px;
+          border-radius: 12px;
           transition: all 0.3s ease;
         }
 
@@ -225,7 +225,7 @@ function LoginForm() {
           border: none;
           color: white;
           padding: 0.875rem 1.5rem;
-          border-radius: 8px;
+          border-radius: 12px;
           transition: all 0.3s ease;
         }
 

@@ -173,7 +173,7 @@ export default function PublicCalendarPage() {
           {/* Calendar */}
           <div className="card shadow-lg" style={{
             border: '1px solid rgba(43, 84, 142, 0.1)',
-            borderRadius: '16px',
+            borderRadius: '24px',
             overflow: 'hidden'
           }}>
             {/* Controls inside calendar card */}
@@ -186,7 +186,7 @@ export default function PublicCalendarPage() {
                     background: 'linear-gradient(135deg, #EDBB00 0%, #d4a600 100%)',
                     border: 'none',
                     color: '#2B548E',
-                    borderRadius: '6px'
+                    borderRadius: '12px'
                   }}
                 >
                   Oggi
@@ -199,7 +199,7 @@ export default function PublicCalendarPage() {
                       background: viewMode === 'week' ? 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)' : 'transparent',
                       border: '2px solid #2B548E',
                       color: viewMode === 'week' ? 'white' : '#2B548E',
-                      borderRadius: '6px 0 0 6px'
+                      borderRadius: '12px 0 0 12px'
                     }}
                     onClick={() => setViewMode('week')}
                   >
@@ -213,7 +213,7 @@ export default function PublicCalendarPage() {
                       border: '2px solid #2B548E',
                       borderLeft: 'none',
                       color: viewMode === 'month' ? 'white' : '#2B548E',
-                      borderRadius: '0 6px 6px 0'
+                      borderRadius: '0 12px 12px 0'
                     }}
                     onClick={() => setViewMode('month')}
                   >
@@ -434,7 +434,7 @@ export default function PublicCalendarPage() {
                 background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)',
                 border: 'none',
                 color: 'white',
-                borderRadius: '8px'
+                borderRadius: '12px'
               }}>
                 Esplora Spazi
               </Link>
@@ -442,7 +442,7 @@ export default function PublicCalendarPage() {
                 background: 'linear-gradient(135deg, #EDBB00 0%, #d4a600 100%)',
                 border: 'none',
                 color: '#2B548E',
-                borderRadius: '8px'
+                borderRadius: '12px'
               }}>
                 Prenota Ora
               </Link>
