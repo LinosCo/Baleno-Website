@@ -163,11 +163,11 @@ export default function PaymentSettingsPage() {
 
               {settings.stripeEnabled && (
                 <div className="card-body">
-                  <div className="alert alert-info mb-4">
+                  <div className="bg-light border rounded p-3 mb-4">
                     <strong>Configurazione Stripe</strong>
-                    <p className="mb-0 mt-1 small">
+                    <p className="mb-0 mt-1 small text-muted">
                       Trova le tue chiavi API nel{' '}
-                      <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener noreferrer" className="alert-link">
+                      <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener noreferrer" className="text-primary">
                         Dashboard Stripe <i className="bi bi-box-arrow-up-right"></i>
                       </a>
                     </p>

@@ -128,9 +128,9 @@ export default function BankTransfersPage() {
         </div>
 
         {transfers.length === 0 ? (
-          <div className="alert alert-info" role="alert">
-            <h4 className="alert-heading">Nessun bonifico in attesa</h4>
-            <p className="mb-0">Al momento non ci sono bonifici bancari in attesa di verifica. I pagamenti apparirranno qui quando gli utenti scelgono il bonifico come metodo di pagamento.</p>
+          <div className="bg-light border rounded p-4" role="alert">
+            <h4 className="fw-semibold mb-2">Nessun bonifico in attesa</h4>
+            <p className="mb-0 text-muted">Al momento non ci sono bonifici bancari in attesa di verifica. I pagamenti apparirranno qui quando gli utenti scelgono il bonifico come metodo di pagamento.</p>
           </div>
         ) : (
           <div className="row g-4">
