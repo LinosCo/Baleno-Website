@@ -132,45 +132,51 @@ export default function PaymentSettingsPage() {
         <div className="row g-4">
           {/* STRIPE SECTION */}
           <div className="col-12">
-            <div className="card shadow-sm">
-              <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <div>
-                  <h5 className="mb-0 d-flex align-items-center">
-                    <i className="bi bi-credit-card me-2"></i>
-                    Stripe (Carta di Credito)
-                  </h5>
-                  <small className="opacity-75">Pagamenti online con carte di credito/debito</small>
+            <div className="card shadow-sm border-0" style={{ borderLeft: '4px solid var(--baleno-primary)' }}>
+              <div className="card-body">
+                <div className="d-flex justify-content-between align-items-start mb-3">
+                  <div>
+                    <h5 className="mb-1 d-flex align-items-center fw-bold" style={{ color: 'var(--baleno-primary)' }}>
+                      <i className="bi bi-credit-card me-2"></i>
+                      Stripe (Carta di Credito)
+                    </h5>
+                    <small className="text-muted">Pagamenti online con carte di credito/debito</small>
+                  </div>
+                  <div className="form-check form-switch">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="stripeEnabled"
+                      checked={settings.stripeEnabled}
+                      onChange={(e) => setSettings({ ...settings, stripeEnabled: e.target.checked })}
+                      style={{ transform: 'scale(1.3)' }}
+                    />
+                    <label className="form-check-label ms-2" htmlFor="stripeEnabled">
+                      {settings.stripeEnabled ? (
+                        <span className="badge" style={{ backgroundColor: 'var(--baleno-primary)' }}>Attivo</span>
+                      ) : (
+                        <span className="badge bg-secondary">Disattivo</span>
+                      )}
+                    </label>
+                  </div>
                 </div>
-                <div className="form-check form-switch mb-0">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    id="stripeEnabled"
-                    checked={settings.stripeEnabled}
-                    onChange={(e) => setSettings({ ...settings, stripeEnabled: e.target.checked })}
-                    style={{ transform: 'scale(1.5)' }}
-                  />
-                  <label className="form-check-label text-white ms-2" htmlFor="stripeEnabled">
-                    {settings.stripeEnabled ? (
-                      <span className="badge bg-success">Attivo</span>
-                    ) : (
-                      <span className="badge bg-secondary">Disattivo</span>
-                    )}
-                  </label>
-                </div>
-              </div>
 
               {settings.stripeEnabled && (
-                <div className="card-body">
-                  <div className="bg-light border rounded p-3 mb-4">
-                    <strong>Configurazione Stripe</strong>
-                    <p className="mb-0 mt-1 small text-muted">
-                      Trova le tue chiavi API nel{' '}
-                      <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener noreferrer" className="text-primary">
-                        Dashboard Stripe <i className="bi bi-box-arrow-up-right"></i>
-                      </a>
-                    </p>
+                <>
+                  <div className="alert alert-light border mb-4">
+                    <div className="d-flex align-items-start">
+                      <i className="bi bi-info-circle me-2 mt-1" style={{ color: 'var(--baleno-primary)' }}></i>
+                      <div>
+                        <strong className="d-block mb-1">Configurazione Stripe</strong>
+                        <small className="text-muted">
+                          Trova le tue chiavi API nel{' '}
+                          <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--baleno-primary)' }}>
+                            Dashboard Stripe <i className="bi bi-box-arrow-up-right"></i>
+                          </a>
+                        </small>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="row g-3">
@@ -220,44 +226,46 @@ export default function PaymentSettingsPage() {
                       </small>
                     </div>
                   </div>
-                </div>
+                </>
               )}
+              </div>
             </div>
           </div>
 
           {/* BONIFICO SECTION */}
           <div className="col-12">
-            <div className="card shadow-sm">
-              <div className="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                <div>
-                  <h5 className="mb-0 d-flex align-items-center">
-                    <i className="bi bi-bank me-2"></i>
-                    Bonifico Bancario
-                  </h5>
-                  <small className="opacity-75">Pagamenti tramite bonifico SEPA</small>
+            <div className="card shadow-sm border-0" style={{ borderLeft: '4px solid #0891B2' }}>
+              <div className="card-body">
+                <div className="d-flex justify-content-between align-items-start mb-3">
+                  <div>
+                    <h5 className="mb-1 d-flex align-items-center fw-bold" style={{ color: '#0891B2' }}>
+                      <i className="bi bi-bank me-2"></i>
+                      Bonifico Bancario
+                    </h5>
+                    <small className="text-muted">Pagamenti tramite bonifico SEPA</small>
+                  </div>
+                  <div className="form-check form-switch">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="bankTransferEnabled"
+                      checked={settings.bankTransferEnabled}
+                      onChange={(e) => setSettings({ ...settings, bankTransferEnabled: e.target.checked })}
+                      style={{ transform: 'scale(1.3)' }}
+                    />
+                    <label className="form-check-label ms-2" htmlFor="bankTransferEnabled">
+                      {settings.bankTransferEnabled ? (
+                        <span className="badge" style={{ backgroundColor: '#0891B2' }}>Attivo</span>
+                      ) : (
+                        <span className="badge bg-secondary">Disattivo</span>
+                      )}
+                    </label>
+                  </div>
                 </div>
-                <div className="form-check form-switch mb-0">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    id="bankTransferEnabled"
-                    checked={settings.bankTransferEnabled}
-                    onChange={(e) => setSettings({ ...settings, bankTransferEnabled: e.target.checked })}
-                    style={{ transform: 'scale(1.5)' }}
-                  />
-                  <label className="form-check-label text-white ms-2" htmlFor="bankTransferEnabled">
-                    {settings.bankTransferEnabled ? (
-                      <span className="badge bg-success bg-opacity-25 border border-success">Attivo</span>
-                    ) : (
-                      <span className="badge bg-secondary">Disattivo</span>
-                    )}
-                  </label>
-                </div>
-              </div>
 
               {settings.bankTransferEnabled && (
-                <div className="card-body">
+                <>
                   <div className="row g-3">
                     <div className="col-md-6">
                       <label className="form-label fw-semibold">Nome Banca</label>
@@ -332,23 +340,23 @@ export default function PaymentSettingsPage() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </>
               )}
+              </div>
             </div>
           </div>
 
           {/* PROMEMORIA SECTION */}
           <div className="col-12">
-            <div className="card shadow-sm">
-              <div className="card-header bg-warning text-dark">
-                <h5 className="mb-0 d-flex align-items-center">
-                  <i className="bi bi-bell me-2"></i>
-                  Promemoria Automatici
-                </h5>
-                <small className="text-dark opacity-75">Notifiche email per pagamenti in sospeso</small>
-              </div>
-
+            <div className="card shadow-sm border-0" style={{ borderLeft: '4px solid #F59E0B' }}>
               <div className="card-body">
+                <div className="mb-3">
+                  <h5 className="mb-1 d-flex align-items-center fw-bold" style={{ color: '#F59E0B' }}>
+                    <i className="bi bi-bell me-2"></i>
+                    Promemoria Automatici
+                  </h5>
+                  <small className="text-muted">Notifiche email per pagamenti in sospeso</small>
+                </div>
                 <div className="form-check mb-3">
                   <input
                     className="form-check-input"
@@ -388,16 +396,15 @@ export default function PaymentSettingsPage() {
 
           {/* IMPOSTAZIONI GENERALI */}
           <div className="col-12">
-            <div className="card shadow-sm">
-              <div className="card-header bg-secondary text-white">
-                <h5 className="mb-0 d-flex align-items-center">
-                  <i className="bi bi-gear me-2"></i>
-                  Impostazioni Generali
-                </h5>
-                <small className="opacity-75">Valuta, tasse e altre configurazioni</small>
-              </div>
-
+            <div className="card shadow-sm border-0" style={{ borderLeft: '4px solid #6B7280' }}>
               <div className="card-body">
+                <div className="mb-3">
+                  <h5 className="mb-1 d-flex align-items-center fw-bold" style={{ color: '#6B7280' }}>
+                    <i className="bi bi-gear me-2"></i>
+                    Impostazioni Generali
+                  </h5>
+                  <small className="text-muted">Valuta, tasse e altre configurazioni</small>
+                </div>
                 <div className="row g-3">
                   <div className="col-md-6">
                     <label className="form-label fw-semibold">Valuta</label>
