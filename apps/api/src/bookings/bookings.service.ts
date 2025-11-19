@@ -434,13 +434,23 @@ export class BookingsService {
       throw new BadRequestException('Can only approve pending bookings');
     }
 
-    // Calculate total amount
-    const duration = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60);
-    let totalAmount = Number(booking.resource.pricePerHour) * duration;
+    // Calculate total amount (or use custom amount if provided)
+    let totalAmount: number;
 
-    // Add additional resources
-    for (const additionalResource of booking.additionalResources) {
-      totalAmount += Number(additionalResource.resource.pricePerHour) * additionalResource.quantity * duration;
+    if (approveDto.customAmount !== undefined && approveDto.customAmount !== null) {
+      // Use custom amount provided by admin
+      totalAmount = approveDto.customAmount;
+      this.logger.log(`Using custom amount: €${totalAmount} for booking ${id}`);
+    } else {
+      // Calculate automatically based on resource pricing
+      const duration = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60);
+      totalAmount = Number(booking.resource.pricePerHour) * duration;
+
+      // Add additional resources
+      for (const additionalResource of booking.additionalResources) {
+        totalAmount += Number(additionalResource.resource.pricePerHour) * additionalResource.quantity * duration;
+      }
+      this.logger.log(`Calculated automatic amount: €${totalAmount} for booking ${id}`);
     }
 
     const amountInCents = Math.round(totalAmount * 100);
