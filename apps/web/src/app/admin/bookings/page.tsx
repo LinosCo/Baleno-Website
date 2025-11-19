@@ -698,7 +698,6 @@ export default function AdminBookingsPage() {
                 <div className="modal-body">
                   <div className="alert alert-warning">
                     <small>
-                      <i className="bi bi-info-circle me-1"></i>
                       L'utente riceverà un'email con il motivo del rifiuto.
                     </small>
                   </div>
