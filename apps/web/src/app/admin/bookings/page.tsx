@@ -1030,8 +1030,8 @@ export default function AdminBookingsPage() {
                 </div>
 
                 <div className="modal-body">
-                  <div className="alert alert-success">
-                    <small>
+                  <div className="border border-success rounded p-3 mb-3" style={{ backgroundColor: '#d1e7dd' }}>
+                    <small className="text-dark">
                       L'utente riceverà un'email con il link per effettuare il pagamento.
                     </small>
                   </div>
