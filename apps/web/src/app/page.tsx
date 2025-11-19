@@ -260,7 +260,7 @@ export default function HomePage() {
               <p className="text-muted mb-1">Via Re Pipino 3/A</p>
               <p className="text-muted mb-1">C.A.P. 37123</p>
               <p className="text-muted mb-3">C.F. 93319200239</p>
-              <Link href="https://balenosanzeno.it" target="_blank" className="text-decoration-none hover-link" style={{ color: '#2B548E', fontSize: '0.9rem' }}>
+              <Link href="https://balenosanzeno.it/wp-content/uploads/2025/09/Statuto-Baleno-.pdf" target="_blank" className="text-decoration-none hover-link" style={{ color: '#2B548E', fontSize: '0.9rem' }}>
                 STATUTO BALENO →
               </Link>
             </div>
@@ -286,7 +286,7 @@ export default function HomePage() {
                   info@balenosanzeno.it
                 </a>
               </div>
-              <Link href="https://balenosanzeno.it/privacy-policy" target="_blank" className="text-decoration-none hover-link" style={{ color: '#2B548E', fontSize: '0.9rem' }}>
+              <Link href="https://balenosanzeno.it" target="_blank" className="text-decoration-none hover-link" style={{ color: '#2B548E', fontSize: '0.9rem' }}>
                 Privacy Policy →
               </Link>
             </div>

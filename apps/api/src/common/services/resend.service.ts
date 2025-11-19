@@ -445,8 +445,10 @@ export class ResendService {
           </div>
 
           <div class="footer">
-            <p>Baleno San Zeno<br>
-            Via Don Giuseppe Andreoli, 37 - San Zeno di Cassola (VI)<br>
+            <p>BALENO ETS<br>
+            Via Re Pipino 3/A<br>
+            37123 Verona VR<br>
+            Tel: +39 328 3565987<br>
             info@balenosanzeno.it</p>
           </div>
         </div>
@@ -587,8 +589,10 @@ export class ResendService {
           </div>
 
           <div class="footer">
-            <p>Baleno San Zeno<br>
-            Via Don Giuseppe Andreoli, 37 - San Zeno di Cassola (VI)<br>
+            <p>BALENO ETS<br>
+            Via Re Pipino 3/A<br>
+            37123 Verona VR<br>
+            Tel: +39 328 3565987<br>
             info@balenosanzeno.it</p>
           </div>
         </div>
@@ -704,8 +708,10 @@ export class ResendService {
           </div>
 
           <div class="footer">
-            <p>Baleno San Zeno<br>
-            Via Don Giuseppe Andreoli, 37 - San Zeno di Cassola (VI)<br>
+            <p>BALENO ETS<br>
+            Via Re Pipino 3/A<br>
+            37123 Verona VR<br>
+            Tel: +39 328 3565987<br>
             info@balenosanzeno.it</p>
           </div>
         </div>
@@ -785,8 +791,10 @@ export class ResendService {
           </div>
 
           <div class="footer">
-            <p>Baleno San Zeno<br>
-            Via Don Giuseppe Andreoli, 37 - San Zeno di Cassola (VI)<br>
+            <p>BALENO ETS<br>
+            Via Re Pipino 3/A<br>
+            37123 Verona VR<br>
+            Tel: +39 328 3565987<br>
             info@balenosanzeno.it</p>
           </div>
         </div>
@@ -939,8 +947,10 @@ export class ResendService {
           </div>
 
           <div class="footer">
-            <p>Baleno San Zeno<br>
-            Via Don Giuseppe Andreoli, 37 - San Zeno di Cassola (VI)<br>
+            <p>BALENO ETS<br>
+            Via Re Pipino 3/A<br>
+            37123 Verona VR<br>
+            Tel: +39 328 3565987<br>
             info@balenosanzeno.it</p>
           </div>
         </div>
@@ -1087,8 +1097,10 @@ export class ResendService {
           </div>
 
           <div class="footer">
-            <p>Baleno San Zeno<br>
-            Via Don Giuseppe Andreoli, 37 - San Zeno di Cassola (VI)<br>
+            <p>BALENO ETS<br>
+            Via Re Pipino 3/A<br>
+            37123 Verona VR<br>
+            Tel: +39 328 3565987<br>
             info@balenosanzeno.it</p>
           </div>
         </div>
