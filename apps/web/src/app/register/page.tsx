@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { authAPI } from '../../lib/api-client';
-import { Mail, Lock, User, Phone, Building, FileText, ArrowRight } from 'lucide-react';
 
 function RegisterForm() {
   const searchParams = useSearchParams();
@@ -97,36 +96,30 @@ function RegisterForm() {
                   <label htmlFor="firstName" className="form-label fw-semibold" style={{ color: '#495057' }}>
                     Nome
                   </label>
-                  <div className="input-with-icon">
-                    <User size={20} className="input-icon" style={{ color: '#6c757d' }} />
-                    <input
-                      id="firstName"
-                      type="text"
-                      value={formData.firstName}
-                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                      required
-                      className="form-control ps-5"
-                      placeholder="Mario"
-                    />
-                  </div>
+                  <input
+                    id="firstName"
+                    type="text"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    required
+                    className="form-control"
+                    placeholder="Mario"
+                  />
                 </div>
 
                 <div className="col-md-6">
                   <label htmlFor="lastName" className="form-label fw-semibold" style={{ color: '#495057' }}>
                     Cognome
                   </label>
-                  <div className="input-with-icon">
-                    <User size={20} className="input-icon" style={{ color: '#6c757d' }} />
-                    <input
-                      id="lastName"
-                      type="text"
-                      value={formData.lastName}
-                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                      required
-                      className="form-control ps-5"
-                      placeholder="Rossi"
-                    />
-                  </div>
+                  <input
+                    id="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    required
+                    className="form-control"
+                    placeholder="Rossi"
+                  />
                 </div>
               </div>
 
@@ -134,36 +127,30 @@ function RegisterForm() {
                 <label htmlFor="email" className="form-label fw-semibold" style={{ color: '#495057' }}>
                   Email
                 </label>
-                <div className="input-with-icon">
-                  <Mail size={20} className="input-icon" style={{ color: '#6c757d' }} />
-                  <input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                    className="form-control ps-5"
-                    placeholder="tu@email.com"
-                  />
-                </div>
+                <input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
+                  className="form-control"
+                  placeholder="tu@email.com"
+                />
               </div>
 
               <div className="mb-3">
                 <label htmlFor="phone" className="form-label fw-semibold" style={{ color: '#495057' }}>
                   Telefono
                 </label>
-                <div className="input-with-icon">
-                  <Phone size={20} className="input-icon" style={{ color: '#6c757d' }} />
-                  <input
-                    id="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    required
-                    className="form-control ps-5"
-                    placeholder="+39 123 456 7890"
-                  />
-                </div>
+                <input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  required
+                  className="form-control"
+                  placeholder="+39 123 456 7890"
+                />
               </div>
 
               {/* Sezione Fatturazione */}
@@ -176,17 +163,14 @@ function RegisterForm() {
                   <label htmlFor="companyName" className="form-label fw-semibold" style={{ color: '#495057' }}>
                     Nome Azienda
                   </label>
-                  <div className="input-with-icon">
-                    <Building size={20} className="input-icon" style={{ color: '#6c757d' }} />
-                    <input
-                      id="companyName"
-                      type="text"
-                      value={formData.companyName}
-                      onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                      className="form-control ps-5"
-                      placeholder="Es: Acme S.r.l."
-                    />
-                  </div>
+                  <input
+                    id="companyName"
+                    type="text"
+                    value={formData.companyName}
+                    onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                    className="form-control"
+                    placeholder="Es: Acme S.r.l."
+                  />
                 </div>
 
                 <div className="row g-3">
@@ -194,36 +178,30 @@ function RegisterForm() {
                     <label htmlFor="vatNumber" className="form-label fw-semibold" style={{ color: '#495057' }}>
                       Partita IVA
                     </label>
-                    <div className="input-with-icon">
-                      <FileText size={20} className="input-icon" style={{ color: '#6c757d' }} />
-                      <input
-                        id="vatNumber"
-                        type="text"
-                        value={formData.vatNumber}
-                        onChange={(e) => setFormData({ ...formData, vatNumber: e.target.value })}
-                        className="form-control ps-5"
-                        placeholder="IT12345678901"
-                        maxLength={16}
-                      />
-                    </div>
+                    <input
+                      id="vatNumber"
+                      type="text"
+                      value={formData.vatNumber}
+                      onChange={(e) => setFormData({ ...formData, vatNumber: e.target.value })}
+                      className="form-control"
+                      placeholder="IT12345678901"
+                      maxLength={16}
+                    />
                   </div>
 
                   <div className="col-md-6">
                     <label htmlFor="fiscalCode" className="form-label fw-semibold" style={{ color: '#495057' }}>
                       Codice Fiscale
                     </label>
-                    <div className="input-with-icon">
-                      <FileText size={20} className="input-icon" style={{ color: '#6c757d' }} />
-                      <input
-                        id="fiscalCode"
-                        type="text"
-                        value={formData.fiscalCode}
-                        onChange={(e) => setFormData({ ...formData, fiscalCode: e.target.value.toUpperCase() })}
-                        className="form-control ps-5"
-                        placeholder="RSSMRA80A01H501X"
-                        maxLength={16}
-                      />
-                    </div>
+                    <input
+                      id="fiscalCode"
+                      type="text"
+                      value={formData.fiscalCode}
+                      onChange={(e) => setFormData({ ...formData, fiscalCode: e.target.value.toUpperCase() })}
+                      className="form-control"
+                      placeholder="RSSMRA80A01H501X"
+                      maxLength={16}
+                    />
                   </div>
                 </div>
               </div>
@@ -232,19 +210,16 @@ function RegisterForm() {
                 <label htmlFor="password" className="form-label fw-semibold" style={{ color: '#495057' }}>
                   Password
                 </label>
-                <div className="input-with-icon">
-                  <Lock size={20} className="input-icon" style={{ color: '#6c757d' }} />
-                  <input
-                    id="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    required
-                    minLength={8}
-                    className="form-control ps-5"
-                    placeholder="Almeno 8 caratteri"
-                  />
-                </div>
+                <input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                  minLength={8}
+                  className="form-control"
+                  placeholder="Almeno 8 caratteri"
+                />
                 <div className="form-text small">
                   La password deve contenere almeno 8 caratteri
                 </div>
@@ -262,7 +237,7 @@ function RegisterForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn btn-lg w-100 fw-semibold d-flex align-items-center justify-content-center auth-btn-primary"
+                className="btn btn-lg w-100 fw-semibold auth-btn-primary"
               >
                 {loading ? (
                   <>
@@ -270,10 +245,7 @@ function RegisterForm() {
                     Registrazione in corso...
                   </>
                 ) : (
-                  <>
-                    Crea Account
-                    <ArrowRight className="ms-2" size={20} />
-                  </>
+                  'Crea Account'
                 )}
               </button>
             </form>
@@ -340,19 +312,6 @@ function RegisterForm() {
           .auth-card-body {
             padding: 2rem 1.5rem;
           }
-        }
-
-        .input-with-icon {
-          position: relative;
-        }
-
-        .input-icon {
-          position: absolute;
-          left: 16px;
-          top: 50%;
-          transform: translateY(-50%);
-          pointer-events: none;
-          z-index: 5;
         }
 
         .form-control {

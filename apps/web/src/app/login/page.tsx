@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { authAPI } from '../../lib/api-client';
-import { Mail, Lock, ArrowRight } from 'lucide-react';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -87,18 +86,15 @@ function LoginForm() {
                 <label htmlFor="email" className="form-label fw-semibold" style={{ color: '#495057' }}>
                   Email
                 </label>
-                <div className="input-with-icon">
-                  <Mail size={20} className="input-icon" style={{ color: '#6c757d' }} />
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="form-control form-control-lg ps-5"
-                    placeholder="tu@email.com"
-                  />
-                </div>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="form-control form-control-lg"
+                  placeholder="tu@email.com"
+                />
               </div>
 
               <div className="mb-4">
@@ -114,18 +110,15 @@ function LoginForm() {
                     Dimenticata?
                   </Link>
                 </div>
-                <div className="input-with-icon">
-                  <Lock size={20} className="input-icon" style={{ color: '#6c757d' }} />
-                  <input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="form-control form-control-lg ps-5"
-                    placeholder="••••••••"
-                  />
-                </div>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="form-control form-control-lg"
+                  placeholder="••••••••"
+                />
               </div>
 
               {error && (
@@ -140,7 +133,7 @@ function LoginForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn btn-lg w-100 fw-semibold d-flex align-items-center justify-content-center auth-btn-primary"
+                className="btn btn-lg w-100 fw-semibold auth-btn-primary"
               >
                 {loading ? (
                   <>
@@ -148,10 +141,7 @@ function LoginForm() {
                     Accesso in corso...
                   </>
                 ) : (
-                  <>
-                    Accedi
-                    <ArrowRight className="ms-2" size={20} />
-                  </>
+                  'Accedi'
                 )}
               </button>
             </form>
@@ -217,19 +207,6 @@ function LoginForm() {
           .auth-card-body {
             padding: 2rem 1.5rem;
           }
-        }
-
-        .input-with-icon {
-          position: relative;
-        }
-
-        .input-icon {
-          position: absolute;
-          left: 16px;
-          top: 50%;
-          transform: translateY(-50%);
-          pointer-events: none;
-          z-index: 5;
         }
 
         .form-control {
