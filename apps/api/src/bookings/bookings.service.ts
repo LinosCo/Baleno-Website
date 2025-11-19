@@ -436,20 +436,28 @@ export class BookingsService {
 
     // Calculate total amount (or use custom amount if provided)
     let totalAmount: number;
+    let originalAmount: number;
+    let discountAmount: number = 0;
+    let discountReason: string | undefined;
+
+    // Always calculate the original amount first
+    const duration = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60);
+    originalAmount = Number(booking.resource.pricePerHour) * duration;
+
+    // Add additional resources to original amount
+    for (const additionalResource of booking.additionalResources) {
+      originalAmount += Number(additionalResource.resource.pricePerHour) * additionalResource.quantity * duration;
+    }
 
     if (approveDto.customAmount !== undefined && approveDto.customAmount !== null) {
       // Use custom amount provided by admin
       totalAmount = approveDto.customAmount;
-      this.logger.log(`Using custom amount: €${totalAmount} for booking ${id}`);
+      discountAmount = originalAmount - totalAmount;
+      discountReason = approveDto.discountReason;
+      this.logger.log(`Using custom amount: €${totalAmount} (original: €${originalAmount}, discount: €${discountAmount}) for booking ${id}`);
     } else {
-      // Calculate automatically based on resource pricing
-      const duration = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60);
-      totalAmount = Number(booking.resource.pricePerHour) * duration;
-
-      // Add additional resources
-      for (const additionalResource of booking.additionalResources) {
-        totalAmount += Number(additionalResource.resource.pricePerHour) * additionalResource.quantity * duration;
-      }
+      // Use calculated amount
+      totalAmount = originalAmount;
       this.logger.log(`Calculated automatic amount: €${totalAmount} for booking ${id}`);
     }
 
@@ -484,6 +492,15 @@ export class BookingsService {
       endDate: booking.endTime,
       totalAmount: amountInCents,
     };
+
+    // Add discount information if applicable
+    if (discountAmount > 0) {
+      emailDetails.originalAmount = Math.round(originalAmount * 100);
+      emailDetails.discountAmount = Math.round(discountAmount * 100);
+      if (discountReason) {
+        emailDetails.discountReason = discountReason;
+      }
+    }
 
     const paymentDetails: any = {};
 

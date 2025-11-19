@@ -9,6 +9,9 @@ export interface BookingDetails {
   endDate: Date;
   requestDate?: Date;
   totalAmount?: number;
+  originalAmount?: number; // Prezzo originale (prima dello sconto)
+  discountAmount?: number; // Importo dello sconto applicato
+  discountReason?: string; // Motivazione dello sconto
   userName?: string;
   userEmail?: string;
 }
@@ -377,7 +380,16 @@ export class ResendService {
                 hour: '2-digit',
                 minute: '2-digit'
               })}</p>
-              ${booking.totalAmount ? `<p><strong>Importo totale:</strong> €${((booking.totalAmount || 0) / 100).toFixed(2)}</p>` : ''}
+              ${booking.totalAmount ? `
+                ${booking.discountAmount && booking.discountAmount > 0 ? `
+                  <p><strong>Prezzo originale:</strong> <span style="text-decoration: line-through; color: #6c757d;">€${((booking.originalAmount || 0) / 100).toFixed(2)}</span></p>
+                  <p style="color: #28a745;"><strong>Sconto applicato:</strong> -€${((booking.discountAmount || 0) / 100).toFixed(2)}</p>
+                  ${booking.discountReason ? `<p style="font-style: italic; color: #6c757d;"><small>Motivo: ${booking.discountReason}</small></p>` : ''}
+                  <p style="font-size: 20px; color: #2B548E;"><strong>Importo totale:</strong> €${((booking.totalAmount || 0) / 100).toFixed(2)}</strong></p>
+                ` : `
+                  <p><strong>Importo totale:</strong> €${((booking.totalAmount || 0) / 100).toFixed(2)}</p>
+                `}
+              ` : ''}
             </div>
 
             ${hasStripe || hasBankTransfer ? `

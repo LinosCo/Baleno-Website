@@ -53,6 +53,7 @@ export default function AdminBookingsPage() {
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [customPrice, setCustomPrice] = useState<number>(0);
   const [calculatedPrice, setCalculatedPrice] = useState<number>(0);
+  const [discountReason, setDiscountReason] = useState<string>('');
 
   // Payment and Invoice tracking
   const [markingPayment, setMarkingPayment] = useState(false);
@@ -199,6 +200,11 @@ export default function AdminBookingsPage() {
       // Only send customAmount if it's different from calculated price
       if (customPrice !== calculatedPrice) {
         payload.customAmount = customPrice;
+
+        // Include discount reason if there's a discount and a reason was provided
+        if (customPrice < calculatedPrice && discountReason.trim()) {
+          payload.discountReason = discountReason.trim();
+        }
       }
 
       const response = await fetch(`${API_ENDPOINTS.bookings}/${selectedBooking.id}/approve`, {
@@ -254,6 +260,7 @@ export default function AdminBookingsPage() {
     const price = calculateBookingPrice(selectedBooking);
     setCalculatedPrice(price);
     setCustomPrice(price); // Initialize with calculated price
+    setDiscountReason(''); // Reset discount reason
     setShowApproveModal(true);
   };
 
@@ -1055,9 +1062,32 @@ export default function AdminBookingsPage() {
                     {calculatedPrice !== customPrice && (
                       <small className="text-muted">
                         Prezzo calcolato automaticamente: €{calculatedPrice.toFixed(2)}
+                        {customPrice < calculatedPrice && (
+                          <> • <span className="text-success fw-semibold">Sconto: €{(calculatedPrice - customPrice).toFixed(2)}</span></>
+                        )}
                       </small>
                     )}
                   </div>
+
+                  {customPrice < calculatedPrice && (
+                    <div className="mb-3">
+                      <label className="form-label fw-semibold">
+                        Motivo Sconto <small className="text-muted">(opzionale)</small>
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Es: Sconto fedeltà 10%, Cliente abituale, ecc."
+                        value={discountReason}
+                        onChange={(e) => setDiscountReason(e.target.value)}
+                        disabled={approving}
+                        maxLength={200}
+                      />
+                      <small className="text-muted">
+                        Questo motivo verrà mostrato nell'email all'utente
+                      </small>
+                    </div>
+                  )}
 
                   <div className="bg-light p-3 rounded">
                     <h6 className="fw-semibold mb-2">Prenotazione da approvare:</h6>

@@ -10,4 +10,9 @@ export class ApproveBookingDto {
   @IsNumber()
   @Min(0)
   customAmount?: number; // Importo personalizzato in euro (se fornito, sovrascrive il calcolo automatico)
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  discountReason?: string; // Motivo dello sconto (mostrato nell'email all'utente)
 }
