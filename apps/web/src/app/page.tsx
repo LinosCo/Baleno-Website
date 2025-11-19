@@ -55,26 +55,25 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Hero Section with Visual Background */}
-      <section className={`hero-visual position-relative ${mounted ? 'fade-in' : 'opacity-0'}`}>
-        <div className="hero-overlay"></div>
-        <div className="hero-pattern"></div>
+      {/* Hero Section - Light Version */}
+      <section className={`hero-light position-relative ${mounted ? 'fade-in' : 'opacity-0'}`}>
+        <div className="hero-pattern-light"></div>
         <div className="container position-relative" style={{ zIndex: 2 }}>
-          <div className="row align-items-center min-vh-75">
-            <div className="col-lg-8 text-white">
-              <h1 className={`display-2 fw-bold mb-4 ${mounted ? 'slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
+          <div className="row align-items-center" style={{ minHeight: '70vh' }}>
+            <div className="col-lg-10">
+              <h1 className={`display-2 fw-bold mb-4 ${mounted ? 'slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s', color: '#2B548E' }}>
                 Casa di Quartiere<br />
                 <span style={{ color: '#EDBB00' }}>Baleno San Zeno</span>
               </h1>
-              <p className={`lead fs-4 mb-4 ${mounted ? 'slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.4s', maxWidth: '600px' }}>
+              <p className={`lead fs-4 mb-5 ${mounted ? 'slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.4s', maxWidth: '700px', color: '#495057' }}>
                 Uno spazio condiviso di 330mq nel cuore di San Zeno di Cassola, dedicato alla community, alla cultura e all'aggregazione sociale.
               </p>
               <div className={`d-flex gap-3 flex-wrap ${mounted ? 'slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.6s' }}>
-                <Link href="/bookings/new" className="btn btn-lg px-4 fw-semibold cta-primary">
+                <Link href="/bookings/new" className="btn btn-lg px-5 py-3 fw-semibold cta-primary">
                   Prenota lo Spazio
                   <ArrowRight className="ms-2" size={20} />
                 </Link>
-                <Link href="/resources" className="btn btn-outline-light btn-lg px-4">
+                <Link href="/resources" className="btn btn-outline-primary btn-lg px-5 py-3 fw-semibold">
                   Scopri gli Spazi
                 </Link>
               </div>
@@ -230,46 +229,40 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-5 position-relative overflow-hidden" style={{ backgroundColor: '#2B548E' }}>
-        <div className="cta-pattern"></div>
-        <div className="container position-relative" style={{ zIndex: 1 }}>
-          <div className="row align-items-center">
-            <div className="col-lg-8 text-white mb-4 mb-lg-0">
-              <h2 className="display-5 fw-bold mb-3">Pronto a Prenotare?</h2>
-              <p className="lead mb-0">
-                Prenota ora il tuo spazio e inizia a realizzare i tuoi progetti nella nostra Casa di Quartiere.
-              </p>
-            </div>
-            <div className="col-lg-4 text-lg-end">
-              <Link href="/bookings/new" className="btn btn-lg px-5 fw-semibold" style={{ backgroundColor: '#EDBB00', color: '#2B548E' }}>
-                Prenota Ora
-              </Link>
+      {/* CTA Section - Light Version */}
+      <section className="py-5 position-relative overflow-hidden" style={{ backgroundColor: '#f8f9fa' }}>
+        <div className="container">
+          <div className="card border-0 shadow-lg p-5" style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f4f8 100%)' }}>
+            <div className="row align-items-center">
+              <div className="col-lg-8 mb-4 mb-lg-0">
+                <h2 className="display-5 fw-bold mb-3" style={{ color: '#2B548E' }}>Pronto a Prenotare?</h2>
+                <p className="lead mb-0 text-muted">
+                  Prenota ora il tuo spazio e inizia a realizzare i tuoi progetti nella nostra Casa di Quartiere.
+                </p>
+              </div>
+              <div className="col-lg-4 text-lg-end">
+                <Link href="/bookings/new" className="btn btn-lg px-5 py-3 fw-semibold cta-primary">
+                  Prenota Ora
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-dark text-white py-5">
+      {/* Footer - Light Version */}
+      <footer className="py-5" style={{ backgroundColor: '#f8f9fa' }}>
         <div className="container">
           <div className="row g-4">
             <div className="col-lg-4 mb-4 mb-lg-0">
-              <Image
-                src="/BALENO-LOGO-BIANCO.png"
-                alt="Baleno San Zeno"
-                width={180}
-                height={60}
-                className="mb-3"
-                style={{ height: '60px', width: 'auto' }}
-              />
+              <h5 className="fw-bold mb-3" style={{ color: '#2B548E' }}>Baleno San Zeno</h5>
               <p className="text-muted mb-0">
                 Casa di Quartiere dedicata alla community e alla cultura
               </p>
             </div>
 
             <div className="col-lg-4 mb-4 mb-lg-0">
-              <h5 className="fw-bold mb-3">Link Utili</h5>
+              <h5 className="fw-bold mb-3" style={{ color: '#2B548E' }}>Link Utili</h5>
               <ul className="list-unstyled">
                 <li className="mb-2">
                   <Link href="/resources" className="text-muted text-decoration-none hover-link">
@@ -290,25 +283,25 @@ export default function HomePage() {
             </div>
 
             <div className="col-lg-4">
-              <h5 className="fw-bold mb-3">Contatti</h5>
+              <h5 className="fw-bold mb-3" style={{ color: '#2B548E' }}>Contatti</h5>
               <div className="d-flex align-items-start mb-2">
-                <MapPin size={18} className="me-2 mt-1" style={{ color: '#EDBB00' }} />
+                <MapPin size={18} className="me-2 mt-1" style={{ color: '#2B548E' }} />
                 <span className="text-muted">Via Don Giuseppe Andreoli, 37<br />San Zeno di Cassola (VI)</span>
               </div>
               <div className="d-flex align-items-center mb-2">
-                <Mail size={18} className="me-2" style={{ color: '#EDBB00' }} />
+                <Mail size={18} className="me-2" style={{ color: '#2B548E' }} />
                 <a href="mailto:info@balenosanzeno.it" className="text-muted text-decoration-none hover-link">
                   info@balenosanzeno.it
                 </a>
               </div>
               <div className="d-flex align-items-center">
-                <Phone size={18} className="me-2" style={{ color: '#EDBB00' }} />
+                <Phone size={18} className="me-2" style={{ color: '#2B548E' }} />
                 <span className="text-muted">+39 XXX XXX XXXX</span>
               </div>
             </div>
           </div>
 
-          <hr className="my-4 border-secondary" />
+          <hr className="my-4" style={{ borderColor: '#dee2e6' }} />
 
           <div className="row">
             <div className="col-12 text-center text-muted small">
@@ -363,39 +356,27 @@ export default function HomePage() {
           opacity: 0;
         }
 
-        /* Hero Visual */
-        .hero-visual {
-          min-height: 85vh;
-          background: linear-gradient(135deg, #1a3d6b 0%, #2B548E 50%, #1e4976 100%);
+        /* Hero Light */
+        .hero-light {
+          min-height: 70vh;
+          background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #ffffff 100%);
           position: relative;
           display: flex;
           align-items: center;
+          padding: 3rem 0;
         }
 
-        .hero-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(43,84,142,0.3) 100%);
-          z-index: 1;
-        }
-
-        .hero-pattern {
+        .hero-pattern-light {
           position: absolute;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
           background-image:
-            radial-gradient(circle at 20% 50%, rgba(237, 187, 0, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(237, 187, 0, 0.08) 0%, transparent 50%);
+            radial-gradient(circle at 15% 20%, rgba(43, 84, 142, 0.04) 0%, transparent 50%),
+            radial-gradient(circle at 85% 80%, rgba(237, 187, 0, 0.06) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, rgba(43, 84, 142, 0.02) 0%, transparent 60%);
           z-index: 1;
-        }
-
-        .min-vh-75 {
-          min-height: 75vh;
         }
 
         /* CTA Buttons */
@@ -481,26 +462,13 @@ export default function HomePage() {
           border-color: rgba(43, 84, 142, 0.2);
         }
 
-        /* CTA Pattern */
-        .cta-pattern {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-image:
-            radial-gradient(circle at 10% 20%, rgba(237, 187, 0, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 90% 80%, rgba(237, 187, 0, 0.08) 0%, transparent 50%);
-          z-index: 0;
-        }
-
         /* Footer Links */
         .hover-link {
           transition: color 0.2s ease;
         }
 
         .hover-link:hover {
-          color: #EDBB00 !important;
+          color: #2B548E !important;
         }
 
         /* Navbar */
