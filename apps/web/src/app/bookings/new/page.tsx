@@ -58,6 +58,7 @@ export default function NewBookingWizardPage() {
     title: '',
     description: '',
     attendees: '',
+    isPrivate: false,
   });
 
   // Additional resources (Step 5)
@@ -711,6 +712,25 @@ export default function NewBookingWizardPage() {
                       placeholder="Aggiungi dettagli sulla prenotazione..."
                       className="form-control"
                     />
+                  </div>
+
+                  <div className="mb-4">
+                    <div className="form-check">
+                      <input
+                        type="checkbox"
+                        id="isPrivate"
+                        checked={bookingData.isPrivate}
+                        onChange={(e) => setBookingData({ ...bookingData, isPrivate: e.target.checked })}
+                        className="form-check-input"
+                        style={{ width: '1.25rem', height: '1.25rem' }}
+                      />
+                      <label htmlFor="isPrivate" className="form-check-label ms-2">
+                        <span className="fw-semibold">Evento privato</span>
+                        <div className="small text-muted">
+                          I tuoi dati non saranno visibili nel calendario pubblico. Gli altri utenti vedranno solo "Evento privato" senza dettagli.
+                        </div>
+                      </label>
+                    </div>
                   </div>
                 </div>
               )}

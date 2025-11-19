@@ -1,4 +1,4 @@
-import { IsString, IsDateString, IsOptional, IsInt, Min, IsNotEmpty, IsArray, ValidateNested } from 'class-validator';
+import { IsString, IsDateString, IsOptional, IsInt, Min, IsNotEmpty, IsArray, ValidateNested, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class AdditionalResourceDto {
@@ -45,4 +45,8 @@ export class CreateBookingDto {
   @Type(() => AdditionalResourceDto)
   @IsOptional()
   additionalResources?: AdditionalResourceDto[];
+
+  @IsBoolean()
+  @IsOptional()
+  isPrivate?: boolean;
 }
