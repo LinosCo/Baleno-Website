@@ -242,6 +242,7 @@ model Booking {
   description String?       @db.Text
   attendees   Int?          // Numero partecipanti
   notes       String?       @db.Text
+  isPrivate   Boolean       @default(false) // Se true, nasconde i dettagli nel calendario pubblico
 
   // Metadata
   createdAt   DateTime      @default(now())
