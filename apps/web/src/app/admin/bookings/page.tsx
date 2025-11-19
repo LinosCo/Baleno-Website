@@ -19,7 +19,15 @@ interface Booking {
   resource: {
     name: string;
     type: string;
+    pricePerHour: number;
   };
+  additionalResources?: Array<{
+    quantity: number;
+    resource: {
+      name: string;
+      pricePerHour: number;
+    };
+  }>;
   createdAt: string;
 }
 
@@ -38,6 +46,11 @@ export default function AdminBookingsPage() {
   const [rejectionNotes, setRejectionNotes] = useState('');
   const [rejecting, setRejecting] = useState(false);
   const [approving, setApproving] = useState(false);
+
+  // Approve modal
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [customPrice, setCustomPrice] = useState<number>(0);
+  const [calculatedPrice, setCalculatedPrice] = useState<number>(0);
 
   // Filtri di ricerca
   const [searchTerm, setSearchTerm] = useState('');
@@ -168,28 +181,34 @@ export default function AdminBookingsPage() {
     }
   };
 
-  const handleApprove = async (bookingId: string) => {
-    if (!confirm('Confermi di voler approvare questa prenotazione? L\'utente riceverà un\'email con il link per il pagamento.')) {
-      return;
-    }
+  const handleApprove = async () => {
+    if (!selectedBooking) return;
 
     setApproving(true);
     const token = localStorage.getItem('accessToken');
 
     try {
-      const response = await fetch(`${API_ENDPOINTS.bookings}/${bookingId}/approve`, {
+      const payload: any = {};
+
+      // Only send customAmount if it's different from calculated price
+      if (customPrice !== calculatedPrice) {
+        payload.customAmount = customPrice;
+      }
+
+      const response = await fetch(`${API_ENDPOINTS.bookings}/${selectedBooking.id}/approve`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
         alert('✓ Prenotazione approvata con successo! L\'utente riceverà un\'email con il link per il pagamento.');
         fetchBookings();
         setShowModal(false);
+        setShowApproveModal(false);
       } else {
         const errorData = await response.json().catch(() => ({}));
         alert(`❌ Errore nell'approvazione: ${errorData.message || response.statusText}`);
@@ -200,6 +219,36 @@ export default function AdminBookingsPage() {
     } finally {
       setApproving(false);
     }
+  };
+
+  const calculateBookingPrice = (booking: Booking): number => {
+    if (!booking) return 0;
+
+    // Calculate duration in hours
+    const startTime = new Date(booking.startTime);
+    const endTime = new Date(booking.endTime);
+    const duration = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+
+    // Calculate main resource price
+    let total = booking.resource.pricePerHour * duration;
+
+    // Add additional resources if any
+    if (booking.additionalResources && booking.additionalResources.length > 0) {
+      for (const additionalResource of booking.additionalResources) {
+        total += additionalResource.resource.pricePerHour * additionalResource.quantity * duration;
+      }
+    }
+
+    return Math.round(total * 100) / 100; // Round to 2 decimals
+  };
+
+  const openApproveModal = () => {
+    if (!selectedBooking) return;
+
+    const price = calculateBookingPrice(selectedBooking);
+    setCalculatedPrice(price);
+    setCustomPrice(price); // Initialize with calculated price
+    setShowApproveModal(true);
   };
 
   const openRejectModal = () => {
@@ -618,7 +667,7 @@ export default function AdminBookingsPage() {
                       <button
                         type="button"
                         className="btn btn-success"
-                        onClick={() => handleApprove(selectedBooking.id)}
+                        onClick={openApproveModal}
                         disabled={approving || rejecting}
                       >
                         {approving ? (
@@ -776,6 +825,105 @@ export default function AdminBookingsPage() {
                       <>
                         <i className="bi bi-x-circle me-2"></i>
                         Conferma Rifiuto
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Approve Modal */}
+      {showApproveModal && selectedBooking && (
+        <>
+          <div
+            className="modal fade show d-block"
+            style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+            onClick={() => setShowApproveModal(false)}
+          >
+            <div
+              className="modal-dialog modal-dialog-centered"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-content">
+                <div className="modal-header bg-success bg-opacity-10">
+                  <h5 className="modal-title fw-bold">
+                    <i className="bi bi-check-circle text-success me-2"></i>
+                    Approva Prenotazione
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowApproveModal(false)}
+                    aria-label="Close"
+                    disabled={approving}
+                  ></button>
+                </div>
+
+                <div className="modal-body">
+                  <div className="alert alert-success">
+                    <small>
+                      L'utente riceverà un'email con il link per effettuare il pagamento.
+                    </small>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      Prezzo Totale <span className="text-danger">*</span>
+                    </label>
+                    <div className="input-group">
+                      <span className="input-group-text">€</span>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={customPrice}
+                        onChange={(e) => setCustomPrice(parseFloat(e.target.value) || 0)}
+                        disabled={approving}
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                    {calculatedPrice !== customPrice && (
+                      <small className="text-muted">
+                        Prezzo calcolato automaticamente: €{calculatedPrice.toFixed(2)}
+                      </small>
+                    )}
+                  </div>
+
+                  <div className="bg-light p-3 rounded">
+                    <h6 className="fw-semibold mb-2">Prenotazione da approvare:</h6>
+                    <p className="mb-1"><strong>Titolo:</strong> {selectedBooking.title}</p>
+                    <p className="mb-1"><strong>Utente:</strong> {selectedBooking.user.firstName} {selectedBooking.user.lastName}</p>
+                    <p className="mb-0"><strong>Risorsa:</strong> {selectedBooking.resource.name}</p>
+                  </div>
+                </div>
+
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowApproveModal(false)}
+                    disabled={approving}
+                  >
+                    Annulla
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={handleApprove}
+                    disabled={approving || customPrice <= 0}
+                  >
+                    {approving ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Approvazione...
+                      </>
+                    ) : (
+                      <>
+                        <i className="bi bi-check-circle me-2"></i>
+                        Conferma Approvazione
                       </>
                     )}
                   </button>
