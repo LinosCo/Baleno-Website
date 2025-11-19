@@ -161,6 +161,7 @@ export default function AdminUsersPage() {
                           onChange={(e) => handleRoleChange(user.id, e.target.value)}
                           className="form-select form-select-sm"
                           style={{ width: 'auto', minWidth: '180px' }}
+                          disabled={user.email === 'admin@balenosanzeno.it'}
                         >
                           <option value="USER">USER</option>
                           <option value="COMMUNITY_MANAGER">COMMUNITY_MANAGER</option>
@@ -176,14 +177,15 @@ export default function AdminUsersPage() {
                           : 'Mai'}
                       </td>
                       <td className="align-middle text-end">
-                        <button
-                          onClick={() => handleDeleteUser(user.id, `${user.firstName} ${user.lastName}`, user.email)}
-                          className="btn btn-sm btn-outline-danger"
-                          title={user.email === 'admin@balenosanzeno.it' ? 'Account amministratore principale protetto' : 'Elimina utente'}
-                          disabled={user.email === 'admin@balenosanzeno.it'}
-                        >
-                          <i className="bi bi-trash"></i> Elimina
-                        </button>
+                        {user.email !== 'admin@balenosanzeno.it' && (
+                          <button
+                            onClick={() => handleDeleteUser(user.id, `${user.firstName} ${user.lastName}`, user.email)}
+                            className="btn btn-sm btn-outline-danger"
+                            title="Elimina utente"
+                          >
+                            <i className="bi bi-trash"></i> Elimina
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
