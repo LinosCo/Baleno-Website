@@ -370,7 +370,8 @@ export class ResendService {
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                timeZone: 'Europe/Rome'
               })}</p>
               <p><strong>Data fine:</strong> ${new Date(booking.endDate).toLocaleDateString('it-IT', {
                 weekday: 'long',
@@ -378,7 +379,8 @@ export class ResendService {
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                timeZone: 'Europe/Rome'
               })}</p>
               ${booking.totalAmount ? `
                 ${booking.discountAmount && booking.discountAmount > 0 ? `
@@ -547,13 +549,15 @@ export class ResendService {
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                timeZone: 'Europe/Rome'
               })} - ${new Date(booking.endDate).toLocaleTimeString('it-IT', {
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                timeZone: 'Europe/Rome'
               })}</p>
               ${booking.requestDate ? `
-                <p><strong>Data richiesta inviata:</strong> ${new Date(booking.requestDate).toLocaleDateString('it-IT')}</p>
+                <p><strong>Data richiesta inviata:</strong> ${new Date(booking.requestDate).toLocaleDateString('it-IT', { timeZone: 'Europe/Rome' })}</p>
               ` : ''}
             </div>
 
@@ -680,10 +684,12 @@ export class ResendService {
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                timeZone: 'Europe/Rome'
               })} - ${new Date(booking.endDate).toLocaleTimeString('it-IT', {
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                timeZone: 'Europe/Rome'
               })}</p>
               ${booking.totalAmount ? `<p><strong>Importo:</strong> €${(booking.totalAmount / 100).toFixed(2)}</p>` : ''}
             </div>
@@ -895,8 +901,8 @@ export class ResendService {
               <ul>
                 <li><strong>Risorsa:</strong> ${booking.resource.name}</li>
                 <li><strong>Titolo:</strong> ${booking.title || 'N/A'}</li>
-                <li><strong>Data:</strong> ${new Date(booking.startTime).toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</li>
-                <li><strong>Orario:</strong> ${new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} - ${new Date(booking.endTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</li>
+                <li><strong>Data:</strong> ${new Date(booking.startTime).toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Europe/Rome' })}</li>
+                <li><strong>Orario:</strong> ${new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' })} - ${new Date(booking.endTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' })}</li>
                 ${booking.numberOfPeople ? `<li><strong>Partecipanti:</strong> ${booking.numberOfPeople}</li>` : ''}
               </ul>
             </div>
@@ -1056,8 +1062,8 @@ export class ResendService {
               <ul>
                 <li><strong>Risorsa:</strong> ${booking.resource.name}</li>
                 <li><strong>Titolo:</strong> ${booking.title || 'N/A'}</li>
-                <li><strong>Data:</strong> ${new Date(booking.startTime).toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</li>
-                <li><strong>Orario:</strong> ${new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} - ${new Date(booking.endTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</li>
+                <li><strong>Data:</strong> ${new Date(booking.startTime).toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Europe/Rome' })}</li>
+                <li><strong>Orario:</strong> ${new Date(booking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' })} - ${new Date(booking.endTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' })}</li>
                 ${booking.numberOfPeople ? `<li><strong>Partecipanti:</strong> ${booking.numberOfPeople}</li>` : ''}
               </ul>
             </div>
