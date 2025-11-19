@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import UserNavbar from '../../components/UserNavbar';
 
 interface Resource {
   id: string;
@@ -155,7 +154,26 @@ export default function ResourcesPage() {
 
   return (
     <div className="min-vh-100" style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #ffffff 100%)' }}>
-      <UserNavbar />
+      {/* Header pulito stile homepage */}
+      <div className="container pt-4 pb-2">
+        <div className="d-flex justify-content-end">
+          <Link
+            href="/"
+            className="text-decoration-none fw-medium d-flex align-items-center gap-2"
+            style={{
+              color: '#2B548E',
+              transition: 'color 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#EDBB00'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#2B548E'}
+          >
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+              <path fillRule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+            </svg>
+            Torna alla Home
+          </Link>
+        </div>
+      </div>
 
       <div className="container py-5">
         <div className="text-center mb-5">

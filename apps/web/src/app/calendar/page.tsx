@@ -143,29 +143,34 @@ export default function PublicCalendarPage() {
 
   return (
     <div className="min-vh-100" style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #ffffff 100%)' }}>
-      {/* Header */}
-      <nav className="bg-white shadow-sm py-3">
-        <div className="container">
-          <div className="d-flex justify-content-between align-items-center">
-            <h1 className="h3 mb-0 fw-bold" style={{ color: '#2B548E' }}>Calendario Prenotazioni</h1>
-            <div className="d-flex gap-3 align-items-center">
-              <Link href="/resources" className="btn fw-semibold" style={{
-                background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)',
-                border: 'none',
-                color: 'white'
-              }}>
-                Esplora Spazi
-              </Link>
-              <Link href="/" className="text-decoration-none fw-medium d-flex align-items-center gap-1" style={{ color: '#2B548E', transition: 'color 0.2s ease' }}>
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                  <path fillRule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
-                </svg>
-                Home
-              </Link>
-            </div>
+      {/* Header pulito stile homepage */}
+      <div className="container py-4">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h1 className="h3 mb-0 fw-bold" style={{ color: '#2B548E' }}>Calendario Prenotazioni</h1>
+          <div className="d-flex gap-3 align-items-center">
+            <Link href="/resources" className="btn fw-semibold" style={{
+              background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)',
+              border: 'none',
+              color: 'white',
+              borderRadius: '12px'
+            }}>
+              Esplora Spazi
+            </Link>
+            <Link
+              href="/"
+              className="text-decoration-none fw-medium d-flex align-items-center gap-2"
+              style={{ color: '#2B548E', transition: 'color 0.2s ease' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#EDBB00'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#2B548E'}
+            >
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path fillRule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+              </svg>
+              Torna alla Home
+            </Link>
           </div>
         </div>
-      </nav>
+      </div>
 
       {/* Calendar Content */}
       <div className="container py-5">
