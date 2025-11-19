@@ -107,9 +107,12 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="min-vh-100" style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #ffffff 100%)' }}>
       {/* Navbar */}
-      <nav className="navbar navbar-dark bg-primary shadow-lg sticky-top" style={{ padding: '1rem 0' }}>
+      <nav className="navbar navbar-dark shadow-sm sticky-top" style={{
+        padding: '1rem 0',
+        background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)'
+      }}>
         <div className="container-fluid px-4">
           <Link href="/dashboard" className="navbar-brand d-flex align-items-center">
             <Image
@@ -125,7 +128,7 @@ export default function DashboardPage() {
             <button
               onClick={handleLogout}
               className="btn btn-link text-white p-0 text-decoration-none d-flex flex-column align-items-center"
-              style={{ minWidth: '80px' }}
+              style={{ minWidth: '80px', transition: 'opacity 0.2s' }}
             >
               <svg width="28" height="28" fill="currentColor" viewBox="0 0 16 16" className="mb-1">
                 <path fillRule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
@@ -143,7 +146,7 @@ export default function DashboardPage() {
       <div className="container py-4">
         <div className="row">
           <div className="col-12">
-            <h1 className="h2 fw-bold text-baleno-primary mb-4">Dashboard</h1>
+            <h1 className="h2 fw-bold mb-4" style={{ color: '#2B548E' }}>👋 Dashboard</h1>
 
             {/* Stats Cards */}
             <div className="row g-4 mb-4">
