@@ -98,16 +98,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </Link>
 
           <div className="d-flex align-items-center gap-3 ms-auto">
-            <Link
-              href="/dashboard"
-              className="btn btn-link text-white p-0 d-flex align-items-center gap-2"
-              title="Vista Utente"
-            >
-              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <span className="d-none d-lg-inline">Vista Utente</span>
-            </Link>
             <div className="text-end d-none d-md-block">
               <div className="text-white fw-semibold" style={{ fontSize: '0.95rem' }}>
                 {user.firstName} {user.lastName}
