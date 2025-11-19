@@ -5,9 +5,22 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { authAPI } from '../../lib/api-client';
 
+interface Booking {
+  id: string;
+  title: string;
+  status: string;
+  startTime: string;
+  endTime: string;
+  resource: {
+    name: string;
+  };
+}
+
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loadingBookings, setLoadingBookings] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
@@ -16,6 +29,7 @@ export default function DashboardPage() {
       return;
     }
 
+    // Fetch user data
     authAPI.getMe()
       .then(response => {
         setUser(response.data);
@@ -25,6 +39,23 @@ export default function DashboardPage() {
         localStorage.removeItem('accessToken');
         window.location.href = '/login';
       });
+
+    // Fetch user bookings
+    fetch('/api/bookings', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setBookings(Array.isArray(data) ? data : []);
+        setLoadingBookings(false);
+      })
+      .catch(err => {
+        console.error('Error fetching bookings:', err);
+        setBookings([]);
+        setLoadingBookings(false);
+      });
   }, []);
 
   const handleLogout = () => {
@@ -32,6 +63,28 @@ export default function DashboardPage() {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     window.location.href = '/';
+  };
+
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case 'PENDING': return 'bg-warning text-dark';
+      case 'APPROVED': return 'bg-success';
+      case 'REJECTED': return 'bg-danger';
+      case 'CANCELLED': return 'bg-secondary';
+      case 'COMPLETED': return 'bg-primary';
+      default: return 'bg-secondary';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'PENDING': return 'In Attesa';
+      case 'APPROVED': return 'Approvata';
+      case 'REJECTED': return 'Rifiutata';
+      case 'CANCELLED': return 'Cancellata';
+      case 'COMPLETED': return 'Completata';
+      default: return status;
+    }
   };
 
   if (loading) {
@@ -114,8 +167,16 @@ export default function DashboardPage() {
                       </svg>
                       <h3 className="h6 mb-0 fw-semibold">Prenotazioni</h3>
                     </div>
-                    <p className="display-6 fw-bold text-baleno-primary mb-2">0</p>
-                    <p className="text-muted small mb-0">Nessuna prenotazione attiva</p>
+                    {loadingBookings ? (
+                      <div className="spinner-border spinner-border-sm text-primary"></div>
+                    ) : (
+                      <>
+                        <p className="display-6 fw-bold text-baleno-primary mb-2">{bookings.length}</p>
+                        <p className="text-muted small mb-0">
+                          {bookings.length === 0 ? 'Nessuna prenotazione' : bookings.length === 1 ? '1 prenotazione' : `${bookings.length} prenotazioni`}
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -205,6 +266,80 @@ export default function DashboardPage() {
                     </Link>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Bookings List */}
+            <div className="card border-0 shadow-sm mb-4">
+              <div className="card-body">
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                  <h2 className="h5 fw-bold mb-0">Le Tue Prenotazioni</h2>
+                  <Link href="/bookings" className="btn btn-sm btn-outline-primary">
+                    Vedi Tutte
+                  </Link>
+                </div>
+
+                {loadingBookings ? (
+                  <div className="text-center py-4">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="visually-hidden">Caricamento...</span>
+                    </div>
+                  </div>
+                ) : bookings.length === 0 ? (
+                  <div className="text-center py-5">
+                    <svg width="64" height="64" fill="currentColor" className="text-muted mb-3" viewBox="0 0 16 16">
+                      <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                    </svg>
+                    <p className="text-muted mb-3">Nessuna prenotazione trovata</p>
+                    <Link href="/bookings/new" className="btn btn-primary">
+                      Crea Nuova Prenotazione
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="table-responsive">
+                    <table className="table table-hover align-middle mb-0">
+                      <thead className="table-light">
+                        <tr>
+                          <th>Titolo</th>
+                          <th>Risorsa</th>
+                          <th>Data Inizio</th>
+                          <th>Stato</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {bookings.slice(0, 5).map((booking) => (
+                          <tr key={booking.id}>
+                            <td className="fw-semibold">{booking.title}</td>
+                            <td className="text-muted small">{booking.resource.name}</td>
+                            <td className="text-muted small">
+                              {new Date(booking.startTime).toLocaleDateString('it-IT', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </td>
+                            <td>
+                              <span className={`badge ${getStatusBadgeClass(booking.status)}`}>
+                                {getStatusLabel(booking.status)}
+                              </span>
+                            </td>
+                            <td>
+                              <Link
+                                href={`/bookings`}
+                                className="btn btn-sm btn-outline-primary"
+                              >
+                                Dettagli
+                              </Link>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
 
