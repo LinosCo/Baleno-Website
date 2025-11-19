@@ -215,6 +215,15 @@ model Booking {
   paymentStatus  PaymentStatus  @default(PENDING)
   reminderSent   Boolean        @default(false)
 
+  // Payment and invoice tracking (admin actions)
+  paymentReceived Boolean       @default(false)
+  paymentReceivedAt DateTime?
+  paymentReceivedBy String?
+
+  invoiceIssued   Boolean       @default(false)
+  invoiceIssuedAt DateTime?
+  invoiceIssuedBy String?
+
   // Approval/Rejection info
   approvedBy  String?
   approver    User?         @relation("BookingApprover", fields: [approvedBy], references: [id])

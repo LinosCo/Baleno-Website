@@ -67,6 +67,18 @@ export class BookingsController {
     return this.bookingsService.reject(id, rejectDto, user);
   }
 
+  @Put(':id/mark-payment-received')
+  @Roles(UserRole.ADMIN, UserRole.COMMUNITY_MANAGER)
+  async markPaymentReceived(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.bookingsService.markPaymentReceived(id, user);
+  }
+
+  @Put(':id/mark-invoice-issued')
+  @Roles(UserRole.ADMIN, UserRole.COMMUNITY_MANAGER)
+  async markInvoiceIssued(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.bookingsService.markInvoiceIssued(id, user);
+  }
+
   @Get('availability/check')
   async checkAvailability(@Query() query: any) {
     return this.bookingsService.checkAvailability(query);

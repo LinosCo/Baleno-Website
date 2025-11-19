@@ -630,6 +630,122 @@ export class BookingsService {
     return { message: 'Booking rejected successfully', booking: updatedBooking };
   }
 
+  async markPaymentReceived(id: string, user: any) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id },
+      include: {
+        resource: true,
+        user: true,
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+
+    if (booking.status !== BookingStatus.APPROVED) {
+      throw new BadRequestException('Can only mark payment for approved bookings');
+    }
+
+    if (booking.paymentReceived) {
+      throw new BadRequestException('Payment already marked as received');
+    }
+
+    // Update booking
+    const updatedBooking = await this.prisma.booking.update({
+      where: { id },
+      data: {
+        paymentReceived: true,
+        paymentReceivedAt: new Date(),
+        paymentReceivedBy: user.id,
+        // If both payment and invoice are marked, mark as completed
+        ...(booking.invoiceIssued && { status: BookingStatus.COMPLETED }),
+      },
+      include: {
+        resource: true,
+        user: true,
+      },
+    });
+
+    // Log audit
+    await this.auditLogsService.log({
+      userId: user.id,
+      userEmail: user.email,
+      userRole: user.role,
+      action: AuditAction.UPDATE,
+      entity: 'booking',
+      entityId: id,
+      description: `Pagamento ricevuto per prenotazione "${booking.title}"`,
+      metadata: {
+        bookingTitle: booking.title,
+        resourceName: booking.resource.name,
+        userName: `${booking.user.firstName} ${booking.user.lastName}`,
+        paymentReceivedAt: new Date().toISOString(),
+      },
+    });
+
+    this.logger.log(`Payment marked as received for booking ${id} by ${user.email}`);
+    return { message: 'Payment marked as received successfully', booking: updatedBooking };
+  }
+
+  async markInvoiceIssued(id: string, user: any) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id },
+      include: {
+        resource: true,
+        user: true,
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+
+    if (booking.status !== BookingStatus.APPROVED) {
+      throw new BadRequestException('Can only issue invoice for approved bookings');
+    }
+
+    if (booking.invoiceIssued) {
+      throw new BadRequestException('Invoice already marked as issued');
+    }
+
+    // Update booking
+    const updatedBooking = await this.prisma.booking.update({
+      where: { id },
+      data: {
+        invoiceIssued: true,
+        invoiceIssuedAt: new Date(),
+        invoiceIssuedBy: user.id,
+        // If both payment and invoice are marked, mark as completed
+        ...(booking.paymentReceived && { status: BookingStatus.COMPLETED }),
+      },
+      include: {
+        resource: true,
+        user: true,
+      },
+    });
+
+    // Log audit
+    await this.auditLogsService.log({
+      userId: user.id,
+      userEmail: user.email,
+      userRole: user.role,
+      action: AuditAction.UPDATE,
+      entity: 'booking',
+      entityId: id,
+      description: `Fattura emessa per prenotazione "${booking.title}"`,
+      metadata: {
+        bookingTitle: booking.title,
+        resourceName: booking.resource.name,
+        userName: `${booking.user.firstName} ${booking.user.lastName}`,
+        invoiceIssuedAt: new Date().toISOString(),
+      },
+    });
+
+    this.logger.log(`Invoice marked as issued for booking ${id} by ${user.email}`);
+    return { message: 'Invoice marked as issued successfully', booking: updatedBooking };
+  }
+
   async checkAvailability(query: {
     resourceId: string;
     startTime: Date;
