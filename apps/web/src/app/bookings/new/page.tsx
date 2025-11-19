@@ -1051,10 +1051,10 @@ export default function NewBookingWizardPage() {
                     {submitting ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        Creazione in corso...
+                        Invio richiesta in corso...
                       </>
                     ) : (
-                      'Conferma la Prenotazione'
+                      'Invia Richiesta di Prenotazione'
                     )}
                   </button>
                 )}
