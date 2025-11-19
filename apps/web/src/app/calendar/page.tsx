@@ -142,21 +142,27 @@ export default function PublicCalendarPage() {
   }
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="min-vh-100" style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #ffffff 100%)' }}>
       {/* Header */}
-      <nav className="navbar bg-white shadow-sm py-3">
+      <nav className="bg-white shadow-sm py-3">
         <div className="container">
-          <h1 className="h4 mb-0 text-baleno-primary fw-bold">Calendario Prenotazioni</h1>
-          <div className="d-flex gap-3 align-items-center">
-            <Link href="/resources" className="btn btn-outline-primary">
-              Esplora Spazi
-            </Link>
-            <Link href="/" className="text-decoration-none fw-medium d-flex align-items-center gap-1" style={{ color: 'var(--baleno-primary)' }}>
-              <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path fillRule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
-              </svg>
-              Home
-            </Link>
+          <div className="d-flex justify-content-between align-items-center">
+            <h1 className="h3 mb-0 fw-bold" style={{ color: '#2B548E' }}>📅 Calendario Prenotazioni</h1>
+            <div className="d-flex gap-3 align-items-center">
+              <Link href="/resources" className="btn fw-semibold" style={{
+                background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)',
+                border: 'none',
+                color: 'white'
+              }}>
+                Esplora Spazi
+              </Link>
+              <Link href="/" className="text-decoration-none fw-medium d-flex align-items-center gap-1" style={{ color: '#2B548E', transition: 'color 0.2s ease' }}>
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path fillRule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+                </svg>
+                Home
+              </Link>
+            </div>
           </div>
         </div>
       </nav>
@@ -400,11 +406,21 @@ export default function PublicCalendarPage() {
           {/* CTA */}
           <div className="text-center mt-4">
             <p className="text-muted mb-3">Vedi uno spazio libero? Esplora le risorse disponibili e prenota!</p>
-            <div className="d-flex gap-3 justify-content-center">
-              <Link href="/resources" className="btn btn-primary btn-lg fw-semibold px-4">
+            <div className="d-flex gap-3 justify-content-center flex-wrap">
+              <Link href="/resources" className="btn btn-lg fw-semibold px-4" style={{
+                background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)',
+                border: 'none',
+                color: 'white',
+                borderRadius: '8px'
+              }}>
                 Esplora Spazi
               </Link>
-              <Link href="/bookings/new" className="btn btn-success btn-lg fw-semibold px-4">
+              <Link href="/bookings/new" className="btn btn-lg fw-semibold px-4" style={{
+                background: 'linear-gradient(135deg, #EDBB00 0%, #d4a600 100%)',
+                border: 'none',
+                color: '#2B548E',
+                borderRadius: '8px'
+              }}>
                 Prenota Ora
               </Link>
             </div>

@@ -154,11 +154,11 @@ export default function ResourcesPage() {
   }
 
   return (
-    <div className="min-vh-100 bg-light">
+    <div className="min-vh-100" style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #ffffff 100%)' }}>
       <UserNavbar />
 
       <div className="container py-4">
-        <h1 className="h3 fw-bold text-baleno-primary mb-4">Risorse Disponibili</h1>
+        <h1 className="h3 fw-bold mb-4" style={{ color: '#2B548E' }}>🏢 Risorse Disponibili</h1>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           {error && (
             <div className="alert alert-warning d-flex align-items-start mb-4" role="alert">
@@ -468,7 +468,13 @@ export default function ResourcesPage() {
                           </div>
                           <Link
                             href={`/bookings/new?resourceId=${resource.id}`}
-                            className="btn btn-primary btn-sm fw-semibold"
+                            className="btn btn-sm fw-semibold"
+                            style={{
+                              background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)',
+                              border: 'none',
+                              color: 'white',
+                              borderRadius: '6px'
+                            }}
                           >
                             Prenota →
                           </Link>
