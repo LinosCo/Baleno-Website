@@ -130,9 +130,11 @@ export default function HomePage() {
             <div className={`col-lg-4 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
               <div className="space-card">
                 <div className="space-card-image">
-                  <div className="placeholder-image d-flex align-items-center justify-content-center">
-                    <Calendar size={48} style={{ color: '#2B548E' }} />
-                  </div>
+                  <img
+                    src="https://balenosanzeno.it/wp-content/uploads/2025/01/DSC09537-2-scaled-uai-1783x1783.jpg"
+                    alt="Sala Principale"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
                 </div>
                 <div className="space-card-body">
                   <h3 className="h4 fw-bold mb-3" style={{ color: '#2B548E' }}>Sala Principale</h3>
@@ -149,9 +151,11 @@ export default function HomePage() {
             <div className={`col-lg-4 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.4s' }}>
               <div className="space-card">
                 <div className="space-card-image">
-                  <div className="placeholder-image d-flex align-items-center justify-content-center">
-                    <Users size={48} style={{ color: '#2B548E' }} />
-                  </div>
+                  <img
+                    src="https://balenosanzeno.it/wp-content/uploads/2025/01/DSC09448-2-scaled-uai-1703x1703.jpg"
+                    alt="Sala Riunioni"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
                 </div>
                 <div className="space-card-body">
                   <h3 className="h4 fw-bold mb-3" style={{ color: '#2B548E' }}>Sala Riunioni</h3>
@@ -168,9 +172,11 @@ export default function HomePage() {
             <div className={`col-lg-4 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.5s' }}>
               <div className="space-card">
                 <div className="space-card-image">
-                  <div className="placeholder-image d-flex align-items-center justify-content-center">
-                    <Shield size={48} style={{ color: '#2B548E' }} />
-                  </div>
+                  <img
+                    src="https://balenosanzeno.it/wp-content/uploads/2025/01/DSC09493-2-scaled-uai-1707x1707.jpg"
+                    alt="Spazio Completo"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
                 </div>
                 <div className="space-card-body">
                   <h3 className="h4 fw-bold mb-3" style={{ color: '#2B548E' }}>Spazio Completo</h3>
@@ -418,11 +424,6 @@ export default function HomePage() {
           height: 220px;
           overflow: hidden;
           background: linear-gradient(135deg, #e8ecf1 0%, #f5f7fa 100%);
-        }
-
-        .placeholder-image {
-          height: 100%;
-          background: linear-gradient(135deg, #f0f4f8 0%, #e8ecf1 100%);
         }
 
         .space-card-body {
