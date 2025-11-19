@@ -138,7 +138,7 @@ export default function DashboardPage() {
 
             {/* Stats Cards */}
             <div className="row g-4 mb-4">
-              <div className="col-md-4">
+              <div className={user?.role === 'ADMIN' ? 'col-md-6' : 'col-md-4'}>
                 <div className="card h-100 border-0 shadow-sm">
                   <div className="card-body">
                     <div className="d-flex align-items-center mb-3">
@@ -158,44 +158,48 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="col-md-4">
-                <div className="card h-100 border-0 shadow-sm">
-                  <div className="card-body">
-                    <div className="d-flex align-items-center mb-3">
-                      <svg width="24" height="24" fill="currentColor" className="text-primary me-2" viewBox="0 0 16 16">
-                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
-                      </svg>
-                      <h3 className="h6 mb-0 fw-semibold">Prenotazioni</h3>
+              {user?.role !== 'ADMIN' && (
+                <>
+                  <div className="col-md-4">
+                    <div className="card h-100 border-0 shadow-sm">
+                      <div className="card-body">
+                        <div className="d-flex align-items-center mb-3">
+                          <svg width="24" height="24" fill="currentColor" className="text-primary me-2" viewBox="0 0 16 16">
+                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                          </svg>
+                          <h3 className="h6 mb-0 fw-semibold">Prenotazioni</h3>
+                        </div>
+                        {loadingBookings ? (
+                          <div className="spinner-border spinner-border-sm text-primary"></div>
+                        ) : (
+                          <>
+                            <p className="display-6 fw-bold text-baleno-primary mb-2">{bookings.length}</p>
+                            <p className="text-muted small mb-0">
+                              {bookings.length === 0 ? 'Nessuna prenotazione' : bookings.length === 1 ? '1 prenotazione' : `${bookings.length} prenotazioni`}
+                            </p>
+                          </>
+                        )}
+                      </div>
                     </div>
-                    {loadingBookings ? (
-                      <div className="spinner-border spinner-border-sm text-primary"></div>
-                    ) : (
-                      <>
-                        <p className="display-6 fw-bold text-baleno-primary mb-2">{bookings.length}</p>
-                        <p className="text-muted small mb-0">
-                          {bookings.length === 0 ? 'Nessuna prenotazione' : bookings.length === 1 ? '1 prenotazione' : `${bookings.length} prenotazioni`}
-                        </p>
-                      </>
-                    )}
                   </div>
-                </div>
-              </div>
 
-              <div className="col-md-4">
-                <div className="card h-100 border-0 shadow-sm">
-                  <div className="card-body">
-                    <div className="d-flex align-items-center mb-3">
-                      <svg width="24" height="24" fill="currentColor" className="text-primary me-2" viewBox="0 0 16 16">
-                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
-                        <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
-                      </svg>
-                      <h3 className="h6 mb-0 fw-semibold">Pagamenti</h3>
+                  <div className="col-md-4">
+                    <div className="card h-100 border-0 shadow-sm">
+                      <div className="card-body">
+                        <div className="d-flex align-items-center mb-3">
+                          <svg width="24" height="24" fill="currentColor" className="text-primary me-2" viewBox="0 0 16 16">
+                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
+                            <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
+                          </svg>
+                          <h3 className="h6 mb-0 fw-semibold">Pagamenti</h3>
+                        </div>
+                        <p className="display-6 fw-bold text-success mb-2">€0</p>
+                        <p className="text-muted small mb-0">Totale speso</p>
+                      </div>
                     </div>
-                    <p className="display-6 fw-bold text-success mb-2">€0</p>
-                    <p className="text-muted small mb-0">Totale speso</p>
                   </div>
-                </div>
-              </div>
+                </>
+              )}
             </div>
 
             {/* Quick Actions - Only for non-admin users */}
