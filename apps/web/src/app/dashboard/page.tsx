@@ -198,150 +198,154 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Quick Actions */}
-            <div className="card border-0 shadow-sm mb-4">
-              <div className="card-body">
-                <h2 className="h5 fw-bold mb-4">Azioni Rapide</h2>
-                <div className="row g-3">
-                  <div className="col-md-6 col-lg-3">
-                    <Link
-                      href="/bookings/new"
-                      className="card border-2 border-dashed text-center text-decoration-none h-100"
-                      style={{ borderColor: 'var(--baleno-primary)', transition: 'all 0.2s' }}
-                    >
-                      <div className="card-body">
-                        <svg width="48" height="48" fill="currentColor" className="text-primary mb-2" viewBox="0 0 16 16">
-                          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                        </svg>
-                        <div className="fw-semibold text-baleno-primary">Nuova Prenotazione</div>
-                      </div>
-                    </Link>
-                  </div>
+            {/* Quick Actions - Only for non-admin users */}
+            {user?.role !== 'ADMIN' && (
+              <div className="card border-0 shadow-sm mb-4">
+                <div className="card-body">
+                  <h2 className="h5 fw-bold mb-4">Azioni Rapide</h2>
+                  <div className="row g-3">
+                    <div className="col-md-6 col-lg-3">
+                      <Link
+                        href="/bookings/new"
+                        className="card border-2 border-dashed text-center text-decoration-none h-100"
+                        style={{ borderColor: 'var(--baleno-primary)', transition: 'all 0.2s' }}
+                      >
+                        <div className="card-body">
+                          <svg width="48" height="48" fill="currentColor" className="text-primary mb-2" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                          </svg>
+                          <div className="fw-semibold text-baleno-primary">Nuova Prenotazione</div>
+                        </div>
+                      </Link>
+                    </div>
 
-                  <div className="col-md-6 col-lg-3">
-                    <Link
-                      href="/resources"
-                      className="card border-2 border-dashed text-center text-decoration-none h-100"
-                      style={{ borderColor: 'var(--baleno-primary)', transition: 'all 0.2s' }}
-                    >
-                      <div className="card-body">
-                        <svg width="48" height="48" fill="currentColor" className="text-primary mb-2" viewBox="0 0 16 16">
-                          <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V1Zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3V1Z"/>
-                          <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1ZM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Z"/>
-                        </svg>
-                        <div className="fw-semibold text-baleno-primary">Visualizza Risorse</div>
-                      </div>
-                    </Link>
-                  </div>
+                    <div className="col-md-6 col-lg-3">
+                      <Link
+                        href="/resources"
+                        className="card border-2 border-dashed text-center text-decoration-none h-100"
+                        style={{ borderColor: 'var(--baleno-primary)', transition: 'all 0.2s' }}
+                      >
+                        <div className="card-body">
+                          <svg width="48" height="48" fill="currentColor" className="text-primary mb-2" viewBox="0 0 16 16">
+                            <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V1Zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3V1Z"/>
+                            <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1ZM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Z"/>
+                          </svg>
+                          <div className="fw-semibold text-baleno-primary">Visualizza Risorse</div>
+                        </div>
+                      </Link>
+                    </div>
 
-                  <div className="col-md-6 col-lg-3">
-                    <Link
-                      href="/bookings"
-                      className="card border-2 border-dashed text-center text-decoration-none h-100"
-                      style={{ borderColor: 'var(--baleno-primary)', transition: 'all 0.2s' }}
-                    >
-                      <div className="card-body">
-                        <svg width="48" height="48" fill="currentColor" className="text-primary mb-2" viewBox="0 0 16 16">
-                          <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                          <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-                        </svg>
-                        <div className="fw-semibold text-baleno-primary">Le Mie Prenotazioni</div>
-                      </div>
-                    </Link>
-                  </div>
+                    <div className="col-md-6 col-lg-3">
+                      <Link
+                        href="/bookings"
+                        className="card border-2 border-dashed text-center text-decoration-none h-100"
+                        style={{ borderColor: 'var(--baleno-primary)', transition: 'all 0.2s' }}
+                      >
+                        <div className="card-body">
+                          <svg width="48" height="48" fill="currentColor" className="text-primary mb-2" viewBox="0 0 16 16">
+                            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                          </svg>
+                          <div className="fw-semibold text-baleno-primary">Le Mie Prenotazioni</div>
+                        </div>
+                      </Link>
+                    </div>
 
-                  <div className="col-md-6 col-lg-3">
-                    <Link
-                      href="/profile"
-                      className="card border-2 border-dashed text-center text-decoration-none h-100"
-                      style={{ borderColor: 'var(--baleno-primary)', transition: 'all 0.2s' }}
-                    >
-                      <div className="card-body">
-                        <svg width="48" height="48" fill="currentColor" className="text-primary mb-2" viewBox="0 0 16 16">
-                          <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                          <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm12 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1v-1c0-1-1-4-6-4s-6 3-6 4v1a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12z"/>
-                        </svg>
-                        <div className="fw-semibold text-baleno-primary">Impostazioni</div>
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bookings List */}
-            <div className="card border-0 shadow-sm mb-4">
-              <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                  <h2 className="h5 fw-bold mb-0">Le Tue Prenotazioni</h2>
-                  <Link href="/bookings" className="btn btn-sm btn-outline-primary">
-                    Vedi Tutte
-                  </Link>
-                </div>
-
-                {loadingBookings ? (
-                  <div className="text-center py-4">
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="visually-hidden">Caricamento...</span>
+                    <div className="col-md-6 col-lg-3">
+                      <Link
+                        href="/profile"
+                        className="card border-2 border-dashed text-center text-decoration-none h-100"
+                        style={{ borderColor: 'var(--baleno-primary)', transition: 'all 0.2s' }}
+                      >
+                        <div className="card-body">
+                          <svg width="48" height="48" fill="currentColor" className="text-primary mb-2" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm12 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1v-1c0-1-1-4-6-4s-6 3-6 4v1a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12z"/>
+                          </svg>
+                          <div className="fw-semibold text-baleno-primary">Impostazioni</div>
+                        </div>
+                      </Link>
                     </div>
                   </div>
-                ) : bookings.length === 0 ? (
-                  <div className="text-center py-5">
-                    <svg width="64" height="64" fill="currentColor" className="text-muted mb-3" viewBox="0 0 16 16">
-                      <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
-                    </svg>
-                    <p className="text-muted mb-3">Nessuna prenotazione trovata</p>
-                    <Link href="/bookings/new" className="btn btn-primary">
-                      Crea Nuova Prenotazione
+                </div>
+              </div>
+            )}
+
+            {/* Bookings List - Only for non-admin users */}
+            {user?.role !== 'ADMIN' && (
+              <div className="card border-0 shadow-sm mb-4">
+                <div className="card-body">
+                  <div className="d-flex justify-content-between align-items-center mb-4">
+                    <h2 className="h5 fw-bold mb-0">Le Tue Prenotazioni</h2>
+                    <Link href="/bookings" className="btn btn-sm btn-outline-primary">
+                      Vedi Tutte
                     </Link>
                   </div>
-                ) : (
-                  <div className="table-responsive">
-                    <table className="table table-hover align-middle mb-0">
-                      <thead className="table-light">
-                        <tr>
-                          <th>Titolo</th>
-                          <th>Risorsa</th>
-                          <th>Data Inizio</th>
-                          <th>Stato</th>
-                          <th></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {bookings.slice(0, 5).map((booking) => (
-                          <tr key={booking.id}>
-                            <td className="fw-semibold">{booking.title}</td>
-                            <td className="text-muted small">{booking.resource.name}</td>
-                            <td className="text-muted small">
-                              {new Date(booking.startTime).toLocaleDateString('it-IT', {
-                                day: '2-digit',
-                                month: 'short',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </td>
-                            <td>
-                              <span className={`badge ${getStatusBadgeClass(booking.status)}`}>
-                                {getStatusLabel(booking.status)}
-                              </span>
-                            </td>
-                            <td>
-                              <Link
-                                href={`/bookings`}
-                                className="btn btn-sm btn-outline-primary"
-                              >
-                                Dettagli
-                              </Link>
-                            </td>
+
+                  {loadingBookings ? (
+                    <div className="text-center py-4">
+                      <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Caricamento...</span>
+                      </div>
+                    </div>
+                  ) : bookings.length === 0 ? (
+                    <div className="text-center py-5">
+                      <svg width="64" height="64" fill="currentColor" className="text-muted mb-3" viewBox="0 0 16 16">
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                      </svg>
+                      <p className="text-muted mb-3">Nessuna prenotazione trovata</p>
+                      <Link href="/bookings/new" className="btn btn-primary">
+                        Crea Nuova Prenotazione
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="table-responsive">
+                      <table className="table table-hover align-middle mb-0">
+                        <thead className="table-light">
+                          <tr>
+                            <th>Titolo</th>
+                            <th>Risorsa</th>
+                            <th>Data Inizio</th>
+                            <th>Stato</th>
+                            <th></th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+                        </thead>
+                        <tbody>
+                          {bookings.slice(0, 5).map((booking) => (
+                            <tr key={booking.id}>
+                              <td className="fw-semibold">{booking.title}</td>
+                              <td className="text-muted small">{booking.resource.name}</td>
+                              <td className="text-muted small">
+                                {new Date(booking.startTime).toLocaleDateString('it-IT', {
+                                  day: '2-digit',
+                                  month: 'short',
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </td>
+                              <td>
+                                <span className={`badge ${getStatusBadgeClass(booking.status)}`}>
+                                  {getStatusLabel(booking.status)}
+                                </span>
+                              </td>
+                              <td>
+                                <Link
+                                  href={`/bookings`}
+                                  className="btn btn-sm btn-outline-primary"
+                                >
+                                  Dettagli
+                                </Link>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Admin Panel */}
             {(user?.role === 'ADMIN' || user?.role === 'COMMUNITY_MANAGER') && (
