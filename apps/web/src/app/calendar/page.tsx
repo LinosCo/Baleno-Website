@@ -9,6 +9,7 @@ interface Booking {
   startTime: string;
   endTime: string;
   status: string;
+  isPrivate?: boolean;
   resource: {
     name: string;
     type: string;
@@ -262,13 +263,15 @@ export default function PublicCalendarPage() {
                                       key={booking.id}
                                       className="rounded shadow-sm mb-1 p-2"
                                       style={{
-                                        backgroundColor: '#008055',
+                                        backgroundColor: booking.isPrivate ? '#6c757d' : '#008055',
                                         color: 'white',
                                         fontSize: '0.75rem'
                                       }}
-                                      title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
+                                      title={booking.isPrivate ? 'Evento Privato' : `${booking.title}\n${booking.resource.name}\n${startTime}`}
                                     >
-                                      <div className="fw-semibold text-truncate">{booking.title}</div>
+                                      <div className="fw-semibold text-truncate">
+                                        {booking.isPrivate ? 'Evento Privato' : booking.title}
+                                      </div>
                                       <div style={{ fontSize: '0.7rem', opacity: 0.9 }}>
                                         {startTime}
                                       </div>
@@ -358,17 +361,21 @@ export default function PublicCalendarPage() {
                                       <div
                                         key={booking.id}
                                         className="rounded text-truncate"
-                                        title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
+                                        title={booking.isPrivate ? 'Evento Privato' : `${booking.title}\n${booking.resource.name}\n${startTime}`}
                                         style={{
                                           fontSize: '0.65rem',
                                           padding: '2px 4px',
-                                          backgroundColor: '#008055',
+                                          backgroundColor: booking.isPrivate ? '#6c757d' : '#008055',
                                           color: 'white',
                                           fontWeight: '500',
                                           lineHeight: 1.2
                                         }}
                                       >
-                                        <span style={{ opacity: 0.9 }}>{startTime}</span> {booking.title}
+                                        {booking.isPrivate ? (
+                                          <span>Privato</span>
+                                        ) : (
+                                          <><span style={{ opacity: 0.9 }}>{startTime}</span> {booking.title}</>
+                                        )}
                                       </div>
                                     );
                                   })}
