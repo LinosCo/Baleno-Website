@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { API_ENDPOINTS } from '../../../config/api';
-import UserNavbar from '../../../components/UserNavbar';
 
 interface Resource {
   id: string;
@@ -270,33 +269,65 @@ export default function NewBookingWizardPage() {
   }
 
   return (
-    <div className="min-vh-100 bg-light">
-      <UserNavbar />
+    <div className="min-vh-100" style={{
+      background: 'linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #ffffff 100%)'
+    }}>
+      {/* Clean Header */}
+      <div className="container pt-4 pb-2">
+        <div className="d-flex justify-content-between align-items-center">
+          <h1 className="h3 fw-bold mb-0" style={{ color: '#2B548E' }}>Nuova Prenotazione</h1>
+          <Link
+            href="/dashboard"
+            className="text-decoration-none fw-medium d-flex align-items-center gap-2"
+            style={{ color: '#2B548E', transition: 'color 0.2s ease' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#EDBB00'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#2B548E'}
+          >
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+              <path fillRule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+            </svg>
+            Torna alla Dashboard
+          </Link>
+        </div>
+      </div>
 
       <div className="container py-4">
-        <h1 className="h3 fw-bold text-baleno-primary mb-4">Nuova Prenotazione</h1>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           {/* Progress Indicator */}
           {currentStep < 6 && (
-            <div className="card border-0 shadow-sm mb-4">
-              <div className="card-body p-3">
+            <div className="card border-0 shadow-sm mb-4" style={{
+              borderRadius: '24px',
+              border: '1px solid rgba(43, 84, 142, 0.1)'
+            }}>
+              <div className="card-body p-4">
                 <div className="d-flex justify-content-between align-items-center">
                   {[1, 2, 3, 4, 5].map((step) => (
                     <div key={step} className="d-flex align-items-center flex-fill">
                       <div className="d-flex flex-column align-items-center" style={{ minWidth: '80px' }}>
                         <div
-                          className={`rounded-circle d-flex align-items-center justify-content-center fw-bold ${
-                            currentStep === step
-                              ? 'bg-primary text-white'
+                          className={`rounded-circle d-flex align-items-center justify-content-center fw-bold`}
+                          style={{
+                            width: '48px',
+                            height: '48px',
+                            background: currentStep === step
+                              ? 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)'
                               : currentStep > step
-                              ? 'bg-success text-white'
-                              : 'bg-light text-muted'
-                          }`}
-                          style={{ width: '40px', height: '40px' }}
+                              ? 'linear-gradient(135deg, #28a745 0%, #20883b 100%)'
+                              : '#f8f9fa',
+                            color: currentStep >= step ? 'white' : '#6c757d',
+                            transition: 'all 0.3s ease',
+                            boxShadow: currentStep === step ? '0 4px 12px rgba(43, 84, 142, 0.3)' : 'none'
+                          }}
                         >
-                          {currentStep > step ? '✓' : step}
+                          {currentStep > step ? (
+                            <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+                            </svg>
+                          ) : step}
                         </div>
-                        <div className={`small mt-2 text-center ${currentStep === step ? 'fw-bold text-primary' : 'text-muted'}`}>
+                        <div className={`small mt-2 text-center ${currentStep === step ? 'fw-bold' : ''}`} style={{
+                          color: currentStep === step ? '#2B548E' : '#6c757d'
+                        }}>
                           {step === 1 && 'Risorsa'}
                           {step === 2 && 'Data/Ora'}
                           {step === 3 && 'Dettagli'}
@@ -306,10 +337,15 @@ export default function NewBookingWizardPage() {
                       </div>
                       {step < 5 && (
                         <div
-                          className={`flex-fill mx-2 ${
-                            currentStep > step ? 'bg-success' : 'bg-light'
-                          }`}
-                          style={{ height: '3px' }}
+                          className="flex-fill mx-2"
+                          style={{
+                            height: '4px',
+                            background: currentStep > step
+                              ? 'linear-gradient(90deg, #28a745 0%, #20883b 100%)'
+                              : '#e9ecef',
+                            borderRadius: '2px',
+                            transition: 'all 0.3s ease'
+                          }}
                         />
                       )}
                     </div>
@@ -321,13 +357,21 @@ export default function NewBookingWizardPage() {
 
           {/* Error/Success Messages */}
           {error && (
-            <div className="mb-4 p-3 bg-danger bg-opacity-10 text-danger rounded" role="alert">
-              {error}
+            <div className="mb-4 p-4 bg-danger bg-opacity-10 text-danger d-flex align-items-start" role="alert" style={{
+              borderRadius: '16px',
+              border: '1px solid rgba(220, 53, 69, 0.2)'
+            }}>
+              <svg className="me-2 mt-1 flex-shrink-0" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+              </svg>
+              <div>{error}</div>
             </div>
           )}
 
           {success && (
-            <div className="alert alert-success d-flex align-items-center mb-4" role="alert">
+            <div className="alert alert-success d-flex align-items-center mb-4" role="alert" style={{
+              borderRadius: '16px'
+            }}>
               <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
               </svg>
@@ -336,12 +380,15 @@ export default function NewBookingWizardPage() {
           )}
 
           {/* Step Content */}
-          <div className="card border-0 shadow-sm">
+          <div className="card border-0 shadow-sm" style={{
+            borderRadius: '24px',
+            border: '1px solid rgba(43, 84, 142, 0.1)'
+          }}>
             <div className="card-body p-4 p-md-5">
               {/* STEP 1: Select Resource */}
               {currentStep === 1 && (
                 <div>
-                  <h2 className="h4 fw-bold text-baleno-primary mb-4">Seleziona Risorsa</h2>
+                  <h2 className="h4 fw-bold mb-4" style={{ color: '#2B548E' }}>Seleziona Risorsa</h2>
 
                   {/* Search and Filters */}
                   <div className="mb-4">
@@ -351,6 +398,19 @@ export default function NewBookingWizardPage() {
                       placeholder="Cerca risorsa..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
+                      style={{
+                        borderRadius: '12px',
+                        border: '2px solid #e9ecef',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = '#2B548E';
+                        e.currentTarget.style.boxShadow = '0 0 0 0.2rem rgba(43, 84, 142, 0.15)';
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = '#e9ecef';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
                     />
                     <div className="row g-2">
                       <div className="col-md-6">
@@ -358,6 +418,11 @@ export default function NewBookingWizardPage() {
                           className="form-select"
                           value={filterCategory}
                           onChange={(e) => setFilterCategory(e.target.value)}
+                          style={{
+                            borderRadius: '12px',
+                            border: '2px solid #e9ecef',
+                            transition: 'all 0.3s ease'
+                          }}
                         >
                           <option value="ALL">Tutte le categorie</option>
                           <option value="MEETING_ROOM">Sale Riunioni</option>
@@ -373,6 +438,11 @@ export default function NewBookingWizardPage() {
                           className="form-select"
                           value={filterType}
                           onChange={(e) => setFilterType(e.target.value)}
+                          style={{
+                            borderRadius: '12px',
+                            border: '2px solid #e9ecef',
+                            transition: 'all 0.3s ease'
+                          }}
                         >
                           <option value="ALL">Tutti i tipi</option>
                           <option value="ROOM">Stanza</option>
@@ -395,45 +465,94 @@ export default function NewBookingWizardPage() {
                       filteredResources.map(resource => (
                         <div key={resource.id} className="col-12">
                           <div
-                            className={`card h-100 cursor-pointer ${
-                              bookingData.resourceId === resource.id
-                                ? 'border-primary border-2'
-                                : 'border'
-                            }`}
+                            className="card h-100"
                             onClick={() => setBookingData({ ...bookingData, resourceId: resource.id })}
-                            style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                            style={{
+                              cursor: 'pointer',
+                              transition: 'all 0.3s ease',
+                              borderRadius: '16px',
+                              border: bookingData.resourceId === resource.id
+                                ? '2px solid #2B548E'
+                                : '2px solid #e9ecef',
+                              background: bookingData.resourceId === resource.id
+                                ? 'linear-gradient(135deg, rgba(43, 84, 142, 0.05) 0%, rgba(43, 84, 142, 0.02) 100%)'
+                                : 'white',
+                              boxShadow: bookingData.resourceId === resource.id
+                                ? '0 4px 12px rgba(43, 84, 142, 0.15)'
+                                : '0 2px 8px rgba(0,0,0,0.08)'
+                            }}
+                            onMouseEnter={(e) => {
+                              if (bookingData.resourceId !== resource.id) {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform = 'translateY(0)';
+                              e.currentTarget.style.boxShadow = bookingData.resourceId === resource.id
+                                ? '0 4px 12px rgba(43, 84, 142, 0.15)'
+                                : '0 2px 8px rgba(0,0,0,0.08)';
+                            }}
                           >
-                            <div className="card-body">
+                            <div className="card-body p-3">
                               <div className="d-flex justify-content-between align-items-start">
                                 <div className="flex-grow-1">
-                                  <h5 className="card-title fw-bold mb-2">
+                                  <h5 className="card-title fw-bold mb-2" style={{ color: '#2B548E' }}>
                                     {resource.name}
                                     {bookingData.resourceId === resource.id && (
-                                      <span className="ms-2 badge bg-primary">Selezionata</span>
+                                      <span className="ms-2 badge" style={{
+                                        background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)',
+                                        color: 'white'
+                                      }}>Selezionata</span>
                                     )}
                                   </h5>
                                   <div className="mb-2">
-                                    <span className="badge bg-secondary me-2">{resource.category}</span>
-                                    <span className="badge bg-light text-dark me-2">{resource.type}</span>
+                                    <span className="badge me-2" style={{
+                                      background: '#6c757d',
+                                      borderRadius: '8px'
+                                    }}>{resource.category}</span>
+                                    <span className="badge bg-light text-dark me-2" style={{ borderRadius: '8px' }}>{resource.type}</span>
                                     {resource.wheelchairAccessible && (
-                                      <span className="badge bg-info">♿ Accessibile</span>
+                                      <span className="badge bg-info" style={{ borderRadius: '8px' }}>
+                                        <svg width="14" height="14" fill="currentColor" className="me-1" viewBox="0 0 16 16">
+                                          <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM6.5 5.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm-.5 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1H7v1h.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0V10H6.5a.5.5 0 0 1-.5-.5v-2Z"/>
+                                        </svg>
+                                        Accessibile
+                                      </span>
                                     )}
                                   </div>
                                   <p className="card-text text-muted small mb-2">{resource.description}</p>
-                                  <div className="small">
-                                    <span className="text-muted">📍 {resource.location || 'Non specificata'}</span>
-                                    <span className="mx-2">•</span>
-                                    <span className="text-muted">👥 {resource.capacity} persone</span>
+                                  <div className="small d-flex flex-wrap gap-2">
+                                    <span className="text-muted">
+                                      <svg width="14" height="14" fill="currentColor" className="me-1" viewBox="0 0 16 16">
+                                        <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                                      </svg>
+                                      {resource.location || 'Non specificata'}
+                                    </span>
+                                    <span className="text-muted">•</span>
+                                    <span className="text-muted">
+                                      <svg width="14" height="14" fill="currentColor" className="me-1" viewBox="0 0 16 16">
+                                        <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                        <path fillRule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                                      </svg>
+                                      {resource.capacity} persone
+                                    </span>
                                     {resource.minBookingHours > 1 && (
                                       <>
-                                        <span className="mx-2">•</span>
-                                        <span className="text-muted">⏱️ Min. {resource.minBookingHours}h</span>
+                                        <span className="text-muted">•</span>
+                                        <span className="text-muted">
+                                          <svg width="14" height="14" fill="currentColor" className="me-1" viewBox="0 0 16 16">
+                                            <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+                                          </svg>
+                                          Min. {resource.minBookingHours}h
+                                        </span>
                                       </>
                                     )}
                                   </div>
                                 </div>
                                 <div className="text-end ms-3">
-                                  <div className="h4 fw-bold text-primary mb-0">
+                                  <div className="h4 fw-bold mb-0" style={{ color: '#2B548E' }}>
                                     €{parseFloat(resource.pricePerHour.toString()).toFixed(2)}
                                   </div>
                                   <div className="small text-muted">per ora</div>
@@ -451,14 +570,18 @@ export default function NewBookingWizardPage() {
               {/* STEP 2: Select Date/Time */}
               {currentStep === 2 && (
                 <div>
-                  <h2 className="h4 fw-bold text-baleno-primary mb-4">Seleziona Data e Ora</h2>
+                  <h2 className="h4 fw-bold mb-4" style={{ color: '#2B548E' }}>Seleziona Data e Ora</h2>
 
                   {selectedResource && (
-                    <div className="card border-0 shadow-sm mb-4" style={{ backgroundColor: '#f8f9fa' }}>
-                      <div className="card-body">
+                    <div className="card border-0 shadow-sm mb-4" style={{
+                      backgroundColor: '#f8f9fa',
+                      borderRadius: '16px',
+                      border: '1px solid rgba(43, 84, 142, 0.1)'
+                    }}>
+                      <div className="card-body p-4">
                         <div className="row align-items-center">
                           <div className="col-md-8">
-                            <h5 className="fw-bold text-baleno-primary mb-2">{selectedResource.name}</h5>
+                            <h5 className="fw-bold mb-2" style={{ color: '#2B548E' }}>{selectedResource.name}</h5>
                             <p className="text-muted mb-2 small" style={{ lineHeight: '1.6' }}>
                               {selectedResource.description?.substring(0, 150)}
                               {selectedResource.description && selectedResource.description.length > 150 ? '...' : ''}
@@ -487,7 +610,7 @@ export default function NewBookingWizardPage() {
                             </div>
                           </div>
                           <div className="col-md-4 text-md-end">
-                            <div className="h3 fw-bold text-primary mb-1">
+                            <div className="h3 fw-bold mb-1" style={{ color: '#2B548E' }}>
                               €{parseFloat(selectedResource.pricePerHour.toString()).toFixed(2)}
                             </div>
                             <p className="small text-muted mb-0">per ora</p>
@@ -503,9 +626,12 @@ export default function NewBookingWizardPage() {
                   )}
 
                   {/* Inizio Prenotazione */}
-                  <div className="card border-0 shadow-sm mb-4">
-                    <div className="card-header bg-white border-bottom">
-                      <h6 className="mb-0 fw-semibold text-baleno-primary">
+                  <div className="card border-0 shadow-sm mb-4" style={{
+                    borderRadius: '16px',
+                    border: '1px solid rgba(43, 84, 142, 0.1)'
+                  }}>
+                    <div className="card-header bg-white border-bottom" style={{ borderRadius: '16px 16px 0 0' }}>
+                      <h6 className="mb-0 fw-semibold" style={{ color: '#2B548E' }}>
                         <svg width="18" height="18" fill="currentColor" className="me-2" viewBox="0 0 16 16">
                           <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
                           <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
@@ -513,10 +639,10 @@ export default function NewBookingWizardPage() {
                         Inizio Prenotazione
                       </h6>
                     </div>
-                    <div className="card-body">
+                    <div className="card-body p-4">
                       <div className="row g-3">
                         <div className="col-md-7">
-                          <label htmlFor="startDate" className="form-label fw-semibold">
+                          <label htmlFor="startDate" className="form-label fw-semibold" style={{ color: '#495057' }}>
                             Data *
                           </label>
                           <input
@@ -537,10 +663,14 @@ export default function NewBookingWizardPage() {
                             required
                             min={new Date().toISOString().split('T')[0]}
                             className="form-control form-control-lg"
+                            style={{
+                              borderRadius: '12px',
+                              border: '2px solid #e9ecef'
+                            }}
                           />
                         </div>
                         <div className="col-md-5">
-                          <label htmlFor="startTimeInput" className="form-label fw-semibold">
+                          <label htmlFor="startTimeInput" className="form-label fw-semibold" style={{ color: '#495057' }}>
                             Ora *
                           </label>
                           <input
@@ -559,6 +689,10 @@ export default function NewBookingWizardPage() {
                                 : undefined
                             }
                             className="form-control form-control-lg"
+                            style={{
+                              borderRadius: '12px',
+                              border: '2px solid #e9ecef'
+                            }}
                           />
                         </div>
                       </div>
@@ -566,9 +700,12 @@ export default function NewBookingWizardPage() {
                   </div>
 
                   {/* Fine Prenotazione */}
-                  <div className="card border-0 shadow-sm mb-4">
-                    <div className="card-header bg-white border-bottom">
-                      <h6 className="mb-0 fw-semibold text-baleno-primary">
+                  <div className="card border-0 shadow-sm mb-4" style={{
+                    borderRadius: '16px',
+                    border: '1px solid rgba(43, 84, 142, 0.1)'
+                  }}>
+                    <div className="card-header bg-white border-bottom" style={{ borderRadius: '16px 16px 0 0' }}>
+                      <h6 className="mb-0 fw-semibold" style={{ color: '#2B548E' }}>
                         <svg width="18" height="18" fill="currentColor" className="me-2" viewBox="0 0 16 16">
                           <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
                           <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
@@ -576,10 +713,10 @@ export default function NewBookingWizardPage() {
                         Fine Prenotazione
                       </h6>
                     </div>
-                    <div className="card-body">
+                    <div className="card-body p-4">
                       <div className="row g-3">
                         <div className="col-md-7">
-                          <label htmlFor="endDate" className="form-label fw-semibold">
+                          <label htmlFor="endDate" className="form-label fw-semibold" style={{ color: '#495057' }}>
                             Data *
                           </label>
                           <input
@@ -594,10 +731,14 @@ export default function NewBookingWizardPage() {
                             required
                             min={bookingData.startTime?.split('T')[0] || new Date().toISOString().split('T')[0]}
                             className="form-control form-control-lg"
+                            style={{
+                              borderRadius: '12px',
+                              border: '2px solid #e9ecef'
+                            }}
                           />
                         </div>
                         <div className="col-md-5">
-                          <label htmlFor="endTimeInput" className="form-label fw-semibold">
+                          <label htmlFor="endTimeInput" className="form-label fw-semibold" style={{ color: '#495057' }}>
                             Ora *
                           </label>
                           <input
@@ -628,6 +769,10 @@ export default function NewBookingWizardPage() {
                               return undefined;
                             })()}
                             className="form-control form-control-lg"
+                            style={{
+                              borderRadius: '12px',
+                              border: '2px solid #e9ecef'
+                            }}
                           />
                         </div>
                       </div>
@@ -635,7 +780,11 @@ export default function NewBookingWizardPage() {
                   </div>
 
                   {bookingData.startTime && bookingData.endTime && (
-                    <div className="card border-0 shadow-sm" style={{ backgroundColor: '#d1f2eb' }}>
+                    <div className="card border-0 shadow-sm" style={{
+                      backgroundColor: '#d1f2eb',
+                      borderRadius: '16px',
+                      border: '1px solid rgba(40, 167, 69, 0.2)'
+                    }}>
                       <div className="card-body">
                         <div className="row align-items-center">
                           <div className="col-md-6">
@@ -667,10 +816,10 @@ export default function NewBookingWizardPage() {
               {/* STEP 3: Enter Details */}
               {currentStep === 3 && (
                 <div>
-                  <h2 className="h4 fw-bold text-baleno-primary mb-4">Dettagli Prenotazione</h2>
+                  <h2 className="h4 fw-bold mb-4" style={{ color: '#2B548E' }}>Dettagli Prenotazione</h2>
 
                   <div className="mb-4">
-                    <label htmlFor="title" className="form-label fw-semibold">
+                    <label htmlFor="title" className="form-label fw-semibold" style={{ color: '#495057' }}>
                       Titolo Prenotazione *
                     </label>
                     <input
@@ -681,11 +830,15 @@ export default function NewBookingWizardPage() {
                       required
                       placeholder="Es: Riunione team di progetto"
                       className="form-control form-control-lg"
+                      style={{
+                        borderRadius: '12px',
+                        border: '2px solid #e9ecef'
+                      }}
                     />
                   </div>
 
                   <div className="mb-4">
-                    <label htmlFor="attendees" className="form-label fw-semibold">
+                    <label htmlFor="attendees" className="form-label fw-semibold" style={{ color: '#495057' }}>
                       Numero Partecipanti (opzionale)
                     </label>
                     <input
@@ -697,11 +850,15 @@ export default function NewBookingWizardPage() {
                       max={selectedResource?.capacity || 100}
                       placeholder={`Max ${selectedResource?.capacity || 0} persone`}
                       className="form-control form-control-lg"
+                      style={{
+                        borderRadius: '12px',
+                        border: '2px solid #e9ecef'
+                      }}
                     />
                   </div>
 
                   <div className="mb-4">
-                    <label htmlFor="description" className="form-label fw-semibold">
+                    <label htmlFor="description" className="form-label fw-semibold" style={{ color: '#495057' }}>
                       Descrizione (opzionale)
                     </label>
                     <textarea
@@ -711,6 +868,10 @@ export default function NewBookingWizardPage() {
                       rows={5}
                       placeholder="Aggiungi dettagli sulla prenotazione..."
                       className="form-control"
+                      style={{
+                        borderRadius: '12px',
+                        border: '2px solid #e9ecef'
+                      }}
                     />
                   </div>
 
@@ -738,7 +899,7 @@ export default function NewBookingWizardPage() {
               {/* STEP 4: Ti serve altro? (Risorse aggiuntive) */}
               {currentStep === 4 && (
                 <div>
-                  <h2 className="h4 fw-bold text-baleno-primary mb-3">Ti serve altro?</h2>
+                  <h2 className="h4 fw-bold mb-3" style={{ color: '#2B548E' }}>Ti serve altro?</h2>
                   <p className="text-muted mb-4">
                     Aggiungi attrezzature o servizi aggiuntivi alla tua prenotazione (opzionale)
                   </p>
@@ -849,18 +1010,26 @@ export default function NewBookingWizardPage() {
                 </div>
               )}
 
-              {/* STEP 5: Review & Confirm */}
+              {/* STEP 6: Success */}
               {currentStep === 6 && (
                 <div className="text-center py-5">
                   <div className="mb-4">
-                    <div className="display-1 text-success mb-3">✓</div>
-                    <h2 className="fw-bold text-baleno-primary mb-3">Prenotazione Inviata con Successo!</h2>
+                    <div className="display-1 mb-3" style={{ color: '#28a745' }}>
+                      <svg width="120" height="120" fill="currentColor" viewBox="0 0 16 16" style={{ margin: '0 auto', display: 'block' }}>
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                      </svg>
+                    </div>
+                    <h2 className="fw-bold mb-3" style={{ color: '#2B548E' }}>Prenotazione Inviata con Successo!</h2>
                     <p className="lead text-muted">
                       La tua richiesta di prenotazione è stata inviata correttamente.
                     </p>
                   </div>
 
-                  <div className="card border-primary shadow-sm mx-auto" style={{maxWidth: '600px'}}>
+                  <div className="card shadow-sm mx-auto" style={{
+                    maxWidth: '600px',
+                    borderRadius: '20px',
+                    border: '2px solid #2B548E'
+                  }}>
                     <div className="card-body p-4">
                       <div className="alert alert-info mb-4">
                         <i className="bi bi-info-circle me-2"></i>
@@ -891,9 +1060,26 @@ export default function NewBookingWizardPage() {
                   <div className="mt-5">
                     <button
                       onClick={() => router.push('/dashboard')}
-                      className="btn btn-primary btn-lg px-5 fw-semibold"
+                      className="btn btn-lg px-5 fw-semibold"
+                      style={{
+                        background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)',
+                        border: 'none',
+                        color: 'white',
+                        borderRadius: '12px',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(43, 84, 142, 0.3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
                     >
-                      <i className="bi bi-house-door me-2"></i>
+                      <svg width="20" height="20" fill="currentColor" className="me-2" viewBox="0 0 16 16">
+                        <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
+                      </svg>
                       Vai alla Dashboard
                     </button>
                   </div>
@@ -902,12 +1088,12 @@ export default function NewBookingWizardPage() {
 
               {currentStep === 5 && (
                 <div>
-                  <h2 className="h4 fw-bold text-baleno-primary mb-4">Riepilogo e Conferma</h2>
+                  <h2 className="h4 fw-bold mb-4" style={{ color: '#2B548E' }}>Riepilogo e Conferma</h2>
 
                   <div className="mb-4">
-                    <h5 className="fw-bold mb-3">Risorsa</h5>
-                    <div className="card border-0 bg-light">
-                      <div className="card-body">
+                    <h5 className="fw-bold mb-3" style={{ color: '#2B548E' }}>Risorsa</h5>
+                    <div className="card border-0 bg-light" style={{ borderRadius: '16px' }}>
+                      <div className="card-body p-4">
                         <h6 className="fw-bold">{selectedResource?.name}</h6>
                         <p className="small text-muted mb-2">{selectedResource?.description}</p>
                         <div className="small">
@@ -919,9 +1105,9 @@ export default function NewBookingWizardPage() {
                   </div>
 
                   <div className="mb-4">
-                    <h5 className="fw-bold mb-3">Data e Ora</h5>
-                    <div className="card border-0 bg-light">
-                      <div className="card-body">
+                    <h5 className="fw-bold mb-3" style={{ color: '#2B548E' }}>Data e Ora</h5>
+                    <div className="card border-0 bg-light" style={{ borderRadius: '16px' }}>
+                      <div className="card-body p-4">
                         <div className="row">
                           <div className="col-md-6 mb-2">
                             <div className="small text-muted">Inizio</div>
@@ -953,9 +1139,9 @@ export default function NewBookingWizardPage() {
                   </div>
 
                   <div className="mb-4">
-                    <h5 className="fw-bold mb-3">Dettagli</h5>
-                    <div className="card border-0 bg-light">
-                      <div className="card-body">
+                    <h5 className="fw-bold mb-3" style={{ color: '#2B548E' }}>Dettagli</h5>
+                    <div className="card border-0 bg-light" style={{ borderRadius: '16px' }}>
+                      <div className="card-body p-4">
                         <div className="mb-2">
                           <span className="small text-muted">Titolo:</span>{' '}
                           <span className="fw-semibold">{bookingData.title}</span>
@@ -978,9 +1164,9 @@ export default function NewBookingWizardPage() {
 
                   {user && (
                     <div className="mb-4">
-                      <h5 className="fw-bold mb-3">Dati Fatturazione</h5>
-                      <div className="card border-0 bg-light">
-                        <div className="card-body">
+                      <h5 className="fw-bold mb-3" style={{ color: '#2B548E' }}>Dati Fatturazione</h5>
+                      <div className="card border-0 bg-light" style={{ borderRadius: '16px' }}>
+                        <div className="card-body p-4">
                           <div className="row g-3">
                             <div className="col-md-6">
                               <div className="small text-muted">Nome Completo</div>
@@ -1020,8 +1206,11 @@ export default function NewBookingWizardPage() {
                     </div>
                   )}
 
-                  <div className="card border-primary border-2 bg-light">
-                    <div className="card-body">
+                  <div className="card bg-light" style={{
+                    borderRadius: '16px',
+                    border: '2px solid #2B548E'
+                  }}>
+                    <div className="card-body p-4">
                       <div className="d-flex justify-content-between align-items-center">
                         <div>
                           <div className="small text-muted">Prezzo Totale</div>
@@ -1029,7 +1218,7 @@ export default function NewBookingWizardPage() {
                             {((new Date(bookingData.endTime).getTime() - new Date(bookingData.startTime).getTime()) / (1000 * 60 * 60)).toFixed(1)} ore × €{parseFloat(selectedResource?.pricePerHour.toString() || '0').toFixed(2)}/ora
                           </div>
                         </div>
-                        <div className="display-5 fw-bold text-primary">
+                        <div className="display-5 fw-bold" style={{ color: '#2B548E' }}>
                           €{calculatePrice().toFixed(2)}
                         </div>
                       </div>
@@ -1045,8 +1234,23 @@ export default function NewBookingWizardPage() {
                     <button
                       type="button"
                       onClick={() => setCurrentStep(currentStep - 1)}
-                      className="btn btn-outline-secondary btn-lg"
+                      className="btn btn-lg"
                       disabled={submitting}
+                      style={{
+                        borderRadius: '12px',
+                        border: '2px solid #6c757d',
+                        color: '#6c757d',
+                        background: 'white',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#6c757d';
+                        e.currentTarget.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'white';
+                        e.currentTarget.style.color = '#6c757d';
+                      }}
                     >
                       ← Indietro
                     </button>
@@ -1057,7 +1261,24 @@ export default function NewBookingWizardPage() {
                     type="button"
                     onClick={() => setCurrentStep(currentStep + 1)}
                     disabled={!canProceedToStep(currentStep + 1)}
-                    className="btn btn-primary btn-lg flex-fill fw-semibold"
+                    className="btn btn-lg flex-fill fw-semibold"
+                    style={{
+                      background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)',
+                      border: 'none',
+                      color: 'white',
+                      borderRadius: '12px',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!e.currentTarget.disabled) {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(43, 84, 142, 0.3)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
                   >
                     Avanti →
                   </button>
@@ -1066,7 +1287,24 @@ export default function NewBookingWizardPage() {
                     type="button"
                     onClick={handleSubmit}
                     disabled={submitting || !canProceedToStep(5)}
-                    className="btn btn-success btn-lg flex-fill fw-semibold"
+                    className="btn btn-lg flex-fill fw-semibold"
+                    style={{
+                      background: 'linear-gradient(135deg, #28a745 0%, #20883b 100%)',
+                      border: 'none',
+                      color: 'white',
+                      borderRadius: '12px',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!e.currentTarget.disabled) {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(40, 167, 69, 0.3)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
                   >
                     {submitting ? (
                       <>
@@ -1081,7 +1319,23 @@ export default function NewBookingWizardPage() {
 
                 <Link
                   href="/"
-                  className="btn btn-light btn-lg"
+                  className="btn btn-lg"
+                  style={{
+                    borderRadius: '12px',
+                    border: '2px solid #e9ecef',
+                    color: '#6c757d',
+                    background: 'white',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#f8f9fa';
+                    e.currentTarget.style.borderColor = '#dee2e6';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'white';
+                    e.currentTarget.style.borderColor = '#e9ecef';
+                  }}
                 >
                   Annulla
                 </Link>
