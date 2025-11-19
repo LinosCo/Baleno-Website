@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar, Users, Shield, CreditCard, MapPin, Mail, Phone, ArrowRight } from 'lucide-react';
+import { Calendar, Users, Shield, CreditCard, Mail, Phone, ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function HomePage() {
@@ -255,49 +255,40 @@ export default function HomePage() {
         <div className="container">
           <div className="row g-4">
             <div className="col-lg-4 mb-4 mb-lg-0">
-              <h5 className="fw-bold mb-3" style={{ color: '#2B548E' }}>Baleno San Zeno</h5>
-              <p className="text-muted mb-0">
-                Casa di Quartiere dedicata alla community e alla cultura
-              </p>
+              <h5 className="fw-bold mb-3" style={{ color: '#2B548E' }}>Baleno</h5>
+              <p className="text-muted mb-1 fw-semibold">BALENO ETS</p>
+              <p className="text-muted mb-1">Via Re Pipino 3/A</p>
+              <p className="text-muted mb-1">C.A.P. 37123</p>
+              <p className="text-muted mb-3">C.F. 93319200239</p>
+              <Link href="https://balenosanzeno.it" target="_blank" className="text-decoration-none hover-link" style={{ color: '#2B548E', fontSize: '0.9rem' }}>
+                STATUTO BALENO →
+              </Link>
             </div>
 
             <div className="col-lg-4 mb-4 mb-lg-0">
-              <h5 className="fw-bold mb-3" style={{ color: '#2B548E' }}>Link Utili</h5>
-              <ul className="list-unstyled">
-                <li className="mb-2">
-                  <Link href="/resources" className="text-muted text-decoration-none hover-link">
-                    Esplora Spazi
-                  </Link>
-                </li>
-                <li className="mb-2">
-                  <Link href="/calendar" className="text-muted text-decoration-none hover-link">
-                    Calendario Pubblico
-                  </Link>
-                </li>
-                <li className="mb-2">
-                  <Link href="/bookings/new" className="text-muted text-decoration-none hover-link">
-                    Prenota Ora
-                  </Link>
-                </li>
-              </ul>
+              <h5 className="fw-bold mb-3" style={{ color: '#2B548E' }}>Indirizzo</h5>
+              <p className="text-muted mb-1 fw-semibold">Casa di quartiere Baleno</p>
+              <p className="text-muted mb-1">Via Re Pipino, 3/A</p>
+              <p className="text-muted mb-0">37123 Verona VR</p>
             </div>
 
             <div className="col-lg-4">
               <h5 className="fw-bold mb-3" style={{ color: '#2B548E' }}>Contatti</h5>
-              <div className="d-flex align-items-start mb-2">
-                <MapPin size={18} className="me-2 mt-1" style={{ color: '#2B548E' }} />
-                <span className="text-muted">Via Don Giuseppe Andreoli, 37<br />San Zeno di Cassola (VI)</span>
-              </div>
               <div className="d-flex align-items-center mb-2">
+                <Phone size={18} className="me-2" style={{ color: '#2B548E' }} />
+                <a href="tel:+393283565987" className="text-muted text-decoration-none hover-link">
+                  +39 328 3565987
+                </a>
+              </div>
+              <div className="d-flex align-items-center mb-3">
                 <Mail size={18} className="me-2" style={{ color: '#2B548E' }} />
                 <a href="mailto:info@balenosanzeno.it" className="text-muted text-decoration-none hover-link">
                   info@balenosanzeno.it
                 </a>
               </div>
-              <div className="d-flex align-items-center">
-                <Phone size={18} className="me-2" style={{ color: '#2B548E' }} />
-                <span className="text-muted">+39 XXX XXX XXXX</span>
-              </div>
+              <Link href="https://balenosanzeno.it/privacy-policy" target="_blank" className="text-decoration-none hover-link" style={{ color: '#2B548E', fontSize: '0.9rem' }}>
+                Privacy Policy →
+              </Link>
             </div>
           </div>
 
@@ -305,7 +296,7 @@ export default function HomePage() {
 
           <div className="row">
             <div className="col-12 text-center text-muted small">
-              <p className="mb-0">© 2025 Baleno San Zeno - Casa di Quartiere. Tutti i diritti riservati.</p>
+              <p className="mb-0">© 2025 Baleno ETS. Tutti i diritti riservati.</p>
             </div>
           </div>
         </div>
