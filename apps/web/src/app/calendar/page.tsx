@@ -171,27 +171,50 @@ export default function PublicCalendarPage() {
       <div className="container py-5">
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           {/* Calendar */}
-          <div className="card border-0 shadow-sm">
+          <div className="card shadow-lg" style={{
+            border: '1px solid rgba(43, 84, 142, 0.1)',
+            borderRadius: '16px',
+            overflow: 'hidden'
+          }}>
             {/* Controls inside calendar card */}
-            <div className="card-body py-2 border-bottom">
+            <div className="card-body py-3 border-bottom" style={{ background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)' }}>
               <div className="d-flex gap-2">
                 <button
                   onClick={goToToday}
-                  className="btn btn-outline-primary btn-sm"
+                  className="btn btn-sm fw-semibold"
+                  style={{
+                    background: 'linear-gradient(135deg, #EDBB00 0%, #d4a600 100%)',
+                    border: 'none',
+                    color: '#2B548E',
+                    borderRadius: '6px'
+                  }}
                 >
                   Oggi
                 </button>
                 <div className="btn-group" role="group">
                   <button
                     type="button"
-                    className={`btn btn-sm ${viewMode === 'week' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                    className="btn btn-sm fw-semibold"
+                    style={{
+                      background: viewMode === 'week' ? 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)' : 'transparent',
+                      border: '2px solid #2B548E',
+                      color: viewMode === 'week' ? 'white' : '#2B548E',
+                      borderRadius: '6px 0 0 6px'
+                    }}
                     onClick={() => setViewMode('week')}
                   >
                     Settimana
                   </button>
                   <button
                     type="button"
-                    className={`btn btn-sm ${viewMode === 'month' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                    className="btn btn-sm fw-semibold"
+                    style={{
+                      background: viewMode === 'month' ? 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)' : 'transparent',
+                      border: '2px solid #2B548E',
+                      borderLeft: 'none',
+                      color: viewMode === 'month' ? 'white' : '#2B548E',
+                      borderRadius: '0 6px 6px 0'
+                    }}
                     onClick={() => setViewMode('month')}
                   >
                     Mese

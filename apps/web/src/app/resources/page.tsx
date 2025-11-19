@@ -174,8 +174,11 @@ export default function ResourcesPage() {
           )}
 
           {/* Barra di ricerca e filtri */}
-          <div className="card border-0 shadow-sm mb-4">
-            <div className="card-body">
+          <div className="card shadow-lg mb-4" style={{
+            border: '1px solid rgba(43, 84, 142, 0.1)',
+            borderRadius: '16px'
+          }}>
+            <div className="card-body" style={{ background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)' }}>
               {/* Ricerca */}
               <div className="row g-3 align-items-end mb-3">
                 <div className="col-md-6">
@@ -346,12 +349,16 @@ export default function ResourcesPage() {
             <div className="row g-4">
               {filteredResources.map(resource => (
                 <div key={resource.id} className="col-md-6 col-lg-4">
-                  <div className="card border-0 shadow-sm h-100 overflow-hidden">
+                  <div className="card shadow-lg h-100 overflow-hidden" style={{
+                    border: '1px solid rgba(43, 84, 142, 0.1)',
+                    borderRadius: '16px',
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                  }}>
                     <div
                       className="d-flex align-items-center justify-content-center text-white position-relative"
                       style={{
                         height: '200px',
-                        background: 'linear-gradient(135deg, #2B548E 0%, #1863DC 100%)'
+                        background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)'
                       }}
                     >
                       <svg width="80" height="80" fill="currentColor" viewBox="0 0 16 16">
