@@ -66,7 +66,7 @@ export default function HomePage() {
                 <span style={{ color: '#EDBB00' }}>Baleno San Zeno</span>
               </h1>
               <p className={`lead fs-4 mb-5 ${mounted ? 'slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.4s', maxWidth: '700px', color: '#495057' }}>
-                Uno spazio condiviso di 330mq nel cuore di San Zeno di Cassola, dedicato alla community, alla cultura e all'aggregazione sociale.
+                Nel cuore del quartiere Orti di Spagna, sorge Baleno, una casa per tutt*
               </p>
               <div className={`d-flex gap-3 flex-wrap ${mounted ? 'slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.6s' }}>
                 <Link href="/bookings/new" className="btn btn-lg px-5 py-3 fw-semibold cta-primary">
