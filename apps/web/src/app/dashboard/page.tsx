@@ -146,7 +146,7 @@ export default function DashboardPage() {
       <div className="container py-4">
         <div className="row">
           <div className="col-12">
-            <h1 className="h2 fw-bold mb-4" style={{ color: '#2B548E' }}>👋 Dashboard</h1>
+            <h1 className="h2 fw-bold mb-4" style={{ color: '#2B548E' }}>Dashboard</h1>
 
             {/* Stats Cards */}
             <div className="row g-4 mb-4">

@@ -147,7 +147,7 @@ export default function PublicCalendarPage() {
       <nav className="bg-white shadow-sm py-3">
         <div className="container">
           <div className="d-flex justify-content-between align-items-center">
-            <h1 className="h3 mb-0 fw-bold" style={{ color: '#2B548E' }}>📅 Calendario Prenotazioni</h1>
+            <h1 className="h3 mb-0 fw-bold" style={{ color: '#2B548E' }}>Calendario Prenotazioni</h1>
             <div className="d-flex gap-3 align-items-center">
               <Link href="/resources" className="btn fw-semibold" style={{
                 background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)',

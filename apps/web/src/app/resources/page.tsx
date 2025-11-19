@@ -157,8 +157,11 @@ export default function ResourcesPage() {
     <div className="min-vh-100" style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #ffffff 100%)' }}>
       <UserNavbar />
 
-      <div className="container py-4">
-        <h1 className="h3 fw-bold mb-4" style={{ color: '#2B548E' }}>🏢 Risorse Disponibili</h1>
+      <div className="container py-5">
+        <div className="text-center mb-5">
+          <h1 className="h2 fw-bold mb-2" style={{ color: '#2B548E' }}>I Nostri Spazi</h1>
+          <p className="text-muted">Ambienti versatili per ogni tipo di attività</p>
+        </div>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           {error && (
             <div className="alert alert-warning d-flex align-items-start mb-4" role="alert">
@@ -349,18 +352,43 @@ export default function ResourcesPage() {
             <div className="row g-4">
               {filteredResources.map(resource => (
                 <div key={resource.id} className="col-md-6 col-lg-4">
-                  <div className="card shadow-lg h-100 overflow-hidden" style={{
-                    border: '1px solid rgba(43, 84, 142, 0.1)',
+                  <div className="card h-100" style={{
+                    border: 'none',
                     borderRadius: '16px',
-                    transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-8px)';
+                    e.currentTarget.style.boxShadow = '0 12px 24px rgba(43, 84, 142, 0.15)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
                   }}>
-                    <div
-                      className="d-flex align-items-center justify-content-center text-white position-relative"
-                      style={{
-                        height: '200px',
-                        background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)'
-                      }}
-                    >
+                    {/* Image Section - usa immagini se disponibili, altrimenti gradient */}
+                    {resource.images && resource.images.length > 0 ? (
+                      <div style={{ height: '220px', overflow: 'hidden' }}>
+                        <img
+                          src={resource.images[0]}
+                          alt={resource.name}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className="d-flex align-items-center justify-content-center"
+                        style={{
+                          height: '220px',
+                          background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                          color: '#2B548E'
+                        }}
+                      >
                       <svg width="80" height="80" fill="currentColor" viewBox="0 0 16 16">
                         {resource.type === 'ROOM' && (
                           <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
@@ -390,101 +418,65 @@ export default function ResourcesPage() {
                         </span>
                       )}
                     </div>
+                    )}
 
-                    <div className="card-body d-flex flex-column">
-                      <div className="d-flex justify-content-between align-items-start mb-2">
-                        <h3 className="h5 fw-bold mb-0 text-baleno-primary">{resource.name}</h3>
-                      </div>
+                    {/* Card Body - stile homepage */}
+                    <div className="card-body d-flex flex-column" style={{ padding: '1.5rem' }}>
+                      <h3 className="h5 fw-bold mb-3" style={{ color: '#2B548E' }}>
+                        {resource.name}
+                      </h3>
 
-                      <div className="mb-2">
-                        <span className="badge bg-info text-white me-1">
-                          {categoryLabels[resource.category] || resource.category}
-                        </span>
-                        <span className="badge bg-secondary text-white">
-                          {typeLabels[resource.type] || resource.type}
-                        </span>
-                      </div>
-
-                      <p className="small text-muted mb-3" style={{ minHeight: '40px' }}>
-                        {resource.description?.substring(0, 100)}{resource.description?.length > 100 ? '...' : ''}
+                      <p className="text-muted mb-3" style={{
+                        minHeight: '60px',
+                        fontSize: '0.95rem',
+                        lineHeight: '1.6'
+                      }}>
+                        {resource.description?.substring(0, 120)}
+                        {resource.description && resource.description.length > 120 ? '...' : ''}
                       </p>
 
-                      <div className="d-flex flex-column gap-2 mb-3 small">
-                        <div className="d-flex align-items-center">
-                          <svg className="me-2 text-muted" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                            <path fillRule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
-                          </svg>
-                          <span className="text-muted">Capacità: <strong>{resource.capacity} persone</strong></span>
-                        </div>
+                      {/* Info minime */}
+                      <div className="mb-4">
+                        {resource.capacity && (
+                          <p className="small text-muted mb-2">
+                            <strong>Capacità:</strong> {resource.capacity} persone
+                          </p>
+                        )}
                         {resource.location && (
-                          <div className="d-flex align-items-center">
-                            <svg className="me-2 text-muted" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                              <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
-                            </svg>
-                            <span className="text-muted">{resource.location}</span>
-                          </div>
+                          <p className="small text-muted mb-0">
+                            <strong>Ubicazione:</strong> {resource.location}
+                          </p>
                         )}
                       </div>
 
-                      {resource.amenities && resource.amenities.length > 0 && (
-                        <div className="mb-3">
-                          <p className="small text-muted mb-2">Servizi:</p>
-                          <div className="d-flex flex-wrap gap-1">
-                            {resource.amenities.slice(0, 3).map((amenity, idx) => (
-                              <span
-                                key={idx}
-                                className="badge bg-success text-white"
-                                style={{ fontSize: '0.7rem' }}
-                              >
-                                {amenity}
-                              </span>
-                            ))}
-                            {resource.amenities.length > 3 && (
-                              <span className="badge bg-secondary text-white" style={{ fontSize: '0.7rem' }}>
-                                +{resource.amenities.length - 3}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {resource.tags && resource.tags.length > 0 && (
-                        <div className="mb-3">
-                          <div className="d-flex flex-wrap gap-1">
-                            {resource.tags.slice(0, 4).map((tag, idx) => (
-                              <span
-                                key={idx}
-                                className="badge bg-light text-dark border"
-                                style={{ fontSize: '0.65rem' }}
-                              >
-                                #{tag}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="border-top pt-3 mt-auto">
-                        <div className="d-flex justify-content-between align-items-center">
-                          <div>
-                            <p className="h4 fw-bold text-primary mb-0">
-                              €{resource.pricePerHour}
-                            </p>
-                            <p className="small text-muted mb-0">per ora</p>
-                          </div>
-                          <Link
-                            href={`/bookings/new?resourceId=${resource.id}`}
-                            className="btn btn-sm fw-semibold"
-                            style={{
-                              background: 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)',
-                              border: 'none',
-                              color: 'white',
-                              borderRadius: '6px'
-                            }}
-                          >
-                            Prenota →
-                          </Link>
+                      {/* Bottone Prenota - stile homepage */}
+                      <div className="mt-auto">
+                        <Link
+                          href={`/bookings/new?resourceId=${resource.id}`}
+                          className="btn w-100 fw-semibold"
+                          style={{
+                            background: 'transparent',
+                            border: '2px solid #2B548E',
+                            color: '#2B548E',
+                            borderRadius: '8px',
+                            padding: '0.625rem',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)';
+                            e.currentTarget.style.color = 'white';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.color = '#2B548E';
+                          }}
+                        >
+                          Prenota →
+                        </Link>
+                        <div className="text-center mt-2">
+                          <span className="small text-muted">
+                            €{resource.pricePerHour}/ora
+                          </span>
                         </div>
                       </div>
                     </div>
