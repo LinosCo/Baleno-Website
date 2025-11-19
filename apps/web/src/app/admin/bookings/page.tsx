@@ -11,6 +11,8 @@ interface Booking {
   startTime: string;
   endTime: string;
   status: string;
+  paymentReceived: boolean;
+  invoiceIssued: boolean;
   user: {
     firstName: string;
     lastName: string;
@@ -51,6 +53,10 @@ export default function AdminBookingsPage() {
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [customPrice, setCustomPrice] = useState<number>(0);
   const [calculatedPrice, setCalculatedPrice] = useState<number>(0);
+
+  // Payment and Invoice tracking
+  const [markingPayment, setMarkingPayment] = useState(false);
+  const [markingInvoice, setMarkingInvoice] = useState(false);
 
   // Filtri di ricerca
   const [searchTerm, setSearchTerm] = useState('');
@@ -255,6 +261,82 @@ export default function AdminBookingsPage() {
     setShowRejectModal(true);
     setRejectionReason('');
     setRejectionNotes('');
+  };
+
+  const handleMarkPaymentReceived = async () => {
+    if (!selectedBooking) return;
+
+    if (!confirm('Confermi di aver ricevuto il pagamento per questa prenotazione?')) {
+      return;
+    }
+
+    setMarkingPayment(true);
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const response = await fetch(`${API_ENDPOINTS.bookings}/${selectedBooking.id}/mark-payment-received`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        alert('✓ Pagamento marcato come ricevuto!');
+        fetchBookings();
+        // Refresh modal data
+        if (showModal) {
+          const updatedData = await response.json();
+          setSelectedBooking(updatedData.booking);
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`❌ Errore: ${errorData.message || response.statusText}`);
+      }
+    } catch (err) {
+      alert('❌ Errore di rete');
+      console.error('Mark payment error:', err);
+    } finally {
+      setMarkingPayment(false);
+    }
+  };
+
+  const handleMarkInvoiceIssued = async () => {
+    if (!selectedBooking) return;
+
+    if (!confirm('Confermi di aver emesso la fattura/ricevuta per questa prenotazione?')) {
+      return;
+    }
+
+    setMarkingInvoice(true);
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const response = await fetch(`${API_ENDPOINTS.bookings}/${selectedBooking.id}/mark-invoice-issued`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        alert('✓ Fattura marcata come emessa!');
+        fetchBookings();
+        // Refresh modal data
+        if (showModal) {
+          const updatedData = await response.json();
+          setSelectedBooking(updatedData.booking);
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`❌ Errore: ${errorData.message || response.statusText}`);
+      }
+    } catch (err) {
+      alert('❌ Errore di rete');
+      console.error('Mark invoice error:', err);
+    } finally {
+      setMarkingInvoice(false);
+    }
   };
 
   const handleReject = async () => {
@@ -652,6 +734,8 @@ export default function AdminBookingsPage() {
                             ? 'bg-success'
                             : selectedBooking.status === 'PENDING'
                             ? 'bg-warning'
+                            : selectedBooking.status === 'COMPLETED'
+                            ? 'bg-primary'
                             : 'bg-danger'
                         }`}
                       >
@@ -659,6 +743,89 @@ export default function AdminBookingsPage() {
                       </span>
                     </div>
                   </div>
+
+                  {/* Payment and Invoice Tracking - Only show for APPROVED bookings */}
+                  {selectedBooking.status === 'APPROVED' && (
+                    <div className="border-top pt-4">
+                      <h6 className="fw-semibold mb-3">Gestione Pagamento e Fattura</h6>
+                      <div className="row g-3">
+                        <div className="col-md-6">
+                          <div className="border rounded p-3">
+                            <div className="d-flex align-items-center justify-content-between mb-2">
+                              <span className="fw-semibold">Pagamento Ricevuto</span>
+                              {selectedBooking.paymentReceived ? (
+                                <span className="badge bg-success">
+                                  <i className="bi bi-check-circle me-1"></i>Ricevuto
+                                </span>
+                              ) : (
+                                <span className="badge bg-secondary">In attesa</span>
+                              )}
+                            </div>
+                            {!selectedBooking.paymentReceived && (
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-success w-100"
+                                onClick={handleMarkPaymentReceived}
+                                disabled={markingPayment}
+                              >
+                                {markingPayment ? (
+                                  <>
+                                    <span className="spinner-border spinner-border-sm me-2"></span>
+                                    Marcando...
+                                  </>
+                                ) : (
+                                  <>
+                                    <i className="bi bi-cash-coin me-2"></i>
+                                    Marca come Ricevuto
+                                  </>
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="border rounded p-3">
+                            <div className="d-flex align-items-center justify-content-between mb-2">
+                              <span className="fw-semibold">Fattura Emessa</span>
+                              {selectedBooking.invoiceIssued ? (
+                                <span className="badge bg-success">
+                                  <i className="bi bi-check-circle me-1"></i>Emessa
+                                </span>
+                              ) : (
+                                <span className="badge bg-secondary">Da emettere</span>
+                              )}
+                            </div>
+                            {!selectedBooking.invoiceIssued && (
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-success w-100"
+                                onClick={handleMarkInvoiceIssued}
+                                disabled={markingInvoice}
+                              >
+                                {markingInvoice ? (
+                                  <>
+                                    <span className="spinner-border spinner-border-sm me-2"></span>
+                                    Marcando...
+                                  </>
+                                ) : (
+                                  <>
+                                    <i className="bi bi-file-earmark-text me-2"></i>
+                                    Marca come Emessa
+                                  </>
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {selectedBooking.paymentReceived && selectedBooking.invoiceIssued && (
+                        <div className="alert alert-success mt-3 mb-0">
+                          <i className="bi bi-check-circle-fill me-2"></i>
+                          <small>Prenotazione completata! Sarà automaticamente marcata come COMPLETED.</small>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="modal-footer">
