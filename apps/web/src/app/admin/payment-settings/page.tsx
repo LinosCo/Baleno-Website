@@ -125,18 +125,22 @@ export default function PaymentSettingsPage() {
       <div className="container-fluid px-0">
         {/* Header */}
         <div className="mb-4">
-          <h1 className="h3 fw-bold text-baleno-primary mb-1">Impostazioni Pagamento</h1>
+          <h1 className="h3 fw-bold mb-1" style={{ color: '#2B548E' }}>Impostazioni Pagamento</h1>
           <p className="text-muted mb-0">Configura i metodi di pagamento accettati e le relative impostazioni</p>
         </div>
 
         <div className="row g-4">
           {/* STRIPE SECTION */}
           <div className="col-12">
-            <div className="card shadow-sm border-0" style={{ borderLeft: '4px solid var(--baleno-primary)' }}>
+            <div className="card shadow-sm" style={{
+              borderRadius: '16px',
+              border: '1px solid rgba(43, 84, 142, 0.1)',
+              borderLeft: '4px solid #2B548E'
+            }}>
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-start mb-3">
                   <div>
-                    <h5 className="mb-1 d-flex align-items-center fw-bold" style={{ color: 'var(--baleno-primary)' }}>
+                    <h5 className="mb-1 d-flex align-items-center fw-bold" style={{ color: '#2B548E' }}>
                       <i className="bi bi-credit-card me-2"></i>
                       Stripe (Carta di Credito)
                     </h5>
@@ -234,7 +238,11 @@ export default function PaymentSettingsPage() {
 
           {/* BONIFICO SECTION */}
           <div className="col-12">
-            <div className="card shadow-sm border-0" style={{ borderLeft: '4px solid #0891B2' }}>
+            <div className="card shadow-sm" style={{
+              borderRadius: '16px',
+              border: '1px solid rgba(8, 145, 178, 0.1)',
+              borderLeft: '4px solid #0891B2'
+            }}>
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-start mb-3">
                   <div>
@@ -327,17 +335,21 @@ export default function PaymentSettingsPage() {
 
                     <div className="col-md-6">
                       <label className="form-label fw-semibold">Giorni Limite per Pagamento</label>
-                      <div className="input-group">
-                        <input
-                          type="number"
-                          className="form-control"
-                          value={settings.paymentDeadlineDays}
-                          onChange={(e) => setSettings({ ...settings, paymentDeadlineDays: parseInt(e.target.value) || 1 })}
-                          min="1"
-                          max="90"
-                        />
-                        <span className="input-group-text">giorni dopo approvazione</span>
-                      </div>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={settings.paymentDeadlineDays}
+                        onChange={(e) => setSettings({ ...settings, paymentDeadlineDays: parseInt(e.target.value) || 1 })}
+                        min="1"
+                        max="90"
+                        style={{
+                          borderRadius: '12px',
+                          border: '2px solid #e9ecef'
+                        }}
+                      />
+                      <small className="form-text text-muted">
+                        Tempo massimo: {settings.paymentDeadlineDays} {settings.paymentDeadlineDays === 1 ? 'giorno' : 'giorni'} dopo l'approvazione
+                      </small>
                     </div>
                   </div>
                 </>
@@ -348,7 +360,11 @@ export default function PaymentSettingsPage() {
 
           {/* PROMEMORIA SECTION */}
           <div className="col-12">
-            <div className="card shadow-sm border-0" style={{ borderLeft: '4px solid #F59E0B' }}>
+            <div className="card shadow-sm" style={{
+              borderRadius: '16px',
+              border: '1px solid rgba(245, 158, 11, 0.1)',
+              borderLeft: '4px solid #F59E0B'
+            }}>
               <div className="card-body">
                 <div className="mb-3">
                   <h5 className="mb-1 d-flex align-items-center fw-bold" style={{ color: '#F59E0B' }}>
@@ -375,18 +391,22 @@ export default function PaymentSettingsPage() {
                   <div className="row g-3 ms-4">
                     <div className="col-md-6">
                       <label className="form-label fw-semibold">Intervallo Promemoria</label>
-                      <div className="input-group">
-                        <input
-                          type="number"
-                          className="form-control"
-                          value={settings.paymentReminderHours}
-                          onChange={(e) => setSettings({ ...settings, paymentReminderHours: parseInt(e.target.value) || 1 })}
-                          min="1"
-                          max="168"
-                        />
-                        <span className="input-group-text">ore dopo approvazione</span>
-                      </div>
-                      <small className="form-text text-muted">Consigliato: 24 ore (1 giorno) o 48 ore (2 giorni)</small>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={settings.paymentReminderHours}
+                        onChange={(e) => setSettings({ ...settings, paymentReminderHours: parseInt(e.target.value) || 1 })}
+                        min="1"
+                        max="168"
+                        style={{
+                          borderRadius: '12px',
+                          border: '2px solid #e9ecef'
+                        }}
+                      />
+                      <small className="form-text text-muted">
+                        Invia promemoria ogni {settings.paymentReminderHours} {settings.paymentReminderHours === 1 ? 'ora' : 'ore'} dopo l'approvazione<br />
+                        Consigliato: 24 ore (1 giorno) o 48 ore (2 giorni)
+                      </small>
                     </div>
                   </div>
                 )}
@@ -396,7 +416,11 @@ export default function PaymentSettingsPage() {
 
           {/* IMPOSTAZIONI GENERALI */}
           <div className="col-12">
-            <div className="card shadow-sm border-0" style={{ borderLeft: '4px solid #6B7280' }}>
+            <div className="card shadow-sm" style={{
+              borderRadius: '16px',
+              border: '1px solid rgba(107, 114, 128, 0.1)',
+              borderLeft: '4px solid #6B7280'
+            }}>
               <div className="card-body">
                 <div className="mb-3">
                   <h5 className="mb-1 d-flex align-items-center fw-bold" style={{ color: '#6B7280' }}>
@@ -439,16 +463,36 @@ export default function PaymentSettingsPage() {
 
           {/* SAVE BUTTON */}
           <div className="col-12">
-            <div className="card shadow-sm border-primary">
+            <div className="card shadow-sm" style={{
+              borderRadius: '16px',
+              border: '2px solid #2B548E'
+            }}>
               <div className="card-body d-flex justify-content-between align-items-center">
                 <div>
-                  <h6 className="mb-0 fw-bold">Salva Modifiche</h6>
+                  <h6 className="mb-0 fw-bold" style={{ color: '#2B548E' }}>Salva Modifiche</h6>
                   <small className="text-muted">Applica le modifiche alle impostazioni di pagamento</small>
                 </div>
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="btn btn-primary btn-lg fw-semibold"
+                  className="btn btn-lg fw-semibold"
+                  style={{
+                    background: saving ? '#6c757d' : 'linear-gradient(135deg, #2B548E 0%, #1e3a5f 100%)',
+                    border: 'none',
+                    color: 'white',
+                    borderRadius: '12px',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!saving) {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 8px 20px rgba(43, 84, 142, 0.3)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                 >
                   {saving ? (
                     <>
