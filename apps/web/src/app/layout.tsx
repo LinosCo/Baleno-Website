@@ -8,6 +8,10 @@ export const metadata: Metadata = {
   title: 'Baleno San Zeno - Sistema di Prenotazione',
   description: 'Prenota spazi e risorse per la Casa di Quartiere Baleno',
   keywords: 'baleno, san zeno, casa quartiere, prenotazione, spazi, sale',
+  icons: {
+    icon: '/BALENO-LOGO-BIANCO.png',
+    apple: '/BALENO-LOGO-BIANCO.png',
+  },
 };
 
 export default function RootLayout({
