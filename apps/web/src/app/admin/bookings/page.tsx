@@ -59,6 +59,15 @@ export default function AdminBookingsPage() {
   const [markingPayment, setMarkingPayment] = useState(false);
   const [markingInvoice, setMarkingInvoice] = useState(false);
 
+  // Edit modal
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editStartTime, setEditStartTime] = useState('');
+  const [editEndTime, setEditEndTime] = useState('');
+  const [editAdminNote, setEditAdminNote] = useState('');
+  const [updating, setUpdating] = useState(false);
+
   // Filtri di ricerca
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -268,6 +277,90 @@ export default function AdminBookingsPage() {
     setShowRejectModal(true);
     setRejectionReason('');
     setRejectionNotes('');
+  };
+
+  const openEditModal = () => {
+    if (!selectedBooking) return;
+
+    // Populate form with current values
+    setEditTitle(selectedBooking.title);
+    setEditDescription(selectedBooking.description || '');
+
+    // Format dates for datetime-local input
+    const startDate = new Date(selectedBooking.startTime);
+    const endDate = new Date(selectedBooking.endTime);
+    setEditStartTime(formatDateForInput(startDate));
+    setEditEndTime(formatDateForInput(endDate));
+    setEditAdminNote('');
+
+    setShowEditModal(true);
+  };
+
+  const formatDateForInput = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  const handleUpdateBooking = async () => {
+    if (!selectedBooking) return;
+
+    // Validation
+    if (!editTitle.trim()) {
+      alert('Il titolo è obbligatorio');
+      return;
+    }
+
+    if (!editStartTime || !editEndTime) {
+      alert('Data e ora sono obbligatorie');
+      return;
+    }
+
+    const startDate = new Date(editStartTime);
+    const endDate = new Date(editEndTime);
+
+    if (startDate >= endDate) {
+      alert('La data di inizio deve essere prima della data di fine');
+      return;
+    }
+
+    setUpdating(true);
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const response = await fetch(`${API_ENDPOINTS.bookings}/${selectedBooking.id}/admin-update`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: editTitle.trim(),
+          description: editDescription.trim() || undefined,
+          startTime: startDate.toISOString(),
+          endTime: endDate.toISOString(),
+          adminNote: editAdminNote.trim() || undefined,
+        }),
+      });
+
+      if (response.ok) {
+        alert('✅ Prenotazione modificata con successo! L\'utente riceverà un\'email con le modifiche.');
+        setShowEditModal(false);
+        setShowModal(false);
+        fetchBookings();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`❌ Errore nella modifica: ${errorData.message || response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error updating booking:', error);
+      alert('❌ Errore di rete nella modifica della prenotazione');
+    } finally {
+      setUpdating(false);
+    }
   };
 
   const handleMarkPaymentReceived = async () => {
@@ -869,6 +962,15 @@ export default function AdminBookingsPage() {
                   )}
                   <button
                     type="button"
+                    className="btn btn-primary"
+                    onClick={openEditModal}
+                    disabled={approving || rejecting}
+                  >
+                    <i className="bi bi-pencil me-2"></i>
+                    Modifica
+                  </button>
+                  <button
+                    type="button"
                     className="btn btn-danger"
                     onClick={() => handleDeleteBooking(selectedBooking.id, selectedBooking.title)}
                     disabled={approving || rejecting}
@@ -1121,6 +1223,152 @@ export default function AdminBookingsPage() {
                       <>
                         <i className="bi bi-check-circle me-2"></i>
                         Conferma Approvazione
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && selectedBooking && (
+        <>
+          <div
+            className="modal fade show d-block"
+            style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+            onClick={() => setShowEditModal(false)}
+          >
+            <div
+              className="modal-dialog modal-dialog-centered modal-lg"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-content">
+                <div className="modal-header bg-primary bg-opacity-10">
+                  <h5 className="modal-title fw-bold">
+                    <i className="bi bi-pencil text-primary me-2"></i>
+                    Modifica Prenotazione
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowEditModal(false)}
+                    aria-label="Close"
+                    disabled={updating}
+                  ></button>
+                </div>
+
+                <div className="modal-body">
+                  <div className="alert alert-info mb-4">
+                    <i className="bi bi-info-circle me-2"></i>
+                    <small>
+                      Le modifiche verranno applicate immediatamente e l'utente riceverà un'email con i dettagli delle modifiche.
+                    </small>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      Titolo <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      disabled={updating}
+                      placeholder="Titolo della prenotazione"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      Descrizione
+                    </label>
+                    <textarea
+                      className="form-control"
+                      rows={3}
+                      value={editDescription}
+                      onChange={(e) => setEditDescription(e.target.value)}
+                      disabled={updating}
+                      placeholder="Descrizione della prenotazione"
+                    />
+                  </div>
+
+                  <div className="row g-3 mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">
+                        Data e Ora Inizio <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="datetime-local"
+                        className="form-control"
+                        value={editStartTime}
+                        onChange={(e) => setEditStartTime(e.target.value)}
+                        disabled={updating}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">
+                        Data e Ora Fine <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="datetime-local"
+                        className="form-control"
+                        value={editEndTime}
+                        onChange={(e) => setEditEndTime(e.target.value)}
+                        disabled={updating}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      Nota Admin <small className="text-muted">(uso interno)</small>
+                    </label>
+                    <textarea
+                      className="form-control"
+                      rows={2}
+                      value={editAdminNote}
+                      onChange={(e) => setEditAdminNote(e.target.value)}
+                      disabled={updating}
+                      placeholder="Motivo della modifica (opzionale, solo per uso interno)"
+                    />
+                  </div>
+
+                  <div className="bg-light p-3 rounded">
+                    <h6 className="fw-semibold mb-2">Prenotazione da modificare:</h6>
+                    <p className="mb-1"><strong>Utente:</strong> {selectedBooking.user.firstName} {selectedBooking.user.lastName}</p>
+                    <p className="mb-1"><strong>Email:</strong> {selectedBooking.user.email}</p>
+                    <p className="mb-0"><strong>Risorsa:</strong> {selectedBooking.resource.name}</p>
+                  </div>
+                </div>
+
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowEditModal(false)}
+                    disabled={updating}
+                  >
+                    Annulla
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleUpdateBooking}
+                    disabled={updating || !editTitle.trim() || !editStartTime || !editEndTime}
+                  >
+                    {updating ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Salvataggio...
+                      </>
+                    ) : (
+                      <>
+                        <i className="bi bi-check2 me-2"></i>
+                        Salva Modifiche
                       </>
                     )}
                   </button>
