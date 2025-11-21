@@ -40,7 +40,6 @@ export default function HomePage() {
 
           <div className="collapse navbar-collapse" id="mainNavbar">
             <div className="navbar-nav ms-auto align-items-lg-center gap-lg-3">
-              <Link href="/calendar" className="nav-link text-white">Calendario</Link>
               <div className="d-flex gap-2 mt-3 mt-lg-0">
                 <Link href="/login" className="btn btn-outline-light btn-sm px-3">
                   Accedi
