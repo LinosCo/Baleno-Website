@@ -167,7 +167,7 @@ export default function BankTransfersPage() {
                             </div>
                             <div className="text-end">
                               <small className="text-muted d-block">Importo</small>
-                              <h3 className="mb-0 text-success fw-bold">€{transfer.amount.toFixed(2)}</h3>
+                              <h3 className="mb-0 text-success fw-bold">€{(Number(transfer.amount) / 100).toFixed(2)}</h3>
                             </div>
                           </div>
                         </div>
