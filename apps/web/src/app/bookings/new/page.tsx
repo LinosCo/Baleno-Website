@@ -146,10 +146,10 @@ export default function NewBookingWizardPage() {
     const end = new Date(bookingData.endTime);
     const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
 
-    // Prezzo base della risorsa principale
+    // Contributo base della risorsa principale
     let totalPrice = hours * parseFloat(selectedResource.pricePerHour.toString());
 
-    // Aggiungi prezzi risorse aggiuntive
+    // Aggiungi contributi risorse aggiuntive
     selectedAdditionalResources.forEach(selected => {
       const resource = additionalResources.find(r => r.id === selected.resourceId);
       if (resource) {
@@ -801,7 +801,7 @@ export default function NewBookingWizardPage() {
                             </div>
                           </div>
                           <div className="col-md-6 text-md-end">
-                            <div className="text-muted small mb-1">Prezzo totale</div>
+                            <div className="text-muted small mb-1">Contributo totale</div>
                             <div className="display-6 fw-bold text-success">
                               €{calculatePrice().toFixed(2)}
                             </div>
@@ -1213,7 +1213,7 @@ export default function NewBookingWizardPage() {
                     <div className="card-body p-4">
                       <div className="d-flex justify-content-between align-items-center">
                         <div>
-                          <div className="small text-muted">Prezzo Totale</div>
+                          <div className="small text-muted">Contributo Totale</div>
                           <div className="text-muted small">
                             {((new Date(bookingData.endTime).getTime() - new Date(bookingData.startTime).getTime()) / (1000 * 60 * 60)).toFixed(1)} ore × €{parseFloat(selectedResource?.pricePerHour.toString() || '0').toFixed(2)}/ora
                           </div>

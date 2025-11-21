@@ -317,7 +317,7 @@ export default function AdminResourcesPage() {
                       <span className="fw-semibold">{resource.capacity} persone</span>
                     </div>
                     <div className="d-flex justify-content-between small">
-                      <span className="text-muted">Prezzo:</span>
+                      <span className="text-muted">Contributo:</span>
                       <span className="fw-semibold text-primary">€{resource.pricePerHour}/h</span>
                     </div>
                     {resource.minBookingHours > 1 && (
@@ -462,8 +462,8 @@ export default function AdminResourcesPage() {
                     />
                   </div>
 
-                  {/* Capacità e Prezzi */}
-                  <h6 className="fw-bold text-primary mb-3">Capacità e Prezzi</h6>
+                  {/* Capacità e Contributi */}
+                  <h6 className="fw-bold text-primary mb-3">Capacità e Contributi</h6>
 
                   <div className="row g-3 mb-4">
                     <div className="col-md-4">
@@ -481,7 +481,7 @@ export default function AdminResourcesPage() {
                     </div>
 
                     <div className="col-md-4">
-                      <label className="form-label fw-semibold">Prezzo/ora (€) *</label>
+                      <label className="form-label fw-semibold">Contributo/ora (€) *</label>
                       <input
                         type="number"
                         value={formData.pricePerHour}

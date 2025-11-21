@@ -91,7 +91,7 @@ export default function ResourcesPage() {
       filtered = filtered.filter(r => r.capacity <= parseInt(maxCapacity));
     }
 
-    // Filtro prezzo
+    // Filtro contributo
     if (minPrice) {
       filtered = filtered.filter(r => r.pricePerHour >= parseFloat(minPrice));
     }
@@ -296,9 +296,9 @@ export default function ResourcesPage() {
                       />
                     </div>
 
-                    {/* Prezzo min */}
+                    {/* Contributo min */}
                     <div className="col-md-3">
-                      <label className="form-label small fw-semibold text-muted">Prezzo Min (€/h)</label>
+                      <label className="form-label small fw-semibold text-muted">Contributo Min (€/h)</label>
                       <input
                         type="number"
                         className="form-control form-control-sm"
@@ -310,9 +310,9 @@ export default function ResourcesPage() {
                       />
                     </div>
 
-                    {/* Prezzo max */}
+                    {/* Contributo max */}
                     <div className="col-md-3">
-                      <label className="form-label small fw-semibold text-muted">Prezzo Max (€/h)</label>
+                      <label className="form-label small fw-semibold text-muted">Contributo Max (€/h)</label>
                       <input
                         type="number"
                         className="form-control form-control-sm"
@@ -493,7 +493,7 @@ export default function ResourcesPage() {
                         </Link>
                         <div className="text-center mt-2">
                           <span className="small text-muted">
-                            €{resource.pricePerHour}/ora
+                            Contributo €{resource.pricePerHour}/ora
                           </span>
                         </div>
                       </div>

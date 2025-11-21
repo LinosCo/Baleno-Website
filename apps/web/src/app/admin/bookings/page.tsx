@@ -1045,7 +1045,7 @@ export default function AdminBookingsPage() {
 
                   <div className="mb-3">
                     <label className="form-label fw-semibold">
-                      Prezzo Totale <span className="text-danger">*</span>
+                      Contributo Totale <span className="text-danger">*</span>
                     </label>
                     <div className="input-group">
                       <span className="input-group-text">€</span>
@@ -1061,7 +1061,7 @@ export default function AdminBookingsPage() {
                     </div>
                     {calculatedPrice !== customPrice && (
                       <small className="text-muted">
-                        Prezzo calcolato automaticamente: €{calculatedPrice.toFixed(2)}
+                        Contributo calcolato automaticamente: €{calculatedPrice.toFixed(2)}
                         {customPrice < calculatedPrice && (
                           <> • <span className="text-success fw-semibold">Sconto: €{(calculatedPrice - customPrice).toFixed(2)}</span></>
                         )}
