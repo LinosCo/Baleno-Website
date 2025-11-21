@@ -1039,7 +1039,7 @@ export class BookingsService {
     // Store old values for email notification
     const oldValues = {
       title: booking.title,
-      description: booking.description,
+      description: booking.description || '',
       startTime: booking.startTime,
       endTime: booking.endTime,
     };
@@ -1128,7 +1128,7 @@ export class BookingsService {
           oldValues,
           {
             title: updatedBooking.title,
-            description: updatedBooking.description,
+            description: updatedBooking.description || '',
             startTime: updatedBooking.startTime,
             endTime: updatedBooking.endTime,
           },
