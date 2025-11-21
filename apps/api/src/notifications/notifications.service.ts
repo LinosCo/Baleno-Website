@@ -6,10 +6,12 @@ import { Resend } from 'resend';
 export class NotificationsService {
   private resend: Resend;
   private fromEmail: string;
+  private adminEmail: string;
 
   constructor(private configService: ConfigService) {
     this.resend = new Resend(this.configService.get('RESEND_API_KEY'));
     this.fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'Baleno San Zeno <onboarding@resend.dev>');
+    this.adminEmail = this.configService.get<string>('ADMIN_EMAIL', 'info@balenosanzeno.it');
   }
 
   async sendBookingConfirmation(booking: any, user: any) {
@@ -167,7 +169,7 @@ export class NotificationsService {
       </div>
     `;
 
-    return this.sendEmail('alessandro@linos.co', subject, html);
+    return this.sendEmail(this.adminEmail, subject, html);
   }
 
   async sendBookingSubmissionToUser(booking: any, user: any) {

@@ -41,10 +41,12 @@ export class ResendService {
   private resend: Resend | null = null;
   private fromEmail: string;
   private frontendUrl: string;
+  private adminEmail: string;
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('RESEND_API_KEY');
     this.fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'Baleno San Zeno <onboarding@resend.dev>');
+    this.adminEmail = this.configService.get<string>('ADMIN_EMAIL', 'info@balenosanzeno.it');
 
     // Handle multiple URLs separated by comma, take only the first one
     const frontendUrlRaw = this.configService.get<string>('FRONTEND_URL');
@@ -73,7 +75,7 @@ export class ResendService {
     try {
       const { data, error } = await this.resend.emails.send({
         from: this.fromEmail,
-        to: 'social@linosandco.com', // Temporary: using Resend account email for testing
+        to: to,
         subject: 'Prenotazione Approvata - Baleno San Zeno',
         html: this.getApprovedEmailTemplate(booking, payment),
       });
@@ -104,7 +106,7 @@ export class ResendService {
     try {
       const { data, error } = await this.resend.emails.send({
         from: this.fromEmail,
-        to: 'social@linosandco.com', // Temporary: using Resend account email for testing
+        to: to,
         subject: 'Prenotazione Non Approvata - Baleno San Zeno',
         html: this.getRejectedEmailTemplate(booking, rejection),
       });
@@ -136,7 +138,7 @@ export class ResendService {
     try {
       const { data, error } = await this.resend.emails.send({
         from: this.fromEmail,
-        to: 'social@linosandco.com', // Temporary: using Resend account email for testing
+        to: to,
         subject: 'Promemoria Pagamento - Baleno San Zeno',
         html: this.getReminderEmailTemplate(booking, paymentUrl, hoursRemaining),
       });
@@ -167,7 +169,7 @@ export class ResendService {
     try {
       const { data, error } = await this.resend.emails.send({
         from: this.fromEmail,
-        to: 'social@linosandco.com', // Temporary: using Resend account email for testing
+        to: to,
         subject: 'Prenotazione Cancellata - Baleno San Zeno',
         html: this.getCancelledEmailTemplate(booking, reason),
       });
@@ -196,7 +198,7 @@ export class ResendService {
     try {
       const { data, error } = await this.resend.emails.send({
         from: this.fromEmail,
-        to: 'social@linosandco.com', // Temporary: using Resend account email for testing
+        to: this.adminEmail,
         subject: 'Nuova Prenotazione in Attesa di Approvazione - Baleno San Zeno',
         html: this.getAdminNotificationTemplate(booking),
       });
@@ -226,7 +228,7 @@ export class ResendService {
     try {
       const { data, error } = await this.resend.emails.send({
         from: this.fromEmail,
-        to: 'social@linosandco.com', // Temporary: using Resend account email for testing
+        to: to,
         subject: 'Richiesta di Prenotazione Ricevuta - Baleno San Zeno',
         html: this.getUserSubmissionTemplate(booking),
       });
