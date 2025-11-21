@@ -34,7 +34,7 @@ export default function AdminPaymentsPage() {
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
 
-    fetch('http://localhost:4000/api/payments/history', {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments/history`, {
       headers: { 'Authorization': `Bearer ${token}` },
     })
       .then(res => res.json())
@@ -42,7 +42,7 @@ export default function AdminPaymentsPage() {
         setPayments(data);
 
         // Calculate stats
-        const total = data.reduce((sum: number, p: Payment) => sum + parseFloat(p.amount.toString()), 0);
+        const total = data.reduce((sum: number, p: Payment) => sum + (parseFloat(p.amount.toString()) / 100), 0);
         const completed = data.filter((p: Payment) => p.status === 'SUCCEEDED').length;
         const pending = data.filter((p: Payment) => p.status === 'PENDING' || p.status === 'PROCESSING').length;
         const refunded = data.filter((p: Payment) => p.status === 'REFUNDED' || p.status === 'PARTIALLY_REFUNDED').length;
@@ -153,11 +153,11 @@ export default function AdminPaymentsPage() {
                         </td>
                         <td>
                           <div className="fw-bold">
-                            €{parseFloat(payment.amount.toString()).toFixed(2)}
+                            €{(parseFloat(payment.amount.toString()) / 100).toFixed(2)}
                           </div>
                           {payment.refundedAmount && (
                             <div className="text-danger small">
-                              Rimborsato: €{parseFloat(payment.refundedAmount.toString()).toFixed(2)}
+                              Rimborsato: €{(parseFloat(payment.refundedAmount.toString()) / 100).toFixed(2)}
                             </div>
                           )}
                         </td>
