@@ -40,7 +40,6 @@ export default function HomePage() {
 
           <div className="collapse navbar-collapse" id="mainNavbar">
             <div className="navbar-nav ms-auto align-items-lg-center gap-lg-3">
-              <Link href="/resources" className="nav-link text-white">Spazi</Link>
               <Link href="/calendar" className="nav-link text-white">Calendario</Link>
               <div className="d-flex gap-2 mt-3 mt-lg-0">
                 <Link href="/login" className="btn btn-outline-light btn-sm px-3">
@@ -72,9 +71,6 @@ export default function HomePage() {
                 <Link href="/bookings/new" className="btn btn-lg px-5 py-3 fw-semibold cta-primary">
                   Prenota lo Spazio
                   <ArrowRight className="ms-2" size={20} />
-                </Link>
-                <Link href="/resources" className="btn btn-outline-primary btn-lg px-5 py-3 fw-semibold">
-                  Scopri gli Spazi
                 </Link>
               </div>
             </div>
