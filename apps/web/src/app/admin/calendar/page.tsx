@@ -36,6 +36,7 @@ export default function AdminCalendarPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [filterResource, setFilterResource] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>('');
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
@@ -359,8 +360,10 @@ export default function AdminCalendarPage() {
                                   style={{
                                     backgroundColor: colors.bg,
                                     color: colors.text,
-                                    fontSize: '0.85rem'
+                                    fontSize: '0.85rem',
+                                    cursor: 'pointer'
                                   }}
+                                  onClick={() => setSelectedBooking(booking)}
                                 >
                                   <div className="fw-semibold">{booking.title}</div>
                                   <div style={{ fontSize: '0.75rem', opacity: 0.9 }}>
@@ -435,6 +438,7 @@ export default function AdminCalendarPage() {
                                       cursor: 'pointer'
                                     }}
                                     title={`${booking.title}\n${booking.resource.name}\n${startTime}`}
+                                    onClick={() => setSelectedBooking(booking)}
                                   >
                                     <div className="fw-semibold text-truncate">{booking.title}</div>
                                     <div style={{ fontSize: '0.7rem', opacity: 0.9 }}>
@@ -537,8 +541,10 @@ export default function AdminCalendarPage() {
                                         padding: '2px 4px',
                                         backgroundColor: colors.bg,
                                         color: colors.text,
-                                        fontWeight: '500'
+                                        fontWeight: '500',
+                                        cursor: 'pointer'
                                       }}
+                                      onClick={() => setSelectedBooking(booking)}
                                     >
                                       <span style={{ opacity: 0.9 }}>{startTime}</span> {booking.title}
                                     </div>
@@ -586,6 +592,96 @@ export default function AdminCalendarPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal Dettagli Prenotazione */}
+      {selectedBooking && (
+        <div
+          className="modal fade show d-block"
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          onClick={() => setSelectedBooking(null)}
+        >
+          <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title fw-bold">Dettagli Prenotazione</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setSelectedBooking(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="text-muted small">Titolo</label>
+                  <div className="fw-semibold">{selectedBooking.title}</div>
+                </div>
+                <div className="mb-3">
+                  <label className="text-muted small">Risorsa</label>
+                  <div className="fw-semibold">{selectedBooking.resource.name}</div>
+                </div>
+                <div className="mb-3">
+                  <label className="text-muted small">Data e Orario</label>
+                  <div className="fw-semibold">
+                    {new Date(selectedBooking.startTime).toLocaleDateString('it-IT', {
+                      weekday: 'long',
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                    <br />
+                    {new Date(selectedBooking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+                    {' - '}
+                    {new Date(selectedBooking.endTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <label className="text-muted small">Utente</label>
+                  <div className="fw-semibold">
+                    {selectedBooking.user.firstName} {selectedBooking.user.lastName}
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <label className="text-muted small">Stato</label>
+                  <div>
+                    <span
+                      className={`badge ${
+                        selectedBooking.status === 'APPROVED'
+                          ? 'bg-success'
+                          : selectedBooking.status === 'PENDING'
+                          ? 'bg-warning text-dark'
+                          : selectedBooking.status === 'REJECTED'
+                          ? 'bg-danger'
+                          : 'bg-secondary'
+                      }`}
+                    >
+                      {selectedBooking.status === 'APPROVED' && 'Approvata'}
+                      {selectedBooking.status === 'PENDING' && 'In Attesa'}
+                      {selectedBooking.status === 'REJECTED' && 'Rifiutata'}
+                      {selectedBooking.status === 'CANCELLED' && 'Cancellata'}
+                      {!['APPROVED', 'PENDING', 'REJECTED', 'CANCELLED'].includes(selectedBooking.status) && selectedBooking.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setSelectedBooking(null)}
+                >
+                  Chiudi
+                </button>
+                <a
+                  href={`/admin/bookings`}
+                  className="btn btn-primary"
+                >
+                  Vai alla Prenotazione
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }

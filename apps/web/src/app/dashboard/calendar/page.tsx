@@ -24,6 +24,7 @@ export default function MyCalendarPage() {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('week');
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
@@ -285,9 +286,11 @@ export default function MyCalendarPage() {
                                       style={{
                                         backgroundColor: getStatusColor(booking.status),
                                         color: 'white',
-                                        fontSize: '0.75rem'
+                                        fontSize: '0.75rem',
+                                        cursor: 'pointer'
                                       }}
                                       title={`${booking.title}\n${booking.resource.name}\n${startTime}\nStato: ${booking.status}${booking.isPrivate ? '\n🔒 Privato' : ''}`}
+                                      onClick={() => setSelectedBooking(booking)}
                                     >
                                       <div className="fw-semibold text-truncate d-flex align-items-center gap-1">
                                         {booking.isPrivate && <span>🔒</span>}
@@ -389,8 +392,10 @@ export default function MyCalendarPage() {
                                           backgroundColor: getStatusColor(booking.status),
                                           color: 'white',
                                           fontWeight: '500',
-                                          lineHeight: 1.2
+                                          lineHeight: 1.2,
+                                          cursor: 'pointer'
                                         }}
+                                        onClick={() => setSelectedBooking(booking)}
                                       >
                                         {booking.isPrivate && <span>🔒 </span>}
                                         <span style={{ opacity: 0.9 }}>{startTime}</span> {booking.title}
@@ -449,6 +454,99 @@ export default function MyCalendarPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal Dettagli Prenotazione */}
+      {selectedBooking && (
+        <div
+          className="modal fade show d-block"
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          onClick={() => setSelectedBooking(null)}
+        >
+          <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title fw-bold">Dettagli Prenotazione</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setSelectedBooking(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="text-muted small">Titolo</label>
+                  <div className="fw-semibold d-flex align-items-center gap-2">
+                    {selectedBooking.isPrivate && <span>🔒</span>}
+                    {selectedBooking.title}
+                  </div>
+                  {selectedBooking.isPrivate && (
+                    <div className="text-muted small mt-1">Evento privato - non visibile pubblicamente</div>
+                  )}
+                </div>
+                <div className="mb-3">
+                  <label className="text-muted small">Risorsa</label>
+                  <div className="fw-semibold">{selectedBooking.resource.name}</div>
+                </div>
+                <div className="mb-3">
+                  <label className="text-muted small">Data e Orario</label>
+                  <div className="fw-semibold">
+                    {new Date(selectedBooking.startTime).toLocaleDateString('it-IT', {
+                      weekday: 'long',
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                    <br />
+                    {new Date(selectedBooking.startTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+                    {' - '}
+                    {new Date(selectedBooking.endTime).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <label className="text-muted small">Stato</label>
+                  <div>
+                    <span
+                      className={`badge ${
+                        selectedBooking.status === 'APPROVED'
+                          ? 'bg-success'
+                          : selectedBooking.status === 'PENDING'
+                          ? 'bg-warning text-dark'
+                          : selectedBooking.status === 'REJECTED'
+                          ? 'bg-danger'
+                          : selectedBooking.status === 'COMPLETED'
+                          ? 'bg-info'
+                          : 'bg-secondary'
+                      }`}
+                    >
+                      {selectedBooking.status === 'APPROVED' && 'Approvata'}
+                      {selectedBooking.status === 'PENDING' && 'In Attesa'}
+                      {selectedBooking.status === 'REJECTED' && 'Rifiutata'}
+                      {selectedBooking.status === 'CANCELLED' && 'Cancellata'}
+                      {selectedBooking.status === 'COMPLETED' && 'Completata'}
+                      {!['APPROVED', 'PENDING', 'REJECTED', 'CANCELLED', 'COMPLETED'].includes(selectedBooking.status) && selectedBooking.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setSelectedBooking(null)}
+                >
+                  Chiudi
+                </button>
+                <Link
+                  href="/dashboard"
+                  className="btn btn-primary"
+                >
+                  Vai alla Dashboard
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
