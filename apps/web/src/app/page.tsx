@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar, Users, Shield, CreditCard, Mail, Phone, ArrowRight } from 'lucide-react';
+import { Mail, Phone, ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function HomePage() {
@@ -188,48 +188,6 @@ export default function HomePage() {
                   </Link>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-5 bg-white">
-        <div className="container">
-          <div className="text-center mb-5">
-            <h2 className={`display-4 fw-bold mb-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ color: '#2B548E', animationDelay: '0.1s' }}>
-              Perché Scegliere Baleno
-            </h2>
-          </div>
-
-          <div className="row g-4">
-            <div className={`col-md-6 col-lg-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
-              <FeatureCard
-                icon={<Calendar style={{ color: '#2B548E' }} size={40} />}
-                title="Prenotazione Semplice"
-                description="Sistema intuitivo per prenotare gli spazi in pochi click"
-              />
-            </div>
-            <div className={`col-md-6 col-lg-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
-              <FeatureCard
-                icon={<CreditCard style={{ color: '#2B548E' }} size={40} />}
-                title="Pagamenti Sicuri"
-                description="Bonifico bancario o carta di credito, scegli tu"
-              />
-            </div>
-            <div className={`col-md-6 col-lg-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.4s' }}>
-              <FeatureCard
-                icon={<Shield style={{ color: '#2B548E' }} size={40} />}
-                title="Gestione Trasparente"
-                description="Calendario pubblico e comunicazioni sempre chiare"
-              />
-            </div>
-            <div className={`col-md-6 col-lg-3 ${mounted ? 'fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.5s' }}>
-              <FeatureCard
-                icon={<Users style={{ color: '#2B548E' }} size={40} />}
-                title="Community Attiva"
-                description="Entra a far parte di una rete di associazioni e cittadini"
-              />
             </div>
           </div>
         </div>
@@ -437,23 +395,6 @@ export default function HomePage() {
           flex: 1;
         }
 
-        /* Feature Cards */
-        .feature-card {
-          background: white;
-          border-radius: 8px;
-          padding: 2rem 1.5rem;
-          text-align: center;
-          transition: all 0.3s ease;
-          height: 100%;
-          border: 1px solid rgba(0,0,0,0.06);
-        }
-
-        .feature-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 10px 30px rgba(43, 84, 142, 0.15);
-          border-color: rgba(43, 84, 142, 0.2);
-        }
-
         /* Footer Links */
         .hover-link {
           transition: color 0.2s ease;
@@ -469,24 +410,6 @@ export default function HomePage() {
           box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
       `}</style>
-    </div>
-  );
-}
-
-function FeatureCard({
-  icon,
-  title,
-  description,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="feature-card">
-      <div className="mb-3">{icon}</div>
-      <h3 className="h5 fw-semibold mb-3" style={{ color: '#2B548E' }}>{title}</h3>
-      <p className="text-muted mb-0 small">{description}</p>
     </div>
   );
 }
