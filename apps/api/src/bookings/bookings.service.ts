@@ -5,7 +5,7 @@ import { PaymentsService } from '../payments/payments.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { AuditLogsService } from '../audit-logs/audit-logs.service';
 import { ResendService } from '../common/services/resend.service';
-import { CreateBookingDto, UpdateBookingDto, CancelBookingDto } from './dto';
+import { CreateBookingDto, UpdateBookingDto, CancelBookingDto, AdminUpdateBookingDto } from './dto';
 import { ApproveBookingDto } from './dto/approve-booking.dto';
 import { RejectBookingDto, REJECTION_REASON_MESSAGES } from './dto/reject-booking.dto';
 import { BookingStatus, UserRole, AuditAction, PaymentStatus } from '@prisma/client';
@@ -1015,5 +1015,161 @@ export class BookingsService {
     } catch (error) {
       this.logger.error('Error in unpaid booking cancellation cron job', error);
     }
+  }
+
+  /**
+   * Admin update booking (date/time and details only, not resources)
+   */
+  async adminUpdate(id: string, updateDto: AdminUpdateBookingDto, user: any) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id },
+      include: {
+        resource: true,
+        user: true,
+        additionalResources: {
+          include: { resource: true },
+        },
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+
+    // Store old values for email notification
+    const oldValues = {
+      title: booking.title,
+      description: booking.description,
+      startTime: booking.startTime,
+      endTime: booking.endTime,
+    };
+
+    // Check if dates are being updated and validate availability
+    if (updateDto.startTime || updateDto.endTime) {
+      const newStartTime = updateDto.startTime ? new Date(updateDto.startTime) : booking.startTime;
+      const newEndTime = updateDto.endTime ? new Date(updateDto.endTime) : booking.endTime;
+
+      // Validate that start is before end
+      if (newStartTime >= newEndTime) {
+        throw new BadRequestException('Start time must be before end time');
+      }
+
+      // Check availability for the main resource (excluding current booking)
+      const conflicts = await this.prisma.booking.findMany({
+        where: {
+          resourceId: booking.resourceId,
+          id: { not: id }, // Exclude current booking
+          status: { in: [BookingStatus.APPROVED, BookingStatus.PENDING] },
+          OR: [
+            {
+              AND: [
+                { startTime: { lte: newStartTime } },
+                { endTime: { gt: newStartTime } },
+              ],
+            },
+            {
+              AND: [
+                { startTime: { lt: newEndTime } },
+                { endTime: { gte: newEndTime } },
+              ],
+            },
+            {
+              AND: [
+                { startTime: { gte: newStartTime } },
+                { endTime: { lte: newEndTime } },
+              ],
+            },
+          ],
+        },
+      });
+
+      if (conflicts.length > 0) {
+        throw new BadRequestException(
+          'La nuova data/orario selezionata è già occupata per questa risorsa',
+        );
+      }
+    }
+
+    // Update booking
+    const updatedBooking = await this.prisma.booking.update({
+      where: { id },
+      data: {
+        ...(updateDto.title && { title: updateDto.title }),
+        ...(updateDto.description && { description: updateDto.description }),
+        ...(updateDto.startTime && { startTime: new Date(updateDto.startTime) }),
+        ...(updateDto.endTime && { endTime: new Date(updateDto.endTime) }),
+        ...(updateDto.adminNote && { internalNotes: updateDto.adminNote }),
+      },
+      include: {
+        resource: true,
+        user: true,
+        additionalResources: {
+          include: { resource: true },
+        },
+      },
+    });
+
+    // Send email notification to user
+    const hasChanges =
+      updateDto.title ||
+      updateDto.description ||
+      updateDto.startTime ||
+      updateDto.endTime;
+
+    if (hasChanges) {
+      try {
+        await this.resendService.sendBookingModifiedEmail(
+          booking.user.email,
+          {
+            id: booking.id,
+            title: booking.title,
+            resourceName: booking.resource.name,
+          },
+          oldValues,
+          {
+            title: updatedBooking.title,
+            description: updatedBooking.description,
+            startTime: updatedBooking.startTime,
+            endTime: updatedBooking.endTime,
+          },
+        );
+        this.logger.log(`Modification email sent to ${booking.user.email} for booking ${id}`);
+      } catch (emailError) {
+        this.logger.error('Failed to send booking modification email:', emailError);
+      }
+    }
+
+    // Log audit
+    const changes = [];
+    if (updateDto.title) changes.push(`Titolo: "${oldValues.title}" → "${updatedBooking.title}"`);
+    if (updateDto.description) changes.push(`Descrizione modificata`);
+    if (updateDto.startTime || updateDto.endTime) {
+      changes.push(
+        `Data/Ora: ${oldValues.startTime.toLocaleString('it-IT')} - ${oldValues.endTime.toLocaleString('it-IT')} → ${updatedBooking.startTime.toLocaleString('it-IT')} - ${updatedBooking.endTime.toLocaleString('it-IT')}`,
+      );
+    }
+
+    await this.auditLogsService.log({
+      userId: user.id,
+      userEmail: user.email,
+      userRole: user.role,
+      action: AuditAction.UPDATE,
+      entity: 'booking',
+      entityId: id,
+      description: `Prenotazione "${booking.title}" modificata dall'admin: ${changes.join(', ')}`,
+      metadata: {
+        bookingTitle: booking.title,
+        resourceName: booking.resource.name,
+        userName: `${booking.user.firstName} ${booking.user.lastName}`,
+        changes: changes,
+        adminNote: updateDto.adminNote,
+      },
+    });
+
+    return {
+      message: 'Booking updated successfully',
+      booking: updatedBooking,
+      changes: changes,
+    };
   }
 }

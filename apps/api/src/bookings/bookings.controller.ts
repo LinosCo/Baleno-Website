@@ -4,7 +4,7 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Public } from '../common/decorators/public.decorator';
-import { CreateBookingDto, UpdateBookingDto, CancelBookingDto } from './dto';
+import { CreateBookingDto, UpdateBookingDto, CancelBookingDto, AdminUpdateBookingDto } from './dto';
 import { ApproveBookingDto } from './dto/approve-booking.dto';
 import { RejectBookingDto } from './dto/reject-booking.dto';
 import { UserRole } from '@prisma/client';
@@ -77,6 +77,16 @@ export class BookingsController {
   @Roles(UserRole.ADMIN, UserRole.COMMUNITY_MANAGER)
   async markInvoiceIssued(@Param('id') id: string, @CurrentUser() user: any) {
     return this.bookingsService.markInvoiceIssued(id, user);
+  }
+
+  @Put(':id/admin-update')
+  @Roles(UserRole.ADMIN, UserRole.COMMUNITY_MANAGER)
+  async adminUpdate(
+    @Param('id') id: string,
+    @Body() updateDto: AdminUpdateBookingDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.bookingsService.adminUpdate(id, updateDto, user);
   }
 
   @Get('availability/check')

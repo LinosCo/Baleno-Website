@@ -1110,4 +1110,236 @@ export class ResendService {
       </html>
     `;
   }
+
+  /**
+   * Send booking modified notification to user
+   */
+  async sendBookingModifiedEmail(
+    to: string,
+    booking: { id: string; title: string; resourceName: string },
+    oldValues: { title: string; description: string; startTime: Date; endTime: Date },
+    newValues: { title: string; description: string; startTime: Date; endTime: Date },
+  ): Promise<void> {
+    if (!this.resend) {
+      this.logger.warn('Resend not configured, skipping booking modified email');
+      return;
+    }
+
+    try {
+      const { data, error } = await this.resend.emails.send({
+        from: this.fromEmail,
+        to: to,
+        subject: 'Prenotazione Modificata - Baleno San Zeno',
+        html: this.getModifiedEmailTemplate(booking, oldValues, newValues),
+      });
+
+      if (error) {
+        this.logger.error('Error sending booking modified email:', error);
+        throw error;
+      }
+
+      this.logger.log(`Booking modified email sent successfully to ${to}`);
+    } catch (error) {
+      this.logger.error('Failed to send booking modified email:', error);
+      throw error;
+    }
+  }
+
+  private getModifiedEmailTemplate(
+    booking: { id: string; title: string; resourceName: string },
+    oldValues: { title: string; description: string; startTime: Date; endTime: Date },
+    newValues: { title: string; description: string; startTime: Date; endTime: Date },
+  ): string {
+    const hasDateChange =
+      oldValues.startTime.getTime() !== newValues.startTime.getTime() ||
+      oldValues.endTime.getTime() !== newValues.endTime.getTime();
+    const hasTitleChange = oldValues.title !== newValues.title;
+    const hasDescriptionChange = oldValues.description !== newValues.description;
+
+    return `
+      <!DOCTYPE html>
+      <html lang="it">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background-color: #e5e5e5;
+            color: #333333;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+          }
+          .header {
+            background-color: #EDBB00;
+            color: #2B548E;
+            padding: 40px 30px;
+            text-align: center;
+          }
+          .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+          }
+          .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+          }
+          .content {
+            padding: 40px 30px;
+          }
+          .info-box {
+            background-color: #fff9e6;
+            border-left: 4px solid #EDBB00;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+          }
+          .change-box {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 4px;
+          }
+          .change-box h4 {
+            margin-top: 0;
+            color: #2B548E;
+            font-size: 16px;
+          }
+          .old-value {
+            text-decoration: line-through;
+            color: #dc3545;
+            margin-bottom: 5px;
+          }
+          .new-value {
+            color: #28a745;
+            font-weight: 600;
+          }
+          .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #2B548E;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 4px;
+          }
+          .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 14px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="icon">✏️</div>
+            <h1>Prenotazione Modificata</h1>
+          </div>
+
+          <div class="content">
+            <p>Ciao,</p>
+            <p>La tua prenotazione è stata modificata dal nostro staff.</p>
+
+            <div class="info-box">
+              <p style="margin: 0;"><strong>Prenotazione:</strong> ${booking.title}</p>
+              <p style="margin: 5px 0 0 0;"><strong>Risorsa:</strong> ${booking.resourceName}</p>
+            </div>
+
+            <h3 style="color: #2B548E;">Modifiche apportate:</h3>
+
+            ${
+              hasTitleChange
+                ? `
+            <div class="change-box">
+              <h4>📝 Titolo</h4>
+              <div class="old-value">Vecchio: ${oldValues.title}</div>
+              <div class="new-value">Nuovo: ${newValues.title}</div>
+            </div>
+            `
+                : ''
+            }
+
+            ${
+              hasDescriptionChange
+                ? `
+            <div class="change-box">
+              <h4>📄 Descrizione</h4>
+              <p style="margin: 0; color: #28a745;">La descrizione è stata aggiornata</p>
+            </div>
+            `
+                : ''
+            }
+
+            ${
+              hasDateChange
+                ? `
+            <div class="change-box">
+              <h4>📅 Data e Orario</h4>
+              <div class="old-value">
+                Vecchio: ${new Date(oldValues.startTime).toLocaleDateString('it-IT', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  timeZone: 'Europe/Rome',
+                })} - ${new Date(oldValues.endTime).toLocaleTimeString('it-IT', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  timeZone: 'Europe/Rome',
+                })}
+              </div>
+              <div class="new-value">
+                Nuovo: ${new Date(newValues.startTime).toLocaleDateString('it-IT', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  timeZone: 'Europe/Rome',
+                })} - ${new Date(newValues.endTime).toLocaleTimeString('it-IT', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  timeZone: 'Europe/Rome',
+                })}
+              </div>
+            </div>
+            `
+                : ''
+            }
+
+            <p style="margin-top: 30px;">Se hai domande o dubbi sulle modifiche, non esitare a contattarci.</p>
+
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${this.frontendUrl}/dashboard" class="button">
+                Vai alla Dashboard
+              </a>
+            </div>
+
+            <p style="color: #666; font-size: 14px; margin-top: 30px;">Il Team di Baleno San Zeno</p>
+          </div>
+
+          <div class="footer">
+            <p>BALENO ETS<br>
+            Via Re Pipino 3/A<br>
+            37123 Verona VR<br>
+            Tel: +39 328 3565987<br>
+            info@balenosanzeno.it</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
 }
