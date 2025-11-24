@@ -155,20 +155,31 @@ export default function ProfilePage() {
         <h1 className="h3 fw-bold text-baleno-primary mb-4">Impostazioni Profilo</h1>
         <div style={{ maxWidth: '900px', margin: '0 auto' }} className="d-flex flex-column gap-4">
           {error && (
-            <div className="alert alert-danger d-flex align-items-center" role="alert">
-              <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            <div className="p-3 d-flex align-items-start" role="alert" style={{
+              borderRadius: '12px',
+              backgroundColor: '#f8d7da',
+              border: '1px solid #dc3545',
+              color: '#721c24'
+            }}>
+              <svg className="me-2 flex-shrink-0" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style={{ marginTop: '2px' }}>
+                <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+                <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
               </svg>
-              {error}
+              <div>{error}</div>
             </div>
           )}
 
           {success && (
-            <div className="alert alert-success d-flex align-items-center" role="alert">
-              <svg className="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+            <div className="p-3 d-flex align-items-start" role="alert" style={{
+              borderRadius: '12px',
+              backgroundColor: '#d1f2eb',
+              border: '1px solid #28a745',
+              color: '#155724'
+            }}>
+              <svg className="me-2 flex-shrink-0" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style={{ marginTop: '2px' }}>
+                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
               </svg>
-              {success}
+              <div>{success}</div>
             </div>
           )}
 

@@ -871,14 +871,15 @@ export class ResendService {
           }
           .button {
             display: inline-block;
-            padding: 14px 40px;
-            background-color: #2B548E;
-            color: white;
+            padding: 16px 50px;
+            background-color: #EDBB00;
+            color: #2B548E;
             text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
-            border-radius: 4px;
+            font-weight: 700;
+            font-size: 18px;
+            border-radius: 8px;
             margin: 10px 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
           }
           .footer {
             text-align: center;
