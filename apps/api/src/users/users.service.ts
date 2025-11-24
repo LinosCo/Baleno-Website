@@ -77,8 +77,15 @@ export class UsersService {
       throw new ConflictException('Email already exists');
     }
 
+    // Hash password if provided
+    let dataToCreate = { ...userData };
+    if (userData.password) {
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      dataToCreate = { ...userData, password: hashedPassword };
+    }
+
     const user = await this.prisma.user.create({
-      data: userData,
+      data: dataToCreate,
       select: {
         id: true,
         email: true,

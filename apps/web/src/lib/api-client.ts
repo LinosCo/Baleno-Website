@@ -67,6 +67,7 @@ export const bookingsAPI = {
 
 export const usersAPI = {
   getAll: () => apiClient.get('/users'),
+  create: (data: any) => apiClient.post('/users', data),
   updateRole: (id: string, role: string) => apiClient.put(`/users/${id}/role`, { role }),
   delete: (id: string) => apiClient.delete(`/users/${id}`),
 };

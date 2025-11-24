@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { UpdateUserDto, ChangePasswordDto } from './dto';
+import { CreateUserDto, UpdateUserDto, ChangePasswordDto } from './dto';
 import { UserRole } from '@prisma/client';
 
 @Controller('users')
@@ -15,6 +15,12 @@ export class UsersController {
   @Roles(UserRole.ADMIN, UserRole.COMMUNITY_MANAGER)
   async findAll() {
     return this.usersService.findAll();
+  }
+
+  @Post()
+  @Roles(UserRole.ADMIN)
+  async create(@Body() createDto: CreateUserDto) {
+    return this.usersService.create(createDto);
   }
 
   @Get(':id')

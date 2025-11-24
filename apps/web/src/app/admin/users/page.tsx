@@ -18,6 +18,17 @@ interface User {
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState('');
+  const [createForm, setCreateForm] = useState({
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    phone: '',
+    role: 'USER' as 'USER' | 'COMMUNITY_MANAGER' | 'ADMIN',
+  });
 
   const fetchUsers = async () => {
     try {
@@ -65,6 +76,33 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreating(true);
+    setCreateError('');
+
+    try {
+      await usersAPI.create(createForm);
+      setShowCreateModal(false);
+      setCreateForm({
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        phone: '',
+        role: 'USER',
+      });
+      fetchUsers();
+      alert('✓ Utente creato con successo!');
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || err.message || 'Errore nella creazione dell\'utente';
+      setCreateError(errorMessage);
+      console.error('Create user error:', err);
+    } finally {
+      setCreating(false);
+    }
+  };
+
   if (loading) {
     return (
       <AdminLayout>
@@ -84,9 +122,20 @@ export default function AdminUsersPage() {
     <AdminLayout>
       <div>
         {/* Header */}
-        <div className="mb-4">
-          <h1 className="h3 fw-bold text-baleno-primary">Gestione Utenti</h1>
-          <p className="text-muted">Gestisci ruoli e permessi degli utenti</p>
+        <div className="mb-4 d-flex justify-content-between align-items-center">
+          <div>
+            <h1 className="h3 fw-bold text-baleno-primary">Gestione Utenti</h1>
+            <p className="text-muted">Gestisci ruoli e permessi degli utenti</p>
+          </div>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="btn btn-primary d-flex align-items-center gap-2"
+          >
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+            </svg>
+            Nuovo Utente
+          </button>
         </div>
 
         {/* Stats */}
@@ -194,6 +243,122 @@ export default function AdminUsersPage() {
             </div>
           </div>
         </div>
+
+        {/* Create User Modal */}
+        {showCreateModal && (
+          <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => setShowCreateModal(false)}>
+            <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-content" style={{ borderRadius: '16px' }}>
+                <div className="modal-header border-0">
+                  <h5 className="modal-title fw-bold">Crea Nuovo Utente</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowCreateModal(false)}></button>
+                </div>
+                <form onSubmit={handleCreateUser}>
+                  <div className="modal-body">
+                    {createError && (
+                      <div className="alert alert-danger mb-3">{createError}</div>
+                    )}
+
+                    <div className="row g-3">
+                      <div className="col-md-6">
+                        <label className="form-label fw-semibold">Nome *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={createForm.firstName}
+                          onChange={(e) => setCreateForm({ ...createForm, firstName: e.target.value })}
+                          required
+                          minLength={2}
+                          maxLength={50}
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="form-label fw-semibold">Cognome *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={createForm.lastName}
+                          onChange={(e) => setCreateForm({ ...createForm, lastName: e.target.value })}
+                          required
+                          minLength={2}
+                          maxLength={50}
+                        />
+                      </div>
+                      <div className="col-12">
+                        <label className="form-label fw-semibold">Email *</label>
+                        <input
+                          type="email"
+                          className="form-control"
+                          value={createForm.email}
+                          onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="col-12">
+                        <label className="form-label fw-semibold">Password *</label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          value={createForm.password}
+                          onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+                          required
+                          minLength={8}
+                          placeholder="Minimo 8 caratteri"
+                        />
+                      </div>
+                      <div className="col-12">
+                        <label className="form-label fw-semibold">Telefono</label>
+                        <input
+                          type="tel"
+                          className="form-control"
+                          value={createForm.phone}
+                          onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })}
+                        />
+                      </div>
+                      <div className="col-12">
+                        <label className="form-label fw-semibold">Ruolo *</label>
+                        <select
+                          className="form-select"
+                          value={createForm.role}
+                          onChange={(e) => setCreateForm({ ...createForm, role: e.target.value as 'USER' | 'COMMUNITY_MANAGER' | 'ADMIN' })}
+                          required
+                        >
+                          <option value="USER">USER</option>
+                          <option value="COMMUNITY_MANAGER">COMMUNITY_MANAGER</option>
+                          <option value="ADMIN">ADMIN</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="modal-footer border-0">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setShowCreateModal(false)}
+                      disabled={creating}
+                    >
+                      Annulla
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={creating}
+                    >
+                      {creating ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                          Creazione...
+                        </>
+                      ) : (
+                        'Crea Utente'
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );
