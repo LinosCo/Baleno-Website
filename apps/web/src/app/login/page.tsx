@@ -107,7 +107,7 @@ function LoginForm() {
                     className="small text-decoration-none hover-link"
                     style={{ color: '#2B548E' }}
                   >
-                    Dimenticata?
+                    Password dimenticata?
                   </Link>
                 </div>
                 <input

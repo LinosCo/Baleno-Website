@@ -1146,6 +1146,146 @@ export class ResendService {
     }
   }
 
+  async sendPasswordResetEmail(
+    to: string,
+    resetToken: string,
+    firstName: string,
+  ): Promise<{ success: boolean; error?: string }> {
+    if (!this.resend) {
+      this.logger.warn('Resend not configured. Skipping email.');
+      return { success: false, error: 'Resend not configured' };
+    }
+
+    try {
+      const resetUrl = `${this.frontendUrl}/reset-password?token=${resetToken}`;
+
+      const { data, error } = await this.resend.emails.send({
+        from: this.fromEmail,
+        to: to,
+        subject: 'Reimposta la tua password - Baleno San Zeno',
+        html: this.getPasswordResetEmailTemplate(firstName, resetUrl),
+      });
+
+      if (error) {
+        this.logger.error('Failed to send password reset email', error);
+        return { success: false, error: String(error) };
+      }
+
+      this.logger.log(`Password reset email sent to ${to}`);
+      return { success: true };
+    } catch (error) {
+      this.logger.error('Error sending password reset email', error);
+      return { success: false, error: String(error) };
+    }
+  }
+
+  private getPasswordResetEmailTemplate(firstName: string, resetUrl: string): string {
+    return `
+      <!DOCTYPE html>
+      <html lang="it">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background-color: #e5e5e5;
+            color: #333333;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+          }
+          .header {
+            background-color: #2B548E;
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+          }
+          .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+          }
+          .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+          }
+          .content {
+            padding: 40px 30px;
+          }
+          .reset-button {
+            display: inline-block;
+            background-color: #EDBB00;
+            color: #2B548E;
+            padding: 16px 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          }
+          .warning-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #EDBB00;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+          }
+          .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 14px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="icon">🔐</div>
+            <h1>Reimposta Password</h1>
+          </div>
+
+          <div class="content">
+            <p>Ciao <strong>${firstName}</strong>,</p>
+            <p>Abbiamo ricevuto una richiesta per reimpostare la password del tuo account Baleno San Zeno.</p>
+
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${resetUrl}" class="reset-button">
+                Reimposta Password
+              </a>
+            </div>
+
+            <div class="warning-box">
+              <p style="margin: 0;"><strong>⏱️ Importante:</strong> Questo link scadrà tra <strong>1 ora</strong>.</p>
+            </div>
+
+            <p>Se non hai richiesto tu questa modifica, puoi ignorare questa email. La tua password rimarrà invariata.</p>
+
+            <p style="font-size: 14px; color: #666; margin-top: 30px;">
+              Se il pulsante non funziona, copia e incolla questo link nel browser:<br>
+              <a href="${resetUrl}" style="color: #2B548E; word-break: break-all;">${resetUrl}</a>
+            </p>
+          </div>
+
+          <div class="footer">
+            <p>BALENO ETS<br>
+            Via Re Pipino 3/A<br>
+            37123 Verona VR<br>
+            Tel: +39 328 3565987<br>
+            info@balenosanzeno.it</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
   private getModifiedEmailTemplate(
     booking: { id: string; title: string; resourceName: string },
     oldValues: { title: string; description: string; startTime: Date; endTime: Date },
