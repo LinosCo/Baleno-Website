@@ -159,14 +159,13 @@ export default function BankTransfersPage() {
                       <div className="row g-4">
                         {/* Codice Bonifico - Highlight */}
                         <div className="col-12">
-                          <div className="alert alert-primary mb-0 d-flex align-items-center">
-                            <i className="bi bi-hash fs-4 me-3"></i>
-                            <div className="flex-grow-1">
-                              <small className="text-muted d-block">Codice Bonifico da Verificare</small>
-                              <h3 className="mb-0 font-monospace fw-bold">{transfer.bankTransferCode}</h3>
+                          <div className="bg-light border rounded p-3 d-flex align-items-center justify-content-between">
+                            <div>
+                              <small className="text-muted d-block mb-1">Codice Bonifico da Verificare</small>
+                              <h3 className="mb-0 font-monospace fw-bold" style={{ color: '#2B548E' }}>{transfer.bankTransferCode}</h3>
                             </div>
                             <div className="text-end">
-                              <small className="text-muted d-block">Importo</small>
+                              <small className="text-muted d-block mb-1">Importo</small>
                               <h3 className="mb-0 text-success fw-bold">€{(Number(transfer.amount) / 100).toFixed(2)}</h3>
                             </div>
                           </div>
