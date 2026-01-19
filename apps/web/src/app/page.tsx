@@ -126,7 +126,7 @@ export default function HomePage() {
               <div className="space-card">
                 <div className="space-card-image">
                   <img
-                    src="https://balenosanzeno.it/wp-content/uploads/2025/01/DSC09537-2-scaled-uai-1783x1783.jpg"
+                    src="/7.jpg"
                     alt="Sala Principale"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
@@ -147,7 +147,7 @@ export default function HomePage() {
               <div className="space-card">
                 <div className="space-card-image">
                   <img
-                    src="https://balenosanzeno.it/wp-content/uploads/2025/01/DSC09448-2-scaled-uai-1703x1703.jpg"
+                    src="/5.jpg"
                     alt="Sala Riunioni"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
@@ -168,7 +168,7 @@ export default function HomePage() {
               <div className="space-card">
                 <div className="space-card-image">
                   <img
-                    src="https://balenosanzeno.it/wp-content/uploads/2025/01/DSC09493-2-scaled-uai-1707x1707.jpg"
+                    src="/3.jpg"
                     alt="Spazio Completo"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
