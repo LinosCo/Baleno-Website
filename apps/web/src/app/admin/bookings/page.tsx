@@ -1246,7 +1246,7 @@ export default function AdminBookingsPage() {
                     <div className="card-body">
                       <h6 className="fw-bold mb-2">Prenotazione da rifiutare:</h6>
                       <p className="mb-1"><strong>Titolo:</strong> {selectedBooking.title}</p>
-                      <p className="mb-1"><strong>Utente:</strong> {selectedBooking.user.firstName} {selectedBooking.user.lastName}</p>
+                      <p className="mb-1"><strong>Utente:</strong> {selectedBooking.isManualBooking ? selectedBooking.manualGuestName : `${selectedBooking.user?.firstName} ${selectedBooking.user?.lastName}`}</p>
                       <p className="mb-0"><strong>Risorsa:</strong> {selectedBooking.resource.name}</p>
                     </div>
                   </div>
@@ -1369,7 +1369,7 @@ export default function AdminBookingsPage() {
                   <div className="bg-light p-3 rounded">
                     <h6 className="fw-semibold mb-2">Prenotazione da approvare:</h6>
                     <p className="mb-1"><strong>Titolo:</strong> {selectedBooking.title}</p>
-                    <p className="mb-1"><strong>Utente:</strong> {selectedBooking.user.firstName} {selectedBooking.user.lastName}</p>
+                    <p className="mb-1"><strong>Utente:</strong> {selectedBooking.isManualBooking ? selectedBooking.manualGuestName : `${selectedBooking.user?.firstName} ${selectedBooking.user?.lastName}`}</p>
                     <p className="mb-0"><strong>Risorsa:</strong> {selectedBooking.resource.name}</p>
                   </div>
                 </div>
