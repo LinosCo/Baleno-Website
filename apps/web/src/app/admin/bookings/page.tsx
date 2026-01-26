@@ -1593,8 +1593,8 @@ export default function AdminBookingsPage() {
                 </div>
 
                 <div className="modal-body">
-                  <div className="alert alert-info mb-4">
-                    <small>
+                  <div className="bg-info bg-opacity-10 border border-info rounded p-3 mb-4">
+                    <small className="text-dark">
                       Crea una prenotazione per conto di un ospite senza che debba registrarsi al sistema.
                     </small>
                   </div>
