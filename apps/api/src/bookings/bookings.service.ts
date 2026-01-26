@@ -5,7 +5,7 @@ import { PaymentsService } from '../payments/payments.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { AuditLogsService } from '../audit-logs/audit-logs.service';
 import { ResendService } from '../common/services/resend.service';
-import { CreateBookingDto, UpdateBookingDto, CancelBookingDto, AdminUpdateBookingDto } from './dto';
+import { CreateBookingDto, CreateManualBookingDto, UpdateBookingDto, CancelBookingDto, AdminUpdateBookingDto } from './dto';
 import { ApproveBookingDto } from './dto/approve-booking.dto';
 import { RejectBookingDto, REJECTION_REASON_MESSAGES } from './dto/reject-booking.dto';
 import { BookingStatus, UserRole, AuditAction, PaymentStatus } from '@prisma/client';
@@ -166,6 +166,199 @@ export class BookingsService {
     }
 
     return completeBooking;
+  }
+
+  /**
+   * Crea una prenotazione manuale (admin crea per conto di un ospite senza account)
+   */
+  async createManualBooking(createDto: CreateManualBookingDto, admin: any) {
+    const { resourceId, startTime, endTime, additionalResources, guestName, guestEmail, guestPhone, autoApprove, ...bookingData } = createDto;
+
+    // Validate dates
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+
+    if (start >= end) {
+      throw new BadRequestException('End time must be after start time');
+    }
+
+    // Check if resource exists and is active
+    const resource = await this.prisma.resource.findUnique({
+      where: { id: resourceId },
+    });
+
+    if (!resource) {
+      throw new NotFoundException('Resource not found');
+    }
+
+    if (!resource.isActive) {
+      throw new BadRequestException('Resource is not available');
+    }
+
+    // Check availability
+    const isAvailable = await this.checkAvailability({
+      resourceId,
+      startTime: start,
+      endTime: end,
+    });
+
+    if (!isAvailable) {
+      throw new ConflictException('Resource is not available for the selected time period');
+    }
+
+    // Calculate base price
+    const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+    let amount = Number(resource.pricePerHour) * hours;
+
+    // Validate and calculate additional resources price
+    let validatedAdditionalResources: Array<{ resourceId: string; quantity: number; resource: any }> = [];
+
+    if (additionalResources && additionalResources.length > 0) {
+      const additionalResourceIds = additionalResources.map(r => r.resourceId);
+
+      const foundResources = await this.prisma.resource.findMany({
+        where: {
+          id: { in: additionalResourceIds },
+          isActive: true,
+        },
+      });
+
+      for (const addRes of additionalResources) {
+        const res = foundResources.find(r => r.id === addRes.resourceId);
+
+        if (!res) {
+          throw new NotFoundException(`Additional resource ${addRes.resourceId} not found`);
+        }
+
+        const quantity = addRes.quantity || 1;
+        const resourcePrice = Number(res.pricePerHour) * hours * quantity;
+        amount += resourcePrice;
+
+        validatedAdditionalResources.push({
+          resourceId: addRes.resourceId,
+          quantity,
+          resource: res
+        });
+      }
+    }
+
+    // Determine initial status
+    const initialStatus = autoApprove ? BookingStatus.APPROVED : BookingStatus.PENDING;
+
+    // Create manual booking (without userId)
+    const booking = await this.prisma.booking.create({
+      data: {
+        ...bookingData,
+        resourceId,
+        userId: null, // No user account
+        startTime: start,
+        endTime: end,
+        status: initialStatus,
+        isManualBooking: true,
+        manualGuestName: guestName,
+        manualGuestEmail: guestEmail || null,
+        manualGuestPhone: guestPhone || null,
+        createdByAdminId: admin.id,
+        ...(autoApprove && {
+          approvedBy: admin.id,
+          approvedAt: new Date(),
+        }),
+      },
+      include: {
+        resource: true,
+      },
+    });
+
+    // Create additional resources associations
+    if (validatedAdditionalResources.length > 0) {
+      await this.prisma.bookingResource.createMany({
+        data: validatedAdditionalResources.map(ar => ({
+          bookingId: booking.id,
+          resourceId: ar.resourceId,
+          quantity: ar.quantity,
+        })),
+      });
+    }
+
+    // Fetch complete booking with additional resources
+    const completeBooking = await this.prisma.booking.findUnique({
+      where: { id: booking.id },
+      include: {
+        resource: true,
+        additionalResources: {
+          include: {
+            resource: true,
+          },
+        },
+      },
+    });
+
+    // Log audit
+    await this.auditLogsService.log({
+      userId: admin.id,
+      userEmail: admin.email,
+      userRole: admin.role,
+      action: AuditAction.CREATE,
+      entity: 'booking',
+      entityId: booking.id,
+      description: `Prenotazione manuale "${booking.title}" creata per ${guestName}${autoApprove ? ' (auto-approvata)' : ''}`,
+      metadata: {
+        bookingTitle: booking.title,
+        resourceName: resource.name,
+        guestName,
+        guestEmail,
+        guestPhone,
+        isManualBooking: true,
+        autoApproved: autoApprove || false,
+      },
+    });
+
+    this.logger.log(`Manual booking ${booking.id} created by admin ${admin.email} for guest ${guestName}`);
+
+    // Send email to guest if email provided
+    if (guestEmail) {
+      try {
+        // Create a mock user object for email
+        const mockUser = {
+          email: guestEmail,
+          firstName: guestName.split(' ')[0] || guestName,
+          lastName: guestName.split(' ').slice(1).join(' ') || '',
+        };
+
+        if (autoApprove) {
+          // Send approval email
+          const amountInCents = Math.round(amount * 100);
+          await this.resendService.sendBookingApprovedEmail(
+            guestEmail,
+            {
+              id: booking.id,
+              resourceName: resource.name,
+              startDate: start,
+              endDate: end,
+              totalAmount: amountInCents,
+            },
+            {}, // No payment links for manual bookings (payment handled manually)
+          );
+        } else {
+          // Send confirmation email
+          await this.resendService.sendBookingSubmissionToUser(guestEmail, {
+            ...completeBooking,
+            user: mockUser,
+          });
+        }
+        this.logger.log(`Email sent to guest ${guestEmail} for manual booking ${booking.id}`);
+      } catch (emailError) {
+        this.logger.error('Failed to send email to guest:', emailError);
+      }
+    }
+
+    return {
+      message: autoApprove
+        ? 'Prenotazione manuale creata e approvata con successo'
+        : 'Prenotazione manuale creata con successo',
+      booking: completeBooking,
+      calculatedAmount: amount,
+    };
   }
 
   async findAll(query: any, user: any) {

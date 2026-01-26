@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   },
   resources: `${API_URL}/resources`,
   bookings: `${API_URL}/bookings`,
+  manualBookings: `${API_URL}/bookings/manual`,
   users: `${API_URL}/users`,
   payments: `${API_URL}/payments`,
   reports: `${API_URL}/reports`,

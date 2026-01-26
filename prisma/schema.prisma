@@ -215,11 +215,18 @@ model Booking {
   id          String        @id @default(cuid())
 
   // Relations
-  userId      String
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String?       // Nullable per prenotazioni manuali admin
+  user        User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   resourceId  String
   resource    Resource      @relation(fields: [resourceId], references: [id], onDelete: Restrict)
+
+  // Manual booking fields (prenotazioni create da admin senza account utente)
+  isManualBooking   Boolean   @default(false)
+  manualGuestName   String?   // Nome ospite per prenotazione manuale
+  manualGuestEmail  String?   // Email ospite per prenotazione manuale
+  manualGuestPhone  String?   // Telefono ospite per prenotazione manuale
+  createdByAdminId  String?   // ID dell'admin che ha creato la prenotazione manuale
 
   // Booking details
   startTime   DateTime

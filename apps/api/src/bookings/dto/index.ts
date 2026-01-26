@@ -1,4 +1,5 @@
 export * from './create-booking.dto';
+export * from './create-manual-booking.dto';
 export * from './update-booking.dto';
 export * from './admin-update-booking.dto';
 export * from './reject-booking.dto';

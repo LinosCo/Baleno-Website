@@ -13,12 +13,17 @@ interface Booking {
   status: string;
   paymentReceived: boolean;
   invoiceIssued: boolean;
+  isManualBooking?: boolean;
+  manualGuestName?: string;
+  manualGuestEmail?: string;
+  manualGuestPhone?: string;
   user: {
     firstName: string;
     lastName: string;
     email: string;
-  };
+  } | null;
   resource: {
+    id: string;
     name: string;
     type: string;
     pricePerHour: number;
@@ -31,6 +36,14 @@ interface Booking {
     };
   }>;
   createdAt: string;
+}
+
+interface Resource {
+  id: string;
+  name: string;
+  type: string;
+  pricePerHour: number;
+  isActive: boolean;
 }
 
 export default function AdminBookingsPage() {
@@ -73,6 +86,23 @@ export default function AdminBookingsPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+  // Manual booking modal
+  const [showManualBookingModal, setShowManualBookingModal] = useState(false);
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [manualBookingData, setManualBookingData] = useState({
+    resourceId: '',
+    title: '',
+    description: '',
+    guestName: '',
+    guestEmail: '',
+    guestPhone: '',
+    startTime: '',
+    endTime: '',
+    attendees: 1,
+    autoApprove: true,
+  });
+  const [creatingManualBooking, setCreatingManualBooking] = useState(false);
+
   const fetchBookings = () => {
     const token = localStorage.getItem('accessToken');
     const url = filter === 'ALL'
@@ -107,6 +137,107 @@ export default function AdminBookingsPage() {
     fetchBookings();
   }, [filter]);
 
+  // Fetch resources for manual booking
+  const fetchResources = async () => {
+    const token = localStorage.getItem('accessToken');
+    try {
+      const response = await fetch(API_ENDPOINTS.resources, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setResources(data.filter((r: Resource) => r.isActive));
+      }
+    } catch (err) {
+      console.error('Error fetching resources:', err);
+    }
+  };
+
+  const openManualBookingModal = () => {
+    fetchResources();
+    setManualBookingData({
+      resourceId: '',
+      title: '',
+      description: '',
+      guestName: '',
+      guestEmail: '',
+      guestPhone: '',
+      startTime: '',
+      endTime: '',
+      attendees: 1,
+      autoApprove: true,
+    });
+    setShowManualBookingModal(true);
+  };
+
+  const handleCreateManualBooking = async () => {
+    // Validation
+    if (!manualBookingData.resourceId) {
+      alert('Seleziona una risorsa');
+      return;
+    }
+    if (!manualBookingData.title.trim()) {
+      alert('Inserisci un titolo');
+      return;
+    }
+    if (!manualBookingData.guestName.trim()) {
+      alert('Inserisci il nome dell\'ospite');
+      return;
+    }
+    if (!manualBookingData.startTime || !manualBookingData.endTime) {
+      alert('Inserisci data e ora di inizio e fine');
+      return;
+    }
+
+    const startDate = new Date(manualBookingData.startTime);
+    const endDate = new Date(manualBookingData.endTime);
+
+    if (startDate >= endDate) {
+      alert('La data di inizio deve essere prima della data di fine');
+      return;
+    }
+
+    setCreatingManualBooking(true);
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const response = await fetch(API_ENDPOINTS.manualBookings, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          resourceId: manualBookingData.resourceId,
+          title: manualBookingData.title.trim(),
+          description: manualBookingData.description.trim() || undefined,
+          guestName: manualBookingData.guestName.trim(),
+          guestEmail: manualBookingData.guestEmail.trim() || undefined,
+          guestPhone: manualBookingData.guestPhone.trim() || undefined,
+          startTime: startDate.toISOString(),
+          endTime: endDate.toISOString(),
+          attendees: manualBookingData.attendees || undefined,
+          autoApprove: manualBookingData.autoApprove,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(`✓ ${result.message}\n\nImporto calcolato: €${result.calculatedAmount?.toFixed(2) || '0.00'}`);
+        setShowManualBookingModal(false);
+        fetchBookings();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`❌ Errore: ${errorData.message || response.statusText}`);
+      }
+    } catch (err) {
+      alert('❌ Errore di rete');
+      console.error('Create manual booking error:', err);
+    } finally {
+      setCreatingManualBooking(false);
+    }
+  };
+
   // Applica filtri di ricerca
   useEffect(() => {
     let filtered = [...bookings];
@@ -122,13 +253,18 @@ export default function AdminBookingsPage() {
         const lastName = b.user?.lastName?.toLowerCase() || '';
         const email = b.user?.email?.toLowerCase() || '';
         const resourceName = b.resource?.name?.toLowerCase() || '';
+        // Include manual booking guest data in search
+        const guestName = b.manualGuestName?.toLowerCase() || '';
+        const guestEmail = b.manualGuestEmail?.toLowerCase() || '';
 
         return (
           title.includes(search) ||
           firstName.includes(search) ||
           lastName.includes(search) ||
           email.includes(search) ||
-          resourceName.includes(search)
+          resourceName.includes(search) ||
+          guestName.includes(search) ||
+          guestEmail.includes(search)
         );
       });
     }
@@ -546,9 +682,20 @@ export default function AdminBookingsPage() {
     <AdminLayout>
       <div>
         {/* Header */}
-        <div className="mb-4">
-          <h1 className="h3 fw-bold text-baleno-primary">Gestione Prenotazioni</h1>
-          <p className="text-muted">Modera e gestisci tutte le prenotazioni</p>
+        <div className="mb-4 d-flex justify-content-between align-items-start">
+          <div>
+            <h1 className="h3 fw-bold text-baleno-primary">Gestione Prenotazioni</h1>
+            <p className="text-muted">Modera e gestisci tutte le prenotazioni</p>
+          </div>
+          <button
+            onClick={openManualBookingModal}
+            className="btn btn-primary"
+          >
+            <svg className="icon icon-sm me-2" fill="currentColor" viewBox="0 0 20 20" width="16" height="16">
+              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
+            Prenotazione Manuale
+          </button>
         </div>
 
         {/* Barra di ricerca */}
@@ -699,10 +846,22 @@ export default function AdminBookingsPage() {
                           )}
                         </td>
                         <td>
-                          <div className="fw-medium">
-                            {booking.user.firstName} {booking.user.lastName}
-                          </div>
-                          <div className="text-muted small">{booking.user.email}</div>
+                          {booking.isManualBooking ? (
+                            <>
+                              <div className="fw-medium">
+                                {booking.manualGuestName}
+                                <span className="badge bg-info ms-2" style={{ fontSize: '0.65rem' }}>Manuale</span>
+                              </div>
+                              <div className="text-muted small">{booking.manualGuestEmail || 'Nessuna email'}</div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="fw-medium">
+                                {booking.user?.firstName} {booking.user?.lastName}
+                              </div>
+                              <div className="text-muted small">{booking.user?.email}</div>
+                            </>
+                          )}
                         </td>
                         <td>
                           <div className="fw-medium">{booking.resource.name}</div>
@@ -797,11 +956,27 @@ export default function AdminBookingsPage() {
 
                   <div className="row g-4 mb-4">
                     <div className="col-md-6">
-                      <label className="form-label text-muted small fw-semibold">Utente</label>
-                      <p className="fw-semibold mb-1">
-                        {selectedBooking.user.firstName} {selectedBooking.user.lastName}
-                      </p>
-                      <p className="text-muted small mb-0">{selectedBooking.user.email}</p>
+                      {selectedBooking.isManualBooking ? (
+                        <>
+                          <label className="form-label text-muted small fw-semibold">
+                            Ospite
+                            <span className="badge bg-info ms-2" style={{ fontSize: '0.65rem' }}>Prenotazione Manuale</span>
+                          </label>
+                          <p className="fw-semibold mb-1">{selectedBooking.manualGuestName}</p>
+                          <p className="text-muted small mb-0">{selectedBooking.manualGuestEmail || 'Nessuna email fornita'}</p>
+                          {selectedBooking.manualGuestPhone && (
+                            <p className="text-muted small mb-0">Tel: {selectedBooking.manualGuestPhone}</p>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <label className="form-label text-muted small fw-semibold">Utente</label>
+                          <p className="fw-semibold mb-1">
+                            {selectedBooking.user?.firstName} {selectedBooking.user?.lastName}
+                          </p>
+                          <p className="text-muted small mb-0">{selectedBooking.user?.email}</p>
+                        </>
+                      )}
                     </div>
                     <div className="col-md-6">
                       <label className="form-label text-muted small fw-semibold">Risorsa</label>
@@ -1339,8 +1514,17 @@ export default function AdminBookingsPage() {
 
                   <div className="bg-light p-3 rounded">
                     <h6 className="fw-semibold mb-2">Prenotazione da modificare:</h6>
-                    <p className="mb-1"><strong>Utente:</strong> {selectedBooking.user.firstName} {selectedBooking.user.lastName}</p>
-                    <p className="mb-1"><strong>Email:</strong> {selectedBooking.user.email}</p>
+                    {selectedBooking.isManualBooking ? (
+                      <>
+                        <p className="mb-1"><strong>Ospite:</strong> {selectedBooking.manualGuestName}</p>
+                        <p className="mb-1"><strong>Email:</strong> {selectedBooking.manualGuestEmail || 'Non fornita'}</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="mb-1"><strong>Utente:</strong> {selectedBooking.user?.firstName} {selectedBooking.user?.lastName}</p>
+                        <p className="mb-1"><strong>Email:</strong> {selectedBooking.user?.email}</p>
+                      </>
+                    )}
                     <p className="mb-0"><strong>Risorsa:</strong> {selectedBooking.resource.name}</p>
                   </div>
                 </div>
@@ -1369,6 +1553,238 @@ export default function AdminBookingsPage() {
                       <>
                         <i className="bi bi-check2 me-2"></i>
                         Salva Modifiche
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Manual Booking Modal */}
+      {showManualBookingModal && (
+        <>
+          <div
+            className="modal fade show d-block"
+            style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+            onClick={() => setShowManualBookingModal(false)}
+          >
+            <div
+              className="modal-dialog modal-dialog-centered modal-lg"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-content">
+                <div className="modal-header bg-primary bg-opacity-10">
+                  <h5 className="modal-title fw-bold">
+                    <svg className="me-2" fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
+                      <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                    </svg>
+                    Nuova Prenotazione Manuale
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowManualBookingModal(false)}
+                    aria-label="Close"
+                    disabled={creatingManualBooking}
+                  ></button>
+                </div>
+
+                <div className="modal-body">
+                  <div className="alert alert-info mb-4">
+                    <small>
+                      Crea una prenotazione per conto di un ospite senza che debba registrarsi al sistema.
+                    </small>
+                  </div>
+
+                  {/* Resource Selection */}
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      Risorsa <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      className="form-select"
+                      value={manualBookingData.resourceId}
+                      onChange={(e) => setManualBookingData({ ...manualBookingData, resourceId: e.target.value })}
+                      disabled={creatingManualBooking}
+                    >
+                      <option value="">-- Seleziona una risorsa --</option>
+                      {resources.map((resource) => (
+                        <option key={resource.id} value={resource.id}>
+                          {resource.name} - €{resource.pricePerHour}/ora
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Booking Title */}
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      Titolo/Evento <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Es: Festa di compleanno, Riunione aziendale..."
+                      value={manualBookingData.title}
+                      onChange={(e) => setManualBookingData({ ...manualBookingData, title: e.target.value })}
+                      disabled={creatingManualBooking}
+                    />
+                  </div>
+
+                  {/* Guest Info */}
+                  <div className="card mb-3">
+                    <div className="card-header bg-light py-2">
+                      <span className="fw-semibold">Dati Ospite</span>
+                    </div>
+                    <div className="card-body">
+                      <div className="row g-3">
+                        <div className="col-md-6">
+                          <label className="form-label fw-semibold">
+                            Nome Ospite <span className="text-danger">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Nome e cognome"
+                            value={manualBookingData.guestName}
+                            onChange={(e) => setManualBookingData({ ...manualBookingData, guestName: e.target.value })}
+                            disabled={creatingManualBooking}
+                          />
+                        </div>
+                        <div className="col-md-6">
+                          <label className="form-label fw-semibold">
+                            Email Ospite
+                          </label>
+                          <input
+                            type="email"
+                            className="form-control"
+                            placeholder="email@esempio.it"
+                            value={manualBookingData.guestEmail}
+                            onChange={(e) => setManualBookingData({ ...manualBookingData, guestEmail: e.target.value })}
+                            disabled={creatingManualBooking}
+                          />
+                          <small className="text-muted">Se fornita, riceverà conferma via email</small>
+                        </div>
+                        <div className="col-md-6">
+                          <label className="form-label fw-semibold">
+                            Telefono Ospite
+                          </label>
+                          <input
+                            type="tel"
+                            className="form-control"
+                            placeholder="+39 123 456 7890"
+                            value={manualBookingData.guestPhone}
+                            onChange={(e) => setManualBookingData({ ...manualBookingData, guestPhone: e.target.value })}
+                            disabled={creatingManualBooking}
+                          />
+                        </div>
+                        <div className="col-md-6">
+                          <label className="form-label fw-semibold">
+                            Numero Partecipanti
+                          </label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            min="1"
+                            value={manualBookingData.attendees}
+                            onChange={(e) => setManualBookingData({ ...manualBookingData, attendees: parseInt(e.target.value) || 1 })}
+                            disabled={creatingManualBooking}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Date and Time */}
+                  <div className="row g-3 mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">
+                        Data e Ora Inizio <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="datetime-local"
+                        className="form-control"
+                        value={manualBookingData.startTime}
+                        onChange={(e) => setManualBookingData({ ...manualBookingData, startTime: e.target.value })}
+                        disabled={creatingManualBooking}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">
+                        Data e Ora Fine <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="datetime-local"
+                        className="form-control"
+                        value={manualBookingData.endTime}
+                        onChange={(e) => setManualBookingData({ ...manualBookingData, endTime: e.target.value })}
+                        disabled={creatingManualBooking}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      Note/Descrizione
+                    </label>
+                    <textarea
+                      className="form-control"
+                      rows={2}
+                      placeholder="Note aggiuntive..."
+                      value={manualBookingData.description}
+                      onChange={(e) => setManualBookingData({ ...manualBookingData, description: e.target.value })}
+                      disabled={creatingManualBooking}
+                    />
+                  </div>
+
+                  {/* Auto-approve checkbox */}
+                  <div className="form-check mb-3">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="autoApprove"
+                      checked={manualBookingData.autoApprove}
+                      onChange={(e) => setManualBookingData({ ...manualBookingData, autoApprove: e.target.checked })}
+                      disabled={creatingManualBooking}
+                    />
+                    <label className="form-check-label" htmlFor="autoApprove">
+                      <span className="fw-semibold">Approva automaticamente</span>
+                      <br />
+                      <small className="text-muted">Se attivo, la prenotazione sarà subito approvata e visibile nel calendario</small>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowManualBookingModal(false)}
+                    disabled={creatingManualBooking}
+                  >
+                    Annulla
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleCreateManualBooking}
+                    disabled={creatingManualBooking || !manualBookingData.resourceId || !manualBookingData.title.trim() || !manualBookingData.guestName.trim() || !manualBookingData.startTime || !manualBookingData.endTime}
+                  >
+                    {creatingManualBooking ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Creazione...
+                      </>
+                    ) : (
+                      <>
+                        <svg className="me-2" fill="currentColor" viewBox="0 0 20 20" width="16" height="16">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        Crea Prenotazione
                       </>
                     )}
                   </button>

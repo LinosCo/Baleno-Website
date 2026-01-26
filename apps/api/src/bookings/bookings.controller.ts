@@ -4,7 +4,7 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Public } from '../common/decorators/public.decorator';
-import { CreateBookingDto, UpdateBookingDto, CancelBookingDto, AdminUpdateBookingDto } from './dto';
+import { CreateBookingDto, CreateManualBookingDto, UpdateBookingDto, CancelBookingDto, AdminUpdateBookingDto } from './dto';
 import { ApproveBookingDto } from './dto/approve-booking.dto';
 import { RejectBookingDto } from './dto/reject-booking.dto';
 import { UserRole } from '@prisma/client';
@@ -87,6 +87,19 @@ export class BookingsController {
     @CurrentUser() user: any,
   ) {
     return this.bookingsService.adminUpdate(id, updateDto, user);
+  }
+
+  /**
+   * Crea una prenotazione manuale (senza account utente)
+   * Solo admin e community manager possono usare questo endpoint
+   */
+  @Post('manual')
+  @Roles(UserRole.ADMIN, UserRole.COMMUNITY_MANAGER)
+  async createManualBooking(
+    @Body() createDto: CreateManualBookingDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.bookingsService.createManualBooking(createDto, user);
   }
 
   @Get('availability/check')
