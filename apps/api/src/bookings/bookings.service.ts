@@ -22,6 +22,22 @@ export class BookingsService {
     private resendService: ResendService,
   ) {}
 
+  /**
+   * Helper per ottenere email e nome dell'utente o ospite manuale
+   */
+  private getBookingContact(booking: any): { email: string | null; name: string } {
+    if (booking.isManualBooking) {
+      return {
+        email: booking.manualGuestEmail,
+        name: booking.manualGuestName || 'Ospite',
+      };
+    }
+    return {
+      email: booking.user?.email || null,
+      name: booking.user ? `${booking.user.firstName} ${booking.user.lastName}` : 'Utente',
+    };
+  }
+
   async create(createDto: CreateBookingDto, user: any) {
     const { resourceId, startTime, endTime, additionalResources, ...bookingData } = createDto;
 
@@ -718,15 +734,18 @@ export class BookingsService {
     }
 
     // Send approval email with payment options
-    try {
-      await this.resendService.sendBookingApprovedEmail(
-        booking.user.email,
-        emailDetails,
-        paymentDetails,
-      );
-      this.logger.log(`Approval email sent to ${booking.user.email} for booking ${id}`);
-    } catch (emailError) {
-      this.logger.error('Failed to send booking approval email:', emailError);
+    const contact = this.getBookingContact(booking);
+    if (contact.email) {
+      try {
+        await this.resendService.sendBookingApprovedEmail(
+          contact.email,
+          emailDetails,
+          paymentDetails,
+        );
+        this.logger.log(`Approval email sent to ${contact.email} for booking ${id}`);
+      } catch (emailError) {
+        this.logger.error('Failed to send booking approval email:', emailError);
+      }
     }
 
     // Log audit
@@ -741,7 +760,7 @@ export class BookingsService {
       metadata: {
         bookingTitle: booking.title,
         resourceName: booking.resource.name,
-        userName: `${booking.user.firstName} ${booking.user.lastName}`,
+        userName: contact.name,
         totalAmount: amountInCents,
         notes: approveDto.notes,
       },
@@ -797,25 +816,28 @@ export class BookingsService {
     }
 
     // Send rejection email with ResendService
-    try {
-      await this.resendService.sendBookingRejectedEmail(
-        booking.user.email,
-        {
-          id: booking.id,
-          resourceName: booking.resource.name,
-          startDate: booking.startTime,
-          endDate: booking.endTime,
-          requestDate: booking.createdAt,
-        },
-        {
-          reason: rejectDto.reason.toString(),
-          reasonMessage,
-          additionalNotes: rejectDto.additionalNotes,
-        },
-      );
-      this.logger.log(`Rejection email sent to ${booking.user.email} for booking ${id}`);
-    } catch (emailError) {
-      this.logger.error('Failed to send booking rejection email:', emailError);
+    const rejectContact = this.getBookingContact(booking);
+    if (rejectContact.email) {
+      try {
+        await this.resendService.sendBookingRejectedEmail(
+          rejectContact.email,
+          {
+            id: booking.id,
+            resourceName: booking.resource.name,
+            startDate: booking.startTime,
+            endDate: booking.endTime,
+            requestDate: booking.createdAt,
+          },
+          {
+            reason: rejectDto.reason.toString(),
+            reasonMessage,
+            additionalNotes: rejectDto.additionalNotes,
+          },
+        );
+        this.logger.log(`Rejection email sent to ${rejectContact.email} for booking ${id}`);
+      } catch (emailError) {
+        this.logger.error('Failed to send booking rejection email:', emailError);
+      }
     }
 
     // Log audit
@@ -830,7 +852,7 @@ export class BookingsService {
       metadata: {
         bookingTitle: booking.title,
         resourceName: booking.resource.name,
-        userName: `${booking.user.firstName} ${booking.user.lastName}`,
+        userName: rejectContact.name,
         reason: rejectDto.reason,
         reasonMessage,
         additionalNotes: rejectDto.additionalNotes,
@@ -889,7 +911,7 @@ export class BookingsService {
       metadata: {
         bookingTitle: booking.title,
         resourceName: booking.resource.name,
-        userName: `${booking.user.firstName} ${booking.user.lastName}`,
+        userName: this.getBookingContact(booking).name,
         paymentReceivedAt: new Date().toISOString(),
       },
     });
@@ -947,7 +969,7 @@ export class BookingsService {
       metadata: {
         bookingTitle: booking.title,
         resourceName: booking.resource.name,
-        userName: `${booking.user.firstName} ${booking.user.lastName}`,
+        userName: this.getBookingContact(booking).name,
         invoiceIssuedAt: new Date().toISOString(),
       },
     });
@@ -1006,20 +1028,23 @@ export class BookingsService {
     ];
 
     // Convert bookings to CSV rows
-    const rows = bookings.map(booking => [
-      booking.id,
-      this.escapeCsvField(booking.title),
-      `${booking.user.firstName} ${booking.user.lastName}`,
-      booking.user.email,
-      this.escapeCsvField(booking.resource.name),
-      booking.resource.type,
-      new Date(booking.startTime).toLocaleString('it-IT'),
-      new Date(booking.endTime).toLocaleString('it-IT'),
-      booking.status,
-      booking.attendees || '',
-      this.escapeCsvField(booking.notes || ''),
-      new Date(booking.createdAt).toLocaleString('it-IT'),
-    ]);
+    const rows = bookings.map((booking: any) => {
+      const contact = this.getBookingContact(booking);
+      return [
+        booking.id,
+        this.escapeCsvField(booking.title),
+        contact.name,
+        contact.email || '',
+        this.escapeCsvField(booking.resource.name),
+        booking.resource.type,
+        new Date(booking.startTime).toLocaleString('it-IT'),
+        new Date(booking.endTime).toLocaleString('it-IT'),
+        booking.status,
+        booking.attendees || '',
+        this.escapeCsvField(booking.notes || ''),
+        new Date(booking.createdAt).toLocaleString('it-IT'),
+      ];
+    });
 
     // Combine headers and rows
     const csvContent = [
@@ -1104,18 +1129,21 @@ export class BookingsService {
           const totalAmount = Math.round(Number(booking.resource.pricePerHour) * duration * 100);
 
           // Send reminder email
-          await this.resendService.sendPaymentReminderEmail(
-            booking.user.email,
-            {
-              id: booking.id,
-              resourceName: booking.resource.name,
-              startDate: booking.startTime,
-              endDate: booking.endTime,
-              totalAmount,
-            },
-            paymentUrl,
-            hoursRemaining,
-          );
+          const reminderContact = this.getBookingContact(booking);
+          if (reminderContact.email) {
+            await this.resendService.sendPaymentReminderEmail(
+              reminderContact.email,
+              {
+                id: booking.id,
+                resourceName: booking.resource.name,
+                startDate: booking.startTime,
+                endDate: booking.endTime,
+                totalAmount,
+              },
+              paymentUrl,
+              hoursRemaining,
+            );
+          }
 
           // Mark reminder as sent
           await this.prisma.booking.update({
@@ -1173,16 +1201,19 @@ export class BookingsService {
         });
 
         // Send cancellation email
-        await this.resendService.sendBookingCancelledEmail(
-          booking.user.email,
-          {
-            id: booking.id,
-            resourceName: booking.resource.name,
-            startDate: booking.startTime,
-            endDate: booking.endTime,
-          },
-          `Pagamento non completato entro ${deadlineDays} giorni`,
-        );
+        const cancelContact = this.getBookingContact(booking);
+        if (cancelContact.email) {
+          await this.resendService.sendBookingCancelledEmail(
+            cancelContact.email,
+            {
+              id: booking.id,
+              resourceName: booking.resource.name,
+              startDate: booking.startTime,
+              endDate: booking.endTime,
+            },
+            `Pagamento non completato entro ${deadlineDays} giorni`,
+          );
+        }
 
         // Log audit
         await this.auditLogsService.log({
@@ -1196,7 +1227,7 @@ export class BookingsService {
           metadata: {
             bookingTitle: booking.title,
             resourceName: booking.resource.name,
-            userName: `${booking.user.firstName} ${booking.user.lastName}`,
+            userName: cancelContact.name,
             reason: 'Payment deadline exceeded',
           },
         });
@@ -1309,10 +1340,11 @@ export class BookingsService {
       updateDto.startTime ||
       updateDto.endTime;
 
-    if (hasChanges) {
+    const modifyContact = this.getBookingContact(booking);
+    if (hasChanges && modifyContact.email) {
       try {
         await this.resendService.sendBookingModifiedEmail(
-          booking.user.email,
+          modifyContact.email,
           {
             id: booking.id,
             title: booking.title,
@@ -1326,14 +1358,14 @@ export class BookingsService {
             endTime: updatedBooking.endTime,
           },
         );
-        this.logger.log(`Modification email sent to ${booking.user.email} for booking ${id}`);
+        this.logger.log(`Modification email sent to ${modifyContact.email} for booking ${id}`);
       } catch (emailError) {
         this.logger.error('Failed to send booking modification email:', emailError);
       }
     }
 
     // Log audit
-    const changes = [];
+    const changes: string[] = [];
     if (updateDto.title) changes.push(`Titolo: "${oldValues.title}" → "${updatedBooking.title}"`);
     if (updateDto.description) changes.push(`Descrizione modificata`);
     if (updateDto.startTime || updateDto.endTime) {
@@ -1353,7 +1385,7 @@ export class BookingsService {
       metadata: {
         bookingTitle: booking.title,
         resourceName: booking.resource.name,
-        userName: `${booking.user.firstName} ${booking.user.lastName}`,
+        userName: modifyContact.name,
         changes: changes,
         adminNote: updateDto.adminNote,
       },

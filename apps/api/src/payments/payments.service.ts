@@ -368,7 +368,10 @@ export class PaymentsService {
       cancel_url: `${this.configService.get('FRONTEND_URL')}/bookings/${bookingId}/payment`,
       expires_at: Math.floor(Date.now() / 1000) + (48 * 60 * 60), // 48 hours
       metadata: { bookingId },
-      customer_email: booking.user.email,
+      // Per prenotazioni manuali, usa l'email del guest se disponibile
+      ...(booking.isManualBooking
+        ? booking.manualGuestEmail ? { customer_email: booking.manualGuestEmail } : {}
+        : booking.user?.email ? { customer_email: booking.user.email } : {}),
     });
 
     // Create or update payment record
@@ -395,7 +398,7 @@ export class PaymentsService {
           status: PaymentStatus.PENDING,
           paymentMethod: PaymentMethod.CREDIT_CARD,
           bookingId,
-          userId: booking.userId,
+          userId: booking.userId, // Può essere null per prenotazioni manuali
           expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
         },
       });
@@ -458,7 +461,7 @@ export class PaymentsService {
     const payment = await this.prisma.payment.create({
       data: {
         bookingId,
-        userId: booking.userId,
+        userId: booking.userId, // Può essere null per prenotazioni manuali
         amount: totalAmount,
         currency: 'EUR',
         status: PaymentStatus.PENDING,

@@ -146,12 +146,15 @@ export class NotificationsService {
         <div style="background-color: #e8f4f8; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="margin-top: 0; color: #333;">Informazioni Cliente</h3>
           <ul style="list-style: none; padding: 0;">
-            <li style="margin-bottom: 10px;"><strong>Nome:</strong> ${booking.user.firstName} ${booking.user.lastName}</li>
-            <li style="margin-bottom: 10px;"><strong>Email:</strong> ${booking.user.email}</li>
-            ${booking.user.phone ? `<li style="margin-bottom: 10px;"><strong>Telefono:</strong> ${booking.user.phone}</li>` : ''}
-            ${booking.user.companyName ? `<li style="margin-bottom: 10px;"><strong>Azienda:</strong> ${booking.user.companyName}</li>` : ''}
-            ${booking.user.vatNumber ? `<li style="margin-bottom: 10px;"><strong>Partita IVA:</strong> ${booking.user.vatNumber}</li>` : ''}
-            ${booking.user.fiscalCode ? `<li style="margin-bottom: 10px;"><strong>Codice Fiscale:</strong> ${booking.user.fiscalCode}</li>` : ''}
+            <li style="margin-bottom: 10px;"><strong>Nome:</strong> ${booking.isManualBooking ? booking.manualGuestName : (booking.user ? `${booking.user.firstName} ${booking.user.lastName}` : 'N/A')}</li>
+            <li style="margin-bottom: 10px;"><strong>Email:</strong> ${booking.isManualBooking ? (booking.manualGuestEmail || 'N/A') : (booking.user?.email || 'N/A')}</li>
+            ${booking.isManualBooking
+              ? (booking.manualGuestPhone ? `<li style="margin-bottom: 10px;"><strong>Telefono:</strong> ${booking.manualGuestPhone}</li>` : '')
+              : (booking.user?.phone ? `<li style="margin-bottom: 10px;"><strong>Telefono:</strong> ${booking.user.phone}</li>` : '')}
+            ${!booking.isManualBooking && booking.user?.companyName ? `<li style="margin-bottom: 10px;"><strong>Azienda:</strong> ${booking.user.companyName}</li>` : ''}
+            ${!booking.isManualBooking && booking.user?.vatNumber ? `<li style="margin-bottom: 10px;"><strong>Partita IVA:</strong> ${booking.user.vatNumber}</li>` : ''}
+            ${!booking.isManualBooking && booking.user?.fiscalCode ? `<li style="margin-bottom: 10px;"><strong>Codice Fiscale:</strong> ${booking.user.fiscalCode}</li>` : ''}
+            ${booking.isManualBooking ? `<li style="margin-bottom: 10px;"><strong>Tipo:</strong> Prenotazione Manuale</li>` : ''}
           </ul>
         </div>
 

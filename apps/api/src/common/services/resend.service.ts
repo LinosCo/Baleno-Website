@@ -921,12 +921,15 @@ export class ResendService {
             <div class="info-box">
               <h3>👤 Informazioni Cliente</h3>
               <ul>
-                <li><strong>Nome:</strong> ${booking.user.firstName} ${booking.user.lastName}</li>
-                <li><strong>Email:</strong> ${booking.user.email}</li>
-                ${booking.user.phone ? `<li><strong>Telefono:</strong> ${booking.user.phone}</li>` : ''}
-                ${booking.user.companyName ? `<li><strong>Azienda:</strong> ${booking.user.companyName}</li>` : ''}
-                ${booking.user.vatNumber ? `<li><strong>Partita IVA:</strong> ${booking.user.vatNumber}</li>` : ''}
-                ${booking.user.fiscalCode ? `<li><strong>Codice Fiscale:</strong> ${booking.user.fiscalCode}</li>` : ''}
+                <li><strong>Nome:</strong> ${booking.isManualBooking ? booking.manualGuestName : (booking.user ? `${booking.user.firstName} ${booking.user.lastName}` : 'N/A')}</li>
+                <li><strong>Email:</strong> ${booking.isManualBooking ? (booking.manualGuestEmail || 'N/A') : (booking.user?.email || 'N/A')}</li>
+                ${booking.isManualBooking
+                  ? (booking.manualGuestPhone ? `<li><strong>Telefono:</strong> ${booking.manualGuestPhone}</li>` : '')
+                  : (booking.user?.phone ? `<li><strong>Telefono:</strong> ${booking.user.phone}</li>` : '')}
+                ${!booking.isManualBooking && booking.user?.companyName ? `<li><strong>Azienda:</strong> ${booking.user.companyName}</li>` : ''}
+                ${!booking.isManualBooking && booking.user?.vatNumber ? `<li><strong>Partita IVA:</strong> ${booking.user.vatNumber}</li>` : ''}
+                ${!booking.isManualBooking && booking.user?.fiscalCode ? `<li><strong>Codice Fiscale:</strong> ${booking.user.fiscalCode}</li>` : ''}
+                ${booking.isManualBooking ? `<li><strong>Tipo:</strong> Prenotazione Manuale</li>` : ''}
               </ul>
             </div>
 
@@ -1067,7 +1070,7 @@ export class ResendService {
           </div>
 
           <div class="content">
-            <p>Ciao <strong>${booking.user.firstName}</strong>,</p>
+            <p>Ciao <strong>${booking.isManualBooking ? booking.manualGuestName?.split(' ')[0] : (booking.user?.firstName || 'Utente')}</strong>,</p>
             <p>Abbiamo ricevuto la tua richiesta di prenotazione. Ecco i dettagli:</p>
 
             <div class="details-box">

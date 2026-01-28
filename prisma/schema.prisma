@@ -311,8 +311,8 @@ model Payment {
   bookingId   String
   booking     Booking       @relation(fields: [bookingId], references: [id], onDelete: Restrict)
 
-  userId      String
-  user        User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  userId      String?       // Nullable per prenotazioni manuali
+  user        User?         @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   // Payment details
   amount        Decimal       @db.Decimal(10, 2)
