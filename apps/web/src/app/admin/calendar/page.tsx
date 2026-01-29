@@ -13,11 +13,16 @@ interface Booking {
   user: {
     firstName: string;
     lastName: string;
-  };
+  } | null;
   resource: {
     name: string;
     type: string;
   };
+  // Manual booking fields
+  isManualBooking?: boolean;
+  manualGuestName?: string;
+  manualGuestEmail?: string;
+  manualGuestPhone?: string;
 }
 
 type ViewMode = 'day' | 'week' | 'month';
@@ -637,7 +642,14 @@ export default function AdminCalendarPage() {
                 <div className="mb-3">
                   <label className="text-muted small">Utente</label>
                   <div className="fw-semibold">
-                    {selectedBooking.user.firstName} {selectedBooking.user.lastName}
+                    {selectedBooking.isManualBooking ? (
+                      <>
+                        {selectedBooking.manualGuestName || 'Ospite'}
+                        <span className="badge bg-info ms-2" style={{ fontSize: '0.7rem' }}>Manuale</span>
+                      </>
+                    ) : (
+                      selectedBooking.user ? `${selectedBooking.user.firstName} ${selectedBooking.user.lastName}` : 'N/A'
+                    )}
                   </div>
                 </div>
                 <div className="mb-3">
