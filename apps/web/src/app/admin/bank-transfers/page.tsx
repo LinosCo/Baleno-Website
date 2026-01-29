@@ -179,12 +179,12 @@ export default function BankTransfersPage() {
                               Informazioni Cliente
                             </h6>
                             <p className="mb-1">
-                              <strong>Nome:</strong> {transfer.booking.user.firstName} {transfer.booking.user.lastName}
+                              <strong>Nome:</strong> {transfer.booking.user ? `${transfer.booking.user.firstName} ${transfer.booking.user.lastName}` : (transfer.booking.manualGuestName || 'Ospite')}
                             </p>
                             <p className="mb-0">
                               <small className="text-muted">
                                 <i className="bi bi-envelope me-1"></i>
-                                {transfer.booking.user.email}
+                                {transfer.booking.user?.email || transfer.booking.manualGuestEmail || 'N/A'}
                               </small>
                             </p>
                           </div>

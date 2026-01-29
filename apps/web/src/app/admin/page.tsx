@@ -292,7 +292,7 @@ export default function AdminDashboard() {
                       <div className="flex-grow-1">
                         <h6 className="mb-1 fw-semibold text-dark">{booking.title}</h6>
                         <p className="mb-1 small text-muted">
-                          {booking.user.firstName} {booking.user.lastName} · {booking.resource.name}
+                          {booking.user ? `${booking.user.firstName} ${booking.user.lastName}` : (booking.manualGuestName || 'Ospite')} · {booking.resource.name}
                         </p>
                         <small className="text-muted">
                           {new Date(booking.startTime).toLocaleDateString('it-IT', {

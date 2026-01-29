@@ -144,9 +144,9 @@ export default function AdminPaymentsPage() {
                         </td>
                         <td>
                           <div className="fw-semibold">
-                            {payment.booking.user.firstName} {payment.booking.user.lastName}
+                            {payment.booking.user ? `${payment.booking.user.firstName} ${payment.booking.user.lastName}` : (payment.booking.manualGuestName || 'Ospite')}
                           </div>
-                          <div className="text-muted small">{payment.booking.user.email}</div>
+                          <div className="text-muted small">{payment.booking.user?.email || payment.booking.manualGuestEmail || 'N/A'}</div>
                         </td>
                         <td className="fw-medium">
                           {payment.booking.title}
