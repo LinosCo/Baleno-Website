@@ -25,7 +25,11 @@ interface PendingBankTransfer {
       email: string;
       firstName: string;
       lastName: string;
-    };
+    } | null;
+    // Manual booking fields
+    isManualBooking?: boolean;
+    manualGuestName?: string;
+    manualGuestEmail?: string;
   };
 }
 

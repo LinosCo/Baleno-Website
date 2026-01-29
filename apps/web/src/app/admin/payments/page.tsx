@@ -14,7 +14,11 @@ interface Payment {
       firstName: string;
       lastName: string;
       email: string;
-    };
+    } | null;
+    // Manual booking fields
+    isManualBooking?: boolean;
+    manualGuestName?: string;
+    manualGuestEmail?: string;
   };
   createdAt: string;
   refundedAmount?: number;
