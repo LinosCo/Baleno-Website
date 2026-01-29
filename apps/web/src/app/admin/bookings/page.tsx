@@ -854,14 +854,14 @@ export default function AdminBookingsPage() {
                               </div>
                               <div className="text-muted small">{booking.manualGuestEmail || 'Nessuna email'}</div>
                             </>
-                          ) : (
+                          ) : booking.user ? (
                             <>
                               <div className="fw-medium">
                                 {booking.user.firstName} {booking.user.lastName}
                               </div>
                               <div className="text-muted small">{booking.user.email}</div>
                             </>
-                          )}
+                          ) : null}
                         </td>
                         <td>
                           <div className="fw-medium">{booking.resource.name}</div>
@@ -968,7 +968,7 @@ export default function AdminBookingsPage() {
                             <p className="text-muted small mb-0">Tel: {selectedBooking.manualGuestPhone}</p>
                           )}
                         </>
-                      ) : (
+                      ) : selectedBooking.user ? (
                         <>
                           <label className="form-label text-muted small fw-semibold">Utente</label>
                           <p className="fw-semibold mb-1">
@@ -976,7 +976,7 @@ export default function AdminBookingsPage() {
                           </p>
                           <p className="text-muted small mb-0">{selectedBooking.user.email}</p>
                         </>
-                      )}
+                      ) : null}
                     </div>
                     <div className="col-md-6">
                       <label className="form-label text-muted small fw-semibold">Risorsa</label>
@@ -1519,12 +1519,12 @@ export default function AdminBookingsPage() {
                         <p className="mb-1"><strong>Ospite:</strong> {selectedBooking.manualGuestName || 'Ospite'}</p>
                         <p className="mb-1"><strong>Email:</strong> {selectedBooking.manualGuestEmail || 'Non fornita'}</p>
                       </>
-                    ) : (
+                    ) : selectedBooking.user ? (
                       <>
                         <p className="mb-1"><strong>Utente:</strong> {selectedBooking.user.firstName} {selectedBooking.user.lastName}</p>
                         <p className="mb-1"><strong>Email:</strong> {selectedBooking.user.email}</p>
                       </>
-                    )}
+                    ) : null}
                     <p className="mb-0"><strong>Risorsa:</strong> {selectedBooking.resource.name}</p>
                   </div>
                 </div>
