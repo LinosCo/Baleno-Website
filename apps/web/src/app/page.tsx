@@ -255,7 +255,7 @@ export default function HomePage() {
 
           <div className="row">
             <div className="col-12 text-center text-muted small">
-              <p className="mb-0">© 2025 Baleno ETS. Tutti i diritti riservati.</p>
+              <p className="mb-0">© {new Date().getFullYear()} Baleno ETS. Tutti i diritti riservati.</p>
             </div>
           </div>
         </div>
