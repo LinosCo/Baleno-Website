@@ -846,20 +846,20 @@ export default function AdminBookingsPage() {
                           )}
                         </td>
                         <td>
-                          {booking.isManualBooking ? (
+                          {booking.isManualBooking || !booking.user ? (
                             <>
                               <div className="fw-medium">
-                                {booking.manualGuestName}
-                                <span className="badge bg-info ms-2" style={{ fontSize: '0.65rem' }}>Manuale</span>
+                                {booking.manualGuestName || 'Ospite'}
+                                {booking.isManualBooking && <span className="badge bg-info ms-2" style={{ fontSize: '0.65rem' }}>Manuale</span>}
                               </div>
                               <div className="text-muted small">{booking.manualGuestEmail || 'Nessuna email'}</div>
                             </>
                           ) : (
                             <>
                               <div className="fw-medium">
-                                {booking.user?.firstName} {booking.user?.lastName}
+                                {booking.user.firstName} {booking.user.lastName}
                               </div>
-                              <div className="text-muted small">{booking.user?.email}</div>
+                              <div className="text-muted small">{booking.user.email}</div>
                             </>
                           )}
                         </td>
@@ -956,13 +956,13 @@ export default function AdminBookingsPage() {
 
                   <div className="row g-4 mb-4">
                     <div className="col-md-6">
-                      {selectedBooking.isManualBooking ? (
+                      {selectedBooking.isManualBooking || !selectedBooking.user ? (
                         <>
                           <label className="form-label text-muted small fw-semibold">
                             Ospite
-                            <span className="badge bg-info ms-2" style={{ fontSize: '0.65rem' }}>Prenotazione Manuale</span>
+                            {selectedBooking.isManualBooking && <span className="badge bg-info ms-2" style={{ fontSize: '0.65rem' }}>Prenotazione Manuale</span>}
                           </label>
-                          <p className="fw-semibold mb-1">{selectedBooking.manualGuestName}</p>
+                          <p className="fw-semibold mb-1">{selectedBooking.manualGuestName || 'Ospite'}</p>
                           <p className="text-muted small mb-0">{selectedBooking.manualGuestEmail || 'Nessuna email fornita'}</p>
                           {selectedBooking.manualGuestPhone && (
                             <p className="text-muted small mb-0">Tel: {selectedBooking.manualGuestPhone}</p>
@@ -972,9 +972,9 @@ export default function AdminBookingsPage() {
                         <>
                           <label className="form-label text-muted small fw-semibold">Utente</label>
                           <p className="fw-semibold mb-1">
-                            {selectedBooking.user?.firstName} {selectedBooking.user?.lastName}
+                            {selectedBooking.user.firstName} {selectedBooking.user.lastName}
                           </p>
-                          <p className="text-muted small mb-0">{selectedBooking.user?.email}</p>
+                          <p className="text-muted small mb-0">{selectedBooking.user.email}</p>
                         </>
                       )}
                     </div>
@@ -1246,7 +1246,7 @@ export default function AdminBookingsPage() {
                     <div className="card-body">
                       <h6 className="fw-bold mb-2">Prenotazione da rifiutare:</h6>
                       <p className="mb-1"><strong>Titolo:</strong> {selectedBooking.title}</p>
-                      <p className="mb-1"><strong>Utente:</strong> {selectedBooking.isManualBooking ? selectedBooking.manualGuestName : `${selectedBooking.user?.firstName} ${selectedBooking.user?.lastName}`}</p>
+                      <p className="mb-1"><strong>Utente:</strong> {selectedBooking.isManualBooking || !selectedBooking.user ? (selectedBooking.manualGuestName || 'Ospite') : `${selectedBooking.user.firstName} ${selectedBooking.user.lastName}`}</p>
                       <p className="mb-0"><strong>Risorsa:</strong> {selectedBooking.resource.name}</p>
                     </div>
                   </div>
@@ -1369,7 +1369,7 @@ export default function AdminBookingsPage() {
                   <div className="bg-light p-3 rounded">
                     <h6 className="fw-semibold mb-2">Prenotazione da approvare:</h6>
                     <p className="mb-1"><strong>Titolo:</strong> {selectedBooking.title}</p>
-                    <p className="mb-1"><strong>Utente:</strong> {selectedBooking.isManualBooking ? selectedBooking.manualGuestName : `${selectedBooking.user?.firstName} ${selectedBooking.user?.lastName}`}</p>
+                    <p className="mb-1"><strong>Utente:</strong> {selectedBooking.isManualBooking || !selectedBooking.user ? (selectedBooking.manualGuestName || 'Ospite') : `${selectedBooking.user.firstName} ${selectedBooking.user.lastName}`}</p>
                     <p className="mb-0"><strong>Risorsa:</strong> {selectedBooking.resource.name}</p>
                   </div>
                 </div>
@@ -1514,15 +1514,15 @@ export default function AdminBookingsPage() {
 
                   <div className="bg-light p-3 rounded">
                     <h6 className="fw-semibold mb-2">Prenotazione da modificare:</h6>
-                    {selectedBooking.isManualBooking ? (
+                    {selectedBooking.isManualBooking || !selectedBooking.user ? (
                       <>
-                        <p className="mb-1"><strong>Ospite:</strong> {selectedBooking.manualGuestName}</p>
+                        <p className="mb-1"><strong>Ospite:</strong> {selectedBooking.manualGuestName || 'Ospite'}</p>
                         <p className="mb-1"><strong>Email:</strong> {selectedBooking.manualGuestEmail || 'Non fornita'}</p>
                       </>
                     ) : (
                       <>
-                        <p className="mb-1"><strong>Utente:</strong> {selectedBooking.user?.firstName} {selectedBooking.user?.lastName}</p>
-                        <p className="mb-1"><strong>Email:</strong> {selectedBooking.user?.email}</p>
+                        <p className="mb-1"><strong>Utente:</strong> {selectedBooking.user.firstName} {selectedBooking.user.lastName}</p>
+                        <p className="mb-1"><strong>Email:</strong> {selectedBooking.user.email}</p>
                       </>
                     )}
                     <p className="mb-0"><strong>Risorsa:</strong> {selectedBooking.resource.name}</p>
