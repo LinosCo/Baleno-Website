@@ -66,6 +66,16 @@ export class BookingsService {
       throw new BadRequestException('Resource is not available');
     }
 
+    // Check allowed weekdays for this resource
+    if (resource.allowedWeekdays && resource.allowedWeekdays.length > 0 && resource.allowedWeekdays.length < 7) {
+      const bookingWeekday = start.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
+      if (!resource.allowedWeekdays.includes(bookingWeekday)) {
+        const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+        const allowedDays = resource.allowedWeekdays.map(d => dayNames[d]).join(', ');
+        throw new BadRequestException(`Questa risorsa è prenotabile solo nei seguenti giorni: ${allowedDays}`);
+      }
+    }
+
     // Check availability
     const isAvailable = await this.checkAvailability({
       resourceId,
@@ -209,6 +219,16 @@ export class BookingsService {
 
     if (!resource.isActive) {
       throw new BadRequestException('Resource is not available');
+    }
+
+    // Check allowed weekdays for manual bookings too (admin can override if needed by using different dates)
+    if (resource.allowedWeekdays && resource.allowedWeekdays.length > 0 && resource.allowedWeekdays.length < 7) {
+      const bookingWeekday = start.getDay();
+      if (!resource.allowedWeekdays.includes(bookingWeekday)) {
+        const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+        const allowedDays = resource.allowedWeekdays.map(d => dayNames[d]).join(', ');
+        throw new BadRequestException(`Questa risorsa è prenotabile solo nei seguenti giorni: ${allowedDays}`);
+      }
     }
 
     // Check availability
