@@ -1,0 +1,9 @@
+[phases.build]
+# Disable caching for tsbuildinfo to avoid mount errors
+cacheDirectories = ["node_modules/.cache", "apps/web/.next/cache"]
+
+[phases.install]
+cmds = ["pnpm install"]
+
+[phases.build]
+cmds = ["pnpm --filter @baleno/api prisma:generate", "pnpm --filter @baleno/api build"]
