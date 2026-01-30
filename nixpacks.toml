@@ -2,10 +2,10 @@
 nixPkgs = ["nodejs-18_x"]
 
 [phases.install]
-cmds = ["npm install -g pnpm@8", "pnpm install --frozen-lockfile"]
+cmds = ["npm install -g pnpm@8", "pnpm install"]
 
 [phases.build]
-cmds = ["npx prisma generate --schema=./prisma/schema.prisma", "pnpm run build"]
+cmds = ["pnpm run build"]
 
 [start]
-cmd = "node apps/api/dist/main.js"
+cmd = "cd apps/api && node dist/main.js"
