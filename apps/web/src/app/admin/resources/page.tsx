@@ -14,6 +14,7 @@ interface Resource {
   capacity: number;
   pricePerHour: number;
   minBookingHours: number;
+  minPrice?: number; // Prezzo minimo totale (es. 160€ per compleanni adulti)
   isActive: boolean;
   maintenanceMode: boolean;
   maintenanceStart?: string;
@@ -41,6 +42,7 @@ export default function AdminResourcesPage() {
     capacity: 1,
     pricePerHour: 0,
     minBookingHours: 1,
+    minPrice: '' as string | number, // Prezzo minimo totale (opzionale)
     isActive: true,
     maintenanceMode: false,
     maintenanceStart: '',
@@ -88,6 +90,7 @@ export default function AdminResourcesPage() {
       capacity: parseInt(formData.capacity.toString()),
       pricePerHour: parseFloat(formData.pricePerHour.toString()),
       minBookingHours: parseInt(formData.minBookingHours.toString()),
+      minPrice: formData.minPrice ? parseFloat(formData.minPrice.toString()) : undefined,
       isActive: formData.isActive,
       maintenanceMode: formData.maintenanceMode,
       maintenanceStart: formData.maintenanceStart || undefined,
@@ -138,6 +141,7 @@ export default function AdminResourcesPage() {
       capacity: resource.capacity,
       pricePerHour: resource.pricePerHour,
       minBookingHours: resource.minBookingHours || 1,
+      minPrice: resource.minPrice || '',
       isActive: resource.isActive,
       maintenanceMode: resource.maintenanceMode || false,
       maintenanceStart: resource.maintenanceStart ? (resource.maintenanceStart.split('T')[0] ?? '') : '',
@@ -214,6 +218,7 @@ export default function AdminResourcesPage() {
       capacity: 1,
       pricePerHour: 0,
       minBookingHours: 1,
+      minPrice: '',
       isActive: true,
       maintenanceMode: false,
       maintenanceStart: '',
@@ -505,6 +510,22 @@ export default function AdminResourcesPage() {
                         placeholder="es. 2"
                       />
                       <div className="form-text">Ore minime consecutive</div>
+                    </div>
+                  </div>
+
+                  <div className="row g-3 mb-4">
+                    <div className="col-md-4">
+                      <label className="form-label fw-semibold">Prezzo minimo (€)</label>
+                      <input
+                        type="number"
+                        value={formData.minPrice}
+                        onChange={(e) => setFormData({ ...formData, minPrice: e.target.value ? parseFloat(e.target.value) : '' })}
+                        min="0"
+                        step="0.01"
+                        className="form-control"
+                        placeholder="es. 160.00"
+                      />
+                      <div className="form-text">Tariffa minima totale (opzionale). Es: 160€ per compleanni adulti</div>
                     </div>
                   </div>
 

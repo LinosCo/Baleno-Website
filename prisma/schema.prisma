@@ -171,6 +171,7 @@ model Resource {
   capacity    Int?              // Capacità persone
   pricePerHour Decimal          @db.Decimal(10, 2)
   minBookingHours Int?          @default(1) // Ore minime prenotazione
+  minPrice    Decimal?          @db.Decimal(10, 2) // Prezzo minimo totale (es. 160€ per compleanni adulti)
 
   // Availability
   isActive    Boolean           @default(true)

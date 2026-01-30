@@ -11,6 +11,7 @@ interface Resource {
   description: string;
   capacity: number;
   pricePerHour: number;
+  minPrice?: number; // Prezzo minimo totale
   isActive: boolean;
   maintenanceMode: boolean;
   images: string[];

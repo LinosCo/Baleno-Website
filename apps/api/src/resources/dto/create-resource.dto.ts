@@ -31,6 +31,11 @@ export class CreateResourceDto {
   @Min(1)
   minBookingHours?: number;
 
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  minPrice?: number; // Prezzo minimo totale (es. 160€ per compleanni adulti)
+
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;

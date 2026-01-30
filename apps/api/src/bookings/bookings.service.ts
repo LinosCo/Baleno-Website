@@ -125,6 +125,12 @@ export class BookingsService {
       }
     }
 
+    // Apply minimum price if defined for the resource
+    if (resource.minPrice && amount < Number(resource.minPrice)) {
+      amount = Number(resource.minPrice);
+      this.logger.log(`Applied minimum price €${amount} for resource ${resource.name}`);
+    }
+
     // Create booking with PENDING status (requires admin approval)
     const booking = await this.prisma.booking.create({
       data: {
@@ -276,6 +282,12 @@ export class BookingsService {
           resource: res
         });
       }
+    }
+
+    // Apply minimum price if defined for the resource
+    if (resource.minPrice && amount < Number(resource.minPrice)) {
+      amount = Number(resource.minPrice);
+      this.logger.log(`Applied minimum price €${amount} for resource ${resource.name}`);
     }
 
     // Determine initial status
@@ -676,6 +688,13 @@ export class BookingsService {
     // Add additional resources to original amount
     for (const additionalResource of booking.additionalResources) {
       originalAmount += Number(additionalResource.resource.pricePerHour) * additionalResource.quantity * duration;
+    }
+
+    // Apply minimum price if defined for the resource
+    const resourceMinPrice = booking.resource.minPrice ? Number(booking.resource.minPrice) : null;
+    if (resourceMinPrice && originalAmount < resourceMinPrice) {
+      this.logger.log(`Applied minimum price €${resourceMinPrice} for resource ${booking.resource.name} (original: €${originalAmount})`);
+      originalAmount = resourceMinPrice;
     }
 
     if (approveDto.customAmount !== undefined && approveDto.customAmount !== null) {
