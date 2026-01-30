@@ -5,7 +5,8 @@
   "description": "Sistema completo di gestione prenotazioni per balenosanzeno.it",
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build": "prisma generate && turbo run build",
+    "prisma:generate": "prisma generate",
     "start": "turbo run start",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
